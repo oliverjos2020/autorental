@@ -22,7 +22,7 @@ class CreateUsersTable extends Migration
             $table->unsignedBigInteger('station_id')->nullable();
             $table->string('phone_no')->nullable();
             $table->string('address')->nullable();
-            // $table->string('meansOfIdentification')->nullable();
+            $table->string('nin')->nullable();
             // $table->string('bank')->nullable();
             // $table->string('accountNumber')->nullable();
             // $table->string('accountName')->nullable();

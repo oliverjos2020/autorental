@@ -26,6 +26,9 @@ use App\Http\Livewire\StartRide;
 use App\Http\Livewire\StationManagement;
 use App\Http\Controllers\PaymentController;
 
+
+//FOR API
+use App\Http\Controllers\UserAPIController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -64,7 +67,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/brand', CarBrandManagement::class)->name('carbrand');
     Route::get('/priceSetup', PriceSetupManagement::class)->name('priceSetup');
     Route::get('/myVehicles', MyVehicles::class)->name('myVehicles');
-    Route::get('/registration/{vehID}/{type}', RegistrationType::class)->name('regType');
+    Route::get('/register-vehicle', RegistrationType::class)->name('registerVehicle');
     Route::get('/bookingOrder/{status}', BookingOrderManagement::class)->name('bookingOrder');
     Route::get('/start-ride', StartRide::class)->name('startRide');
     Route::get('/users', UserManagement::class)->name('userSetup');
@@ -81,7 +84,15 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth'])->name('dashboard');
 
-// Route::get('/create-payment', [PaymentController::class, 'createPayment'])->name('createPayment');
-// Route::get('/status', [PaymentController::class, 'getPaymentStatus'])->name('status');
+//API V1
+
+Route::middleware('api')->group(function () {
+    Route::post('/api/v1/user/register', [UserAPIController::class, 'register']);
+    Route::post('/api/v1/user/login', [UserAPIController::class, 'login']);
+    Route::middleware('auth:api')->group(function () {
+        Route::get('/user-profile', [UserAPIController::class, 'userProfile']);
+    });
+});
+
 
 require __DIR__.'/auth.php';

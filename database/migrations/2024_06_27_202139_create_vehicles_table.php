@@ -16,23 +16,17 @@ class CreateVehiclesTable extends Migration
         Schema::create('vehicles', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->string('reason')->nullable();
-            $table->string('location')->nullable();
-            $table->enum('driverLicense', ['yes', 'no'])->nullable();
             $table->string('vehicleMake')->nullable();
             $table->string('vehicleYear')->nullable();
             $table->string('vehicleModel')->nullable();
             $table->string('transmission')->nullable();
             $table->string('doors')->nullable();
-            $table->string('passengers')->nullable();
             $table->enum('airCondition', ['yes', 'no'])->nullable();
             $table->string('seats')->nullable();
-            // $table->integer('category')->nullable();
-            $table->foreignId('category_id')->constrained()->cascadeOnDelete()->nullable();
             $table->foreignId('price_setup_id')->constrained()->cascadeOnDelete()->nullable();
             $table->char('status', 1)->default('0')->nullable();
-            $table->dateTime('dateApproved')->nullable();
             $table->char('on_trip', 1)->default('0')->nullable();
+            $table->text('moreInfo')->nullable();
             $table->timestamps();
         });
     }

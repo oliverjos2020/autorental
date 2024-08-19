@@ -255,7 +255,7 @@
                                 </a>
                             </li>
                             <li>
-                                <a href="/registration/new/rental" class="waves-effect">
+                                <a href="/register-vehicle" class="waves-effect">
                                     <i class="mdi mdi-car"></i>
                                     <span>Add Vehicle</span>
                                 </a>

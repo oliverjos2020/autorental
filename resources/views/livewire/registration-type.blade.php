@@ -142,9 +142,9 @@
                         </select>
                         @error('airCondition') <span class="text-danger">{{ $message }}</span> @enderror
                     </div>
-                    <div class="form-group mt-2">
+                    <div class="form-group mt-2" wire:ignore>
                         <label for="moreInfo">More Information</label>
-                        <textarea id="elm1" wire:model="moreInfo"></textarea>
+                        <textarea id="elm1" wire:model.defer="moreInfo"></textarea>
                     </div>
                     
                 </div>
@@ -154,7 +154,7 @@
                
                 {{-- @elseif ($step == 5) --}}
                     <div>
-                        <div class="form-group row mt-2">
+                        <div class="form-group row mt-2 p-2">
                             <div class="alert alert-info" role="alert">
                                 {{-- <h4 class="alert-heading">Well done!</h4> --}}
                                 <p>To ensure your car listing stands out, please upload clear images of your car from the following angles:</p>
@@ -175,7 +175,13 @@
                                 <span class="text-danger">{{ $error[0] }}</span><br>
                                 @endforeach
                                 @endif
-                                <div class="row mt-3 mb-3">
+                                @if($errors->has('vehImage'))
+                                    <div class="invalid-feedback">
+                                        {{ $errors->first('vehImage') }}
+                                    </div>
+                                @endif
+
+                                <div class="row mt-1 mb-1">
                                 {{-- @if ($vehImage)
                                     @foreach ($vehImage as $image)
                                         @if ($image instanceof \Livewire\TemporaryUploadedFile)
@@ -199,34 +205,29 @@
                                             </div>
                                         @endif
                                     @endforeach
-                                @elseif ($existingvehImage)
-                                    @foreach ($existingvehImage as $existingImage)
-                                        <div class="col-md-3">
-                                            <img src="{{ $existingImage->image_path }}" class="img-fluid mb-2" style="max-width: 100%">
-                                        </div>
-                                    @endforeach
                                 @endif
                                 </div>
-                                <br>
                                 <span class="text-warning">Allowed extensions: *jpg, jpeg, png</span>
                                 <div wire:loading wire:target="vehImage">
                                     Uploading...
                                 </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="SelectPrice">Select Vehicle placement category</label>
+                                <select wire:model="category" class="form-control">
+                                    <option value="">Select Vehicle category</option>
+                                    @foreach($priceCategory as $category)
+                                        <option value="{{$category->id}}">{{$category->item}}</option>
+                                    @endforeach
+                                </select>
+                                @error('category') <span class="text-danger">{{ $message }}</span> @enderror
                             </div>
                         </div>
                     </div>
                 {{-- @endif --}}
     
                 <div class="mt-4">
-                    @if ($step > 1)
-                    <button type="button" class="btn btn-secondary" wire:click="previousStep" style="margin-right:15px;">Previous</button>
-                    @endif
-    
-                    @if ($step < 5) <button type="button" class="btn btn-primary btn-block" wire:click="nextStep">Next</button>
-                        @else
-                        <button type="button" class="btn btn-success" wire:click="submit">Submit</button>
-                        @endif
-
+                    <button class="btn btn-primary" id="submitButton">Submit</button>
                 </div>
                 <div class="row">
                     <div class="col-7">
@@ -249,4 +250,33 @@
             @endif
         </div>
     </div>
-    
+    <script src="{{ asset('assets/libs/tinymce/tinymce.min.js') }}"></script>
+    <script>
+        tinymce.init({
+            selector: '#elm1',
+            setup: function (editor) {
+                editor.on('change', function () {
+                    var content = tinymce.get('elm1').getContent();
+                    console.log("Content on change:", content); // Log to ensure content is retrieved
+                    @this.set('moreInfo', content);
+                });
+            }
+        });
+
+        document.getElementById('submitButton').addEventListener('click', function(event) {
+            event.preventDefault();
+            
+            // Retrieve content from TinyMCE
+            var content = tinymce.get('elm1').getContent();
+            
+            // Log the content to ensure it's being retrieved
+            console.log("Retrieved content from TinyMCE:", content);
+            
+            // Set the content to the Livewire property
+            @this.set('moreInfo', content);
+            
+            // Trigger the Livewire submit method
+            @this.call('submit'); // Directly call the submit method
+            
+        });
+    </script>
