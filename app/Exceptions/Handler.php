@@ -40,27 +40,15 @@ class Handler extends ExceptionHandler
         });
     }
 
-    // public function render($request, Throwable $exception)
-    // {
-    //     if ($exception instanceof MethodNotAllowedHttpException) {
-    //         return response()->json([
-    //             'error' => 'The method is not allowed for the requested route. Please use POST.',
-    //         ], 405);
-    //     }
-
-    //     return parent::render($request, $exception);
-    // }
     public function render($request, Throwable $exception)
     {
-        // If the request expects JSON, return a JSON response
-        if ($request->wantsJson()) {
+        if ($exception instanceof MethodNotAllowedHttpException) {
             return response()->json([
-                'error' => 'Something went wrong',
-                'message' => $exception->getMessage()
-            ], $exception->getStatusCode() ?: 500);
+                'error' => 'The method is not allowed for the requested route. Please use POST.',
+            ], 405);
         }
 
-        // Otherwise, use the default rendering for HTML requests
         return parent::render($request, $exception);
     }
+
 }

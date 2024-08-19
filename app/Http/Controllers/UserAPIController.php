@@ -7,10 +7,12 @@ use App\Models\User;
 use Illuminate\Validation\Rules;
 use Illuminate\Support\Facades\Hash;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use Illuminate\Validation\ValidationException;
 class UserAPIController extends Controller
 {
     public function register(Request $request)
     {
+        try {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
@@ -32,12 +34,22 @@ class UserAPIController extends Controller
 
         // Generate JWT token for the new user
         $token = JWTAuth::fromUser($user);
+        unset($user['role_id']);
+        unset($user['updated_at']);
+        unset($user['created_at']);
 
         return response()->json([
-            'user' => $user,
+            'responseCode' => 201,
+            'responseMessage' => 'success',
+            'data' => $user,
             'token' => $token,
         ], 201);
-
+    } catch (ValidationException $e) {
+        return response()->json([
+            'errors' => $e->errors(),
+            'responseCode' => 422 // Adding the response code
+        ], 422);
+    }
         
     }
 
@@ -49,10 +61,10 @@ class UserAPIController extends Controller
         $credentials = $request->only('email', 'password');
 
         if (!$token = JWTAuth::attempt($credentials)) {
-            return response()->json(['error' => 'Invalid credentials'], 401);
+            return response()->json(['error' => 'Invalid credentials', 'responseCode' => 401], 401);
         }
 
-        return response()->json(['token' => $token]);
+        return response()->json(['responseCode' => 200, 'responseMessage' => 'success', 'token' => $token]);
     }
 
 
