@@ -260,13 +260,13 @@
                                     <span>Add Vehicle</span>
                                 </a>
                             </li>
-                            {{-- <li>
-                                <a href="/bookingOrder/pending" class="waves-effect">
+                            <li>
+                                <a href="/myVehicles" class="waves-effect">
                                     <i class="mdi mdi-car-info"></i>
-                                    <span>Pending Booking Orders</span>
+                                    <span>Vehicles</span>
                                 </a>
                             </li>
-                            <li>
+                            {{--<li>
                                 <a href="/bookingOrder/ongoing" class="waves-effect">
                                     <i class="mdi mdi-car-multiple"></i>
                                     <span>Booking Ongoing Trips</span>

@@ -27,7 +27,7 @@ class CreateUsersTable extends Migration
             // $table->string('accountNumber')->nullable();
             // $table->string('accountName')->nullable();
             // $table->string('accountType')->nullable();
-            // $table->string('passport')->nullable();
+            $table->string('otp')->nullable();
             $table->string('driverLicense')->nullable();
             $table->string('insurance')->nullable();
             $table->string('password');

@@ -51,11 +51,11 @@
                         <tbody>
                             @forelse($vehicles as $vehicle)
                             <tr>
-                                <td><img src="{{ asset($vehicle->photos->first()->image_path) }}" style="height:50px; width:70px;" alt="{{ $vehicle->vehicleMake }}"></td>
+                                <td><img src="{{ url($vehicle->photos->first()->image_path) }}" style="height:50px; width:70px;" alt="{{ $vehicle->vehicleMake }}"></td>
                                 <td>{{ $vehicle->vehicleMake }}</td>
                                 <td>{{ $vehicle->vehicleModel }}</td>
                                 <td>{{ $vehicle->vehicleYear }}</td>
-                                <td><span class="badge bg-{{ $vehicle->category->slug == 'booking'? 'primary': 'success'}}">{{ $vehicle->category->category }}</span></td>
+                                <td>{{ $vehicle->priceSetup->item}}</td>
                                 <td>{{ $vehicle->airCondition }}</td>
                                 <td><span class="badge bg-{{ $vehicle->transmission == 'automatic' ? 'warning' : 'danger'}}">{{ $vehicle->transmission }}</span></td>
                                 <td>{{ $vehicle->seats }}</td>

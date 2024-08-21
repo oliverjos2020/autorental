@@ -49,6 +49,20 @@ Route::get('/processCancel', [PaymentController::class, 'processCancel'])->name(
 Route::get('/', function () {
     return view('auth.login');
 });
+Route::get('/clear/cache', function () {
+
+    try {
+        // Clear various caches
+        Artisan::call('cache:clear');
+        Artisan::call('config:clear');
+        Artisan::call('route:clear');
+        Artisan::call('view:clear');
+        
+        echo "Caches cleared successfully!";
+    } catch (Exception $e) {
+        echo "An error occurred: " . $e->getMessage();
+    }
+});
 // Route::get('/', Index::class)->name('index');
 Route::get('/listing', Listing::class)->name('listing');
 Route::get('/review/{reviewId}', Review::class)->name('review');
@@ -88,10 +102,13 @@ Route::get('/dashboard', function () {
 
 Route::middleware('api')->group(function () {
     Route::post('/api/v1/user/register', [UserAPIController::class, 'register']);
+    Route::post('/api/v1/user/confirmOTP', [UserAPIController::class, 'confirmOtp']);
     Route::post('/api/v1/user/login', [UserAPIController::class, 'login']);
     Route::middleware('auth:api')->group(function () {
         Route::get('/user-profile', [UserAPIController::class, 'userProfile']);
     });
+   
+
 });
 
 

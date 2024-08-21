@@ -12,6 +12,7 @@ use App\Models\Vehicle;
 use App\Models\PriceSetup;
 use Exception; 
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 
 class RegistrationType extends Component
@@ -69,35 +70,28 @@ class RegistrationType extends Component
             'price_setup_id' => $this->category,
             'moreInfo' => $this->moreInfo
         ]);
-        $this->reset(['vehicleMake', 'vehicleModel', 'seats', 'transmission', 'airCondition', 'doors', 'vehicleYear', 'category', 'moreInfo']);
-            
+       
 
-            if (!empty($this->vehImage)):
-                Photo::where('vehicle_id', $this->vehID)->delete();
-
-                foreach ($this->vehImage as $image):
-                    $filename = 'vehImage-' . Str::random(10) . '.' . $image->extension();
-                    $path = $image->storeAs('uploads/vehicle', $filename, 'public');
-                    $storedImages = Storage::url($path);
-                    Photo::create([
-                        'vehicle_id' => $vehicle,
-                        'image_path' => $storedImages
-                    ]);
-                endforeach;
-            endif;
+        $destinationPath = public_path('uploads/vehicle');
+        if (!File::exists($destinationPath)) {
+            File::makeDirectory($destinationPath, 0755, true, true);
+        }
+    
+        foreach ($this->vehImage as $image):
+            $filename = 'vehImage-' . Str::random(10) . '.' . $image->extension();
+            $path = $image->storeAs('uploads/vehicle', $filename, 'public');
+            $storedImages = Storage::url($path);
+            Photo::create([
+                'vehicle_id' => $vehicle->id,
+                'image_path' => $storedImages
+            ]);
+        endforeach;
             $this->dispatchBrowserEvent('notify', [
                 'type' => 'success',
                 'message' => 'Registration completed Successfully',
             ]);
-            // return redirect()->to('/dashboard2');
-
-        // }catch(Exception $e){
-        //     $this->dispatchBrowserEvent('notify', [
-        //         'type' => 'error',
-        //         'message' => $e->getMessage(),
-        //     ]);
-        //     return;
-        // }
+            $this->reset(['vehicleMake', 'vehicleModel', 'seats', 'transmission', 'airCondition', 'doors', 'vehicleYear', 'category', 'moreInfo']);
+            
        
     }
 
