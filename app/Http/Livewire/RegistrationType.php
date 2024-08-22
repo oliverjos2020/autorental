@@ -10,7 +10,7 @@ use App\Models\Location;
 use App\Models\Photo;
 use App\Models\Vehicle;
 use App\Models\PriceSetup;
-use Exception; 
+use Exception;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
@@ -36,10 +36,11 @@ class RegistrationType extends Component
     public $transmission;
     public $airCondition;
     public $vehImage = [];
+    public $existingvehImage = [];
     public $category;
     public $moreInfo;
-    
- 
+
+
     public function submit()
     {
 
@@ -51,7 +52,7 @@ class RegistrationType extends Component
             'transmission' => 'required',
             'airCondition' => 'required',
             'doors' => 'required',
-            'vehImage' => 'required|array|min:1', 
+            'vehImage' => 'required|array|min:1',
             'vehImage.*' => 'required|image|max:300',
             'vehicleYear' => 'required',
             'category' => 'required'
@@ -59,6 +60,7 @@ class RegistrationType extends Component
 
         $vehicle = Vehicle::create([
             'user_id' => Auth()->User()->id,
+            'station_id' => Auth()->User()->station_id,
             'vehicleMake' => $this->vehicleMake,
             'vehicleModel' => $this->vehicleModel,
             'seats' => $this->seats,
@@ -70,13 +72,13 @@ class RegistrationType extends Component
             'price_setup_id' => $this->category,
             'moreInfo' => $this->moreInfo
         ]);
-       
+
 
         $destinationPath = public_path('uploads/vehicle');
         if (!File::exists($destinationPath)) {
             File::makeDirectory($destinationPath, 0755, true, true);
         }
-    
+
         foreach ($this->vehImage as $image):
             $filename = 'vehImage-' . Str::random(10) . '.' . $image->extension();
             $path = $image->storeAs('uploads/vehicle', $filename, 'public');
@@ -91,8 +93,8 @@ class RegistrationType extends Component
                 'message' => 'Registration completed Successfully',
             ]);
             $this->reset(['vehicleMake', 'vehicleModel', 'seats', 'transmission', 'airCondition', 'doors', 'vehicleYear', 'category', 'moreInfo']);
-            
-       
+
+
     }
 
     public function render()

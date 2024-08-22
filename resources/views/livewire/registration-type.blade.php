@@ -39,18 +39,18 @@
     <div class="container mt-2">
         <div class="card">
             <div class="card-header">
-                <p class="card-title"><strongx>Setting Up Your Profile for Car {{ $type }}</strongx></p>
+                <p class="card-title"><strongx>Setting Up Your Profile for Car </strongx></p>
             </div>
             <div class="card-body">
                 {{-- @if ($step == 1) --}}
-             
-                
+
+
                 {{-- @elseif ($step == 2) --}}
                 <div>
                     <h4><strong>Vehicle Information</strong></h4>
-                    
+
                         @if(!$addtionalMake)
-                            
+
                             <div class="form-group">
                                 <label for="vehicleMake">Vehicle Make</label>
                                 <select wire:model="vehicleMake" class="form-control">
@@ -85,13 +85,13 @@
                             </select>
                             @error('vehicleYear') <span class="text-danger">{{ $message }}</span> @enderror
                         </div>
-                    
+
                     {{-- <div class="form-group mt-2">
                         <label for="vehicleMake">Vehicle Make</label>
                         <input type="text" id="vehicleMake" class="form-control" wire:model="vehicleMake" placeholder="e.g Toyota">
                         @error('vehicleMake') <span class="text-danger">{{ $message }}</span> @enderror
                     </div> --}}
-    
+
                     <div class="form-group mt-2">
                         <label for="vehicleModel">Vehicle Model</label>
                         <input type="text" id="vehicleModel" class="form-control" wire:model="vehicleModel" placeholder="e.g Corolla">
@@ -132,7 +132,7 @@
                         </select>
                         @error('transmission') <span class="text-danger">{{ $message }}</span> @enderror
                     </div>
-                    
+
                     <div class="form-group mt-2">
                         <label for="airCondition">Air Condition</label>
                         <select wire:model="airCondition" class="form-control">
@@ -146,12 +146,12 @@
                         <label for="moreInfo">More Information</label>
                         <textarea id="elm1" wire:model.defer="moreInfo"></textarea>
                     </div>
-                    
+
                 </div>
                 {{-- @elseif ($step == 3) --}}
-                
+
                 {{-- @elseif ($step == 4) --}}
-               
+
                 {{-- @elseif ($step == 5) --}}
                     <div>
                         <div class="form-group row mt-2 p-2">
@@ -197,6 +197,17 @@
                                         </div>
                                     @endforeach
                                 @endif --}}
+                                {{-- @if ($vehImage)
+                                    @foreach ($vehImage as $image)
+                                        @if ($image instanceof \Livewire\TemporaryUploadedFile)
+                                            <div class="col-md-3">
+                                                <img src="{{ $image->temporaryUrl() }}" class="img-fluid mb-2" style="max-width: 100%">
+                                            </div>
+                                        @endif
+                                    @endforeach
+                                @endif --}}
+
+
                                 @if ($vehImage)
                                     @foreach ($vehImage as $image)
                                         @if ($image instanceof \Livewire\TemporaryUploadedFile)
@@ -205,7 +216,15 @@
                                             </div>
                                         @endif
                                     @endforeach
+                                @elseif ($existingvehImage)
+                                    @foreach ($existingvehImage as $existingImage)
+                                        <div class="col-md-3">
+                                            <img src="{{ $existingImage->image_path }}" class="img-fluid mb-2" style="max-width: 100%">
+                                        </div>
+                                    @endforeach
                                 @endif
+                                </div>
+                                <br>
                                 </div>
                                 <span class="text-warning">Allowed extensions: *jpg, jpeg, png</span>
                                 <div wire:loading wire:target="vehImage">
@@ -222,16 +241,17 @@
                                 </select>
                                 @error('category') <span class="text-danger">{{ $message }}</span> @enderror
                             </div>
+                            <div class="mt-4">
+                                <button class="btn btn-primary" id="submitButton">Submit</button>
+                            </div>
                         </div>
                     </div>
                 {{-- @endif --}}
-    
-                <div class="mt-4">
-                    <button class="btn btn-primary" id="submitButton">Submit</button>
-                </div>
+
+
                 <div class="row">
                     <div class="col-7">
-                
+
                     </div>
                     <div class="col-5">
                         <div class="mt-4">
@@ -240,7 +260,7 @@
                     </div>
                 </div>
             </div>
-    
+
             @if (session()->has('message'))
             <div class="card-footer">
                 <div class="alert alert-success">
@@ -265,18 +285,18 @@
 
         document.getElementById('submitButton').addEventListener('click', function(event) {
             event.preventDefault();
-            
+
             // Retrieve content from TinyMCE
             var content = tinymce.get('elm1').getContent();
-            
+
             // Log the content to ensure it's being retrieved
             console.log("Retrieved content from TinyMCE:", content);
-            
+
             // Set the content to the Livewire property
             @this.set('moreInfo', content);
-            
+
             // Trigger the Livewire submit method
             @this.call('submit'); // Directly call the submit method
-            
+
         });
     </script>

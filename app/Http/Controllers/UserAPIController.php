@@ -63,6 +63,28 @@ class UserAPIController extends Controller
 
     }
 
+    public function resendOTP(Request $request)
+    {
+        $request->validate([
+            'email' => ['required', 'string', 'max:255']
+        ]);
+        $user = User::where('email', $request->email)->first();
+        if($user):
+            $otp = $this->generateOTP();
+            $user->otp = $otp;
+            $user->save();
+            Mail::to($user->email)->send(new SendOtpMail($otp, $request->name));
+
+            return response()->json([
+                'responseCode' => 200,
+                'responseMessage' => 'success',
+                'data' => $user,
+            ], 200);
+        else:
+            return response()->json(['responseCode' => 404, 'responseMessage' => 'Email address not found'], 404);
+        endif;
+    }
+
     public function login(Request $request)
     {
         if ($request->method() !== 'POST') {

@@ -2,8 +2,9 @@
 
 namespace App\Http\Livewire;
 
-use Livewire\Component;
+use Exception;
 use App\Models\Vehicle;
+use Livewire\Component;
 use Livewire\WithPagination;
 
 class MyVehicles extends Component
@@ -23,10 +24,29 @@ class MyVehicles extends Component
    {
        $this->resetPage();
    }
-   
+   public function delete($id)
+    {
+        try{
+            Vehicle::findOrfail($id)->delete();
+            session()->flash('delete', 'Deleted Successfully');
+            $this->dispatchBrowserEvent('notify', [
+                'type' => 'error',
+                'message' => 'Deleted Successfully',
+            ]);
+
+        } catch (Exception $e) {
+            $this->dispatchBrowserEvent('notify', [
+                'type' => 'error',
+                'message' => $e->getMessage(),
+            ]);
+            return;
+        }
+
+    }
+
     public function render()
     {
-        $vehicleManagement = Vehicle::query()->where('vehicleMake', 'like', '%' . $this->search . '%')->where('user_id', Auth()->user()->id)->latest()->paginate($this->limit);
+        $vehicleManagement = Vehicle::query()->where('vehicleMake', 'like', '%' . $this->search . '%')->where('station_id', Auth()->user()->station_id)->latest()->paginate($this->limit);
         return view('livewire.my-vehicles', [
             'vehicles' => $vehicleManagement,
         ])->layout('components.dashboard.dashboard-master');

@@ -20,7 +20,7 @@
     <link href="{{asset('assets/css/icons.min.css')}}" rel="stylesheet" type="text/css" />
     <!-- App Css-->
     <link href="{{asset('assets/css/app.min.css')}}" id="app-style" rel="stylesheet" type="text/css" />
-  
+
     <link href="{{asset('css/toastr.min.css')}}" id="app-style" rel="stylesheet" type="text/css" />
     {{-- <script src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_API_KEY') }}&libraries=places"></script> --}}
     {{-- <script src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_API_KEY') }}&libraries=places&callback=initMap" async defer></script> --}}
@@ -85,7 +85,7 @@
                                 </button>
                             </div>
 
-                           
+
                             <div class="dropdown d-inline-block">
                                 <button type="button" class="btn header-item waves-effect"
                                     id="page-header-user-dropdown" data-bs-toggle="dropdown" aria-haspopup="true"
@@ -116,34 +116,32 @@
                                 </div>
                             </div>
 
-                            
+
 
                         </div>
                         <div>
                             <!-- LOGO -->
                             <div class="navbar-brand-box">
                                 <a href="/" class="logo logo-dark">
-                                    {{-- <span class="logo-sm">
-                                        
-                                        <img src="{{asset('logo/d-logo-light.png')}}" alt="" height="50">
+                                    <span class="logo-sm">
+
+                                        <img src="{{asset('logo/main-logo.png')}}" alt="" height="50">
                                     </span>
                                     <span class="logo-lg">
-                                        
-                                        <img src="{{asset('logo/d-logo-dark.png')}}" alt="" height="50">
-                                    </span> --}}
-                                    <h3>Autorentals</h3>
+
+                                        <img src="{{asset('logo/main-logo.png')}}" alt="" height="50">
+                                    </span>
                                 </a>
 
                                 <a href="/" class="logo logo-light">
-                                    {{-- <span class="logo-sm">
-                                        
-                                        <img src="{{asset('logo/d-logo-dark.png')}}" alt="" height="50">
+                                    <span class="logo-sm">
+
+                                        <img src="{{asset('logo/main-logo.png')}}" alt="" height="50">
                                     </span>
                                     <span class="logo-lg">
-                                        
-                                        <img src="{{asset('logo/d-logo-light.png')}}" alt="" height="50">
-                                    </span> --}}
-                                    <h3>Autorentals</h3>
+
+                                        <img src="{{asset('logo/main-logo.png')}}" alt="" height="50">
+                                    </span>
                                 </a>
                             </div>
 
@@ -153,10 +151,10 @@
                                 <i class="fa fa-fw fa-bars"></i>
                             </button>
 
-                          
+
                             </form>
 
-                           
+
                         </div>
 
                     </div>
@@ -190,10 +188,10 @@
                                     <i class="mdi mdi-airplay"></i>
                                     <span>Dashboard</span>
                                 </a>
-                                
+
                             </li>
                             @if(Auth::user()->role_id == 1)
-                            
+
                             <li>
                                 <a href="javascript: void(0);" class="has-arrow waves-effecxt">
                                     <i class="mdi mdi-account-supervisor-outline"></i>
@@ -213,7 +211,7 @@
                                 </a>
                                 <ul class="sub-menu" aria-expanded="false">
                                     <li><a href="/role">Role Setup</a></li>
-                                   
+
                                 </ul>
                             </li>
                             <li>
@@ -282,7 +280,7 @@
 
                             <li class="menu-title">Components</li>
 
-                            
+
 
                             <li>
                                 {{-- <a href="javascript: void(0);" class="waves-effect">
@@ -291,12 +289,12 @@
                                 </a> --}}
                                 <form method="POST" action="{{ route('logout') }}">
                                     @csrf
-                                
+
                                     <x-dropdown-link :href="route('logout')" onclick="event.preventDefault(); this.closest('form').submit();">
                                         {{ __('Log Out') }}
                                     </x-dropdown-link>
                                 </form>
-                                
+
                             </li>
 
                         </ul>
@@ -314,12 +312,12 @@
                 <div class="page-content">
 
                     <!-- start page title -->
-                    
+
                     <!-- end page title -->
                     {{-- @yield('content') --}}
                     {{ $slot }}
 
-              
+
                 </div>
                 <!-- End Page-content -->
 
@@ -367,7 +365,7 @@
     <script src="{{asset('assets/libs/admin-resources/jquery.vectormap/jquery-jvectormap-1.2.2.min.js')}}"></script>
     <script src="{{asset('assets/libs/admin-resources/jquery.vectormap/maps/jquery-jvectormap-us-merc-en.js')}}"></script>
     <script src="{{asset('assets/libs/jquery-steps/build/jquery.steps.min.js')}}"></script>
-    
+
     <!-- form wizard init -->
     <script src="{{asset('assets/js/pages/form-wizard.init.js')}}"></script>
 
@@ -377,7 +375,7 @@
     <script src="{{asset('js/toastr.min.js')}}"></script>
     <script src="{{asset('assets/libs/tinymce/tinymce.min.js')}}"></script>
     <script src="{{asset('assets/js/pages/form-editor.init.js')}}"></script>
-    
+
 
    <script>
     document.addEventListener('livewire:load', function () {
@@ -385,7 +383,7 @@
             toastr[event.detail.type](event.detail.message);
         });
     });
-    
+
 </script>
 @livewire('paypal-payment')
 @livewireScripts
