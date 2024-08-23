@@ -28,6 +28,7 @@ class CreateVehiclesTable extends Migration
             $table->char('status', 1)->default('0')->nullable();
             $table->char('on_trip', 1)->default('0')->nullable();
             $table->text('moreInfo')->nullable();
+            $table->string('passport')->nullable();
             $table->timestamps();
         });
     }
@@ -39,6 +40,7 @@ class CreateVehiclesTable extends Migration
      */
     public function down()
     {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         Schema::dropIfExists('vehicles');
         Schema::table('vehicles', function (Blueprint $table) {
             // $table->dropColumn('user_id');

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\Mail\SendOtpMail;
+use App\Mail\ResetPasswordOtpMail;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -9,22 +10,23 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rules;
 use Illuminate\Validation\ValidationException;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use Exception;
 
 class UserAPIController extends Controller
 {
     public function register(Request $request)
     {
         try {
+
             $request->validate([
                 'name' => ['required', 'string', 'max:255'],
                 'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
                 'phone_no' => ['required', 'max:15', 'unique:users'],
                 'nin' => ['required'],
-                'password' => ['required', 'confirmed', Rules\Password::defaults()],
+                'password' => ['required', 'confirmed', Rules\Password::defaults()]
             ]);
 
             $roleId = 5;
-
             $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
@@ -35,7 +37,6 @@ class UserAPIController extends Controller
             ]);
 
             $otp = $this->generateOTP();
-
             // Save OTP to the user's record (assuming you have a column in the users table for this)
             $user->otp = $otp;
             $user->save();
@@ -43,7 +44,6 @@ class UserAPIController extends Controller
             Mail::to($user->email)->send(new SendOtpMail($otp, $request->name));
 
             // Generate JWT token for the new user
-
             unset($user['role_id']);
             unset($user['otp']);
             unset($user['updated_at']);
@@ -51,8 +51,7 @@ class UserAPIController extends Controller
 
             return response()->json([
                 'responseCode' => 201,
-                'responseMessage' => 'success',
-                'data' => $user,
+                'responseMessage' => 'Registration successful. OTP has been sent to confirm account',
             ], 201);
         } catch (ValidationException $e) {
             return response()->json([
@@ -60,7 +59,6 @@ class UserAPIController extends Controller
                 'responseCode' => 422, // Adding the response code
             ], 422);
         }
-
     }
 
     public function resendOTP(Request $request)
@@ -68,6 +66,7 @@ class UserAPIController extends Controller
         $request->validate([
             'email' => ['required', 'string', 'max:255']
         ]);
+
         $user = User::where('email', $request->email)->first();
         if($user):
             $otp = $this->generateOTP();
@@ -130,7 +129,7 @@ class UserAPIController extends Controller
             ]);
 
             $user = User::where('email', $request->email)->where('otp', $request->otp)->first();
-
+            
             if ($user) {
                 // OTP is correct, you can now mark the user as verified or proceed further
                 $user->otp = null; // Clear the OTP
@@ -155,5 +154,71 @@ class UserAPIController extends Controller
 
         return response()->json(['message' => 'User logged out successfully']);
     }
+
+    public function sendOTP(Request $request)
+    {
+        try{
+            $request->validate([
+                'email' => ['required', 'email', 'max:255']
+            ]);
+
+            $user = User::where('email', $request->email)->first();
+            if($user):
+                $otp = $this->generateOTP();
+                $user->otp = $otp;
+                $user->save();
+                Mail::to($user->email)->send(new ResetPasswordOtpMail($otp, $request->name));
+                return response()->json([
+                    'responseCode' => 200,
+                    'responseMessage' => 'OTP sent successfully'
+                ], 200);
+            else:
+                return response()->json([
+                    'responseCode' => 404,
+                    'responseMessage' => 'User not found',
+                    'data' => [],
+                ], 404);
+            endif;
+        } catch (ValidationException $e){
+            return response()->json([
+                'errors' => $e->errors(),
+                'responseCode' => 422, // Adding the response code
+            ], 422);
+        }
+    }
+    public function changePassword(Request $request)
+    {
+        try{
+            $request->validate([
+                'email' => ['required', 'email', 'max:255'],
+                'otp' => ['required'],
+                'password' => ['required', 'confirmed', Rules\Password::defaults()]
+            ]);
+
+            $user = User::where('email', $request->email)->first();
+            if($user):
+                $user->otp = null;
+                $user->password = Hash::make($request->password);
+                $user->save();
+                return response()->json([
+                    'responseCode' => 200,
+                    'responseMessage' => 'Password changed successfully'
+                ], 200);
+            else:
+                return response()->json([
+                    'responseCode' => 404,
+                    'responseMessage' => 'User not found',
+                    'data' => [],
+                ], 404);
+            endif;
+        } catch (ValidationException $e){
+            return response()->json([
+                'errors' => $e->errors(),
+                'responseCode' => 422, // Adding the response code
+            ], 422);
+        }
+    }
+
+   
 
 }

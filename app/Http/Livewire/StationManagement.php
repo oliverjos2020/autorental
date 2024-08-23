@@ -39,16 +39,17 @@ class StationManagement extends Component
             'station' => ['required', 'unique:stations,stationName', 'min:2', 'max:50']
         ]);
         try{
-        Station::create([
-            'stationName' => $this->station,
-            'slug'=>Str::of(Str::lower($this->station))->slug('-'),
-            'location_id' => $this->location
-        ]);
-        $this->reset(['station','location']);
-        $this->dispatchBrowserEvent('notify', [
-            'type' => 'success',
-            'message' => 'Station Created Successfully',
-        ]);
+            Station::create([
+                'stationName' => $this->station,
+                'slug'=>Str::of(Str::lower($this->station))->slug('-'),
+                'location_id' => $this->location
+            ]);
+
+            $this->reset(['station','location']);
+            $this->dispatchBrowserEvent('notify', [
+                'type' => 'success',
+                'message' => 'Station Created Successfully',
+            ]);
         } catch (Exception $e) {
             $this->dispatchBrowserEvent('notify', [
                 'type' => 'error',
@@ -62,12 +63,12 @@ class StationManagement extends Component
     {
         $this->editingID = $id;
         $this->editingStation = Station::find($id)->stationName;
-        $this->editingLocation = Station::find($id)->location->location;
+        $this->editingLocation = Station::find($id)->location_id;
     }
 
     public function cancelEdit()
     {
-        $this->reset('editingID', 'editinglocation');
+        $this->reset('editingID', 'editingLocation', 'editingStation');
     }
 
     public function update()
@@ -83,6 +84,7 @@ class StationManagement extends Component
                 'slug' => Str::slug($this->editingStation),
                 'location_id' => $this->editingLocation
             ]);
+
             $this->cancelEdit();
         }catch(Exception $e){
             $this->dispatchBrowserEvent('notify', [
@@ -119,10 +121,5 @@ class StationManagement extends Component
         return view('livewire.station-management', [
             'stations' => $stations, 'locations' => $location
         ])->layout('components.dashboard.dashboard-master');
-
     }
-    // public function render()
-    // {
-    //     return view('livewire.station-management');
-    // }
 }

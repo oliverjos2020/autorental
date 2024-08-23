@@ -25,9 +25,12 @@ class CreateCategoriesTable extends Migration
     private function insertDefaultData()
     {
         $data = [
-            ['category' => 'Hire', 'slug' => Str::of(Str::lower('Hire'))->slug('-'), 'created_at' => Carbon::now()],
-            ['category' => 'Booking', 'slug' => Str::of(Str::lower('Booking'))->slug('-'), 'created_at' => Carbon::now()],
-            ['category' => 'Entertainment', 'slug' => Str::of(Str::lower('Entertainment'))->slug('-'), 'created_at' => Carbon::now()]
+            ['category' => 'Sports Car', 'slug' => Str::of(Str::lower('Sports Car'))->slug('-'), 'created_at' => Carbon::now()],
+            ['category' => 'Truck', 'slug' => Str::of(Str::lower('Truck'))->slug('-'), 'created_at' => Carbon::now()],
+            ['category' => 'Convertible', 'slug' => Str::of(Str::lower('Convertible'))->slug('-'), 'created_at' => Carbon::now()],
+            ['category' => 'SUV', 'slug' => Str::of(Str::lower('SUV'))->slug('-'), 'created_at' => Carbon::now()],
+            ['category' => 'Buses', 'slug' => Str::of(Str::lower('Buses'))->slug('-'), 'created_at' => Carbon::now()],
+            ['category' => 'Sedan', 'slug' => Str::of(Str::lower('Sedan'))->slug('-'), 'created_at' => Carbon::now()]
             // Add more default data as needed
         ];
 
@@ -41,6 +44,7 @@ class CreateCategoriesTable extends Migration
      */
     public function down()
     {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         Schema::dropIfExists('categories');
     }
 }

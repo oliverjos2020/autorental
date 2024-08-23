@@ -15,8 +15,12 @@ class LocationManagement extends Component
     protected $paginationTheme = 'bootstrap';
     public $search;
     public $location;
+    public $latitude;
+    public $longitude;
     public $editingID;
     public $editinglocation;
+    public $editingLatitude;
+    public $editingLongitude;
     public $limit = '10';
 
     protected $queryString = ['limit', 'search'];
@@ -35,14 +39,19 @@ class LocationManagement extends Component
     public function createLocation()
     {
         $this->validate([
-            'location' => ['required', 'unique:locations,location', 'min:2', 'max:50']
+            'location' => ['required', 'unique:locations,location', 'min:2', 'max:50'],
+            'latitude' => ['required'],
+            'longitude' => ['required']
         ]);
+
         try{
         Location::create([
             'location' => $this->location,
-            'slug'=>Str::of(Str::lower($this->location))->slug('-')
+            'slug'=> Str::of(Str::lower($this->location))->slug('-'),
+            'latitude' => $this->latitude,
+            'longitude' => $this->longitude
         ]);
-        $this->reset(['location']);
+        $this->reset(['location', 'latitude', 'longitude']);
         $this->dispatchBrowserEvent('notify', [
             'type' => 'success',
             'message' => 'Location Created Successfully',
@@ -60,20 +69,24 @@ class LocationManagement extends Component
     {
         $this->editingID = $id;
         $this->editinglocation = Location::find($id)->location;
+        $this->editingLatitude = Location::find($id)->latitude;
+        $this->editingLongitude = Location::find($id)->longitude;
     }
 
     public function cancelEdit()
     {
-        $this->reset('editingID', 'editinglocation');
+        $this->reset('editingID', 'editinglocation', 'editingLatitude', 'editingLongitude');
     }
 
     public function update()
     {
         try {
-            $this->validateOnly('editinglocation', ['editinglocation' => 'required']);
+            $this->validateOnly('editinglocation', ['editinglocation' => 'required', 'editinglatitude' => 'required', 'editinglongitude']);
             Location::find($this->editingID)->update([
                 'location' => $this->editinglocation,
-                'slug' => Str::slug($this->editinglocation)
+                'slug' => Str::slug($this->editinglocation),
+                'latitude' => $this->editingLatitude,
+                'longitude' => $this->editingLongitude
             ]);
             $this->cancelEdit();
         }catch(Exception $e){

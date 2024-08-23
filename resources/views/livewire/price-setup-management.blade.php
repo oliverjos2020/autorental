@@ -27,8 +27,15 @@
             <div class="card-body">
 
                 <div class="form-group">
-                    <label for="priceSetup">Vehicle category/Class </label>
-                    <input type="text" wire:model="item" class="form-control" placeholder="Vehicle category/Class">
+                    <label for="priceSetup">Vehicle Category</label>
+                    {{-- <input type="text" wire:model="item" class="form-control" placeholder="Vehicle category/Class"> --}}
+                    <select wire:model="item" id="" class="form-control">
+                        <option value="">Select an option</option>
+                        @forelse($categories as $category)
+                            <option value="{{ $category->category }}">{{ $category->category }}</option>
+                        @empty
+                        @endforelse
+                    </select>
                     @error('item')
                     <span class="text-danger"> {{ $message }} </span>
                     @enderror

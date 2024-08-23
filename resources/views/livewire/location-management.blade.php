@@ -32,10 +32,20 @@
                     @error('location')
                     <span class="text-danger"> {{ $message }} </span>
                     @enderror
-
-                    @if(session('message'))
-                    <div class="bg-success p-2 text-light mx-2 mt-3">{{session('message')}}</div>
-                    @endif
+                </div>
+                <div class="form-group">
+                    <label for="location">Latitude</label>
+                    <input type="text" wire:model="latitude" class="form-control" placeholder="Latitude">
+                    @error('latitude')
+                    <span class="text-danger"> {{ $message }} </span>
+                    @enderror
+                </div>
+                <div class="form-group">
+                    <label for="longitude">Longitude</label>
+                    <input type="text" wire:model="longitude" class="form-control" placeholder="Longitude">
+                    @error('longitude')
+                    <span class="text-danger"> {{ $message }} </span>
+                    @enderror
                 </div>
 
                 <button class="btn btn-primary btn-sm mt-3" wire:click.prevent="createLocation">
@@ -78,11 +88,15 @@
                         <tbody>
                             @forelse($locations as $location)
                             <tr>
-                                <td>{{ ($locations->currentPage() - 1) * $locations->perPage() + $loop->iteration }}
+                                <td>
+                                    {{ ($locations->currentPage() - 1) * $locations->perPage() + $loop->iteration }}
                                 </td>
-                                <td>{{ $location->location }}</td>
-                                <td><a class="btn btn-primary btn-sm text-light" style="cursor:pointer;"
-                                        wire:click="edit({{$location->id}})"><i class="fa fa-edit"></i> Edit</a> </td>
+                                <td>
+                                    {{ $location->location }}
+                                </td>
+                                <td>
+                                    <a class="btn btn-primary btn-sm text-light" style="cursor:pointer;" wire:click="edit({{$location->id}})"><i class="fa fa-edit"></i> Edit</a> 
+                                </td>
                                 <td><a class="text-light btn btn-danger btn-sm"
                                         wire:click="delete({{$location->id}})"><i class="fa fa-trash"></i>
                                         Delete</a></a></td>

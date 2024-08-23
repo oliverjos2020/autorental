@@ -17,7 +17,7 @@ class CreateStationsTable extends Migration
             $table->id();
             $table->string('stationName');
             $table->string('slug');
-            $table->string('stationLocation');
+            $table->foreignId('location_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
         });
     }
@@ -29,6 +29,7 @@ class CreateStationsTable extends Migration
      */
     public function down()
     {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         Schema::dropIfExists('stations');
     }
 }

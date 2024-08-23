@@ -86,7 +86,7 @@ class UserManagement extends Component
         $this->editingName = User::find($id)->name;
         $this->editingEmail = User::find($id)->email;
         $this->editingRole = User::find($id)->role->id;
-        $this->editingStation = User::find($id)->station->stationName;
+        $this->editingStation = User::find($id)->station->id ?? null;
     }
 
     public function cancelEdit()
@@ -96,12 +96,14 @@ class UserManagement extends Component
 
     public function update()
     {
-        try {
+        // try {
+
+        // dd($this->editingStation);
             $this->validate([
                 'editingName' => ['required'],
                 'editingEmail' => ['required'],
                 'editingRole' => ['required'],
-                'editingStation' => ['required']
+                // 'editingStation' => ['required']
             ]);
 
             User::find($this->editingID)->update([
@@ -111,14 +113,14 @@ class UserManagement extends Component
                 'station_id' => $this->editingStation
             ]);
             $this->cancelEdit();
-        }catch(Exception $e){
-            $this->dispatchBrowserEvent('notify', [
-                'type' => 'error',
-                'message' => $e->getMessage(),
-            ]);
-            return;
+        // }catch(Exception $e){
+        //     $this->dispatchBrowserEvent('notify', [
+        //         'type' => 'error',
+        //         'message' => $e->getMessage(),
+        //     ]);
+        //     return;
 
-        }
+        // }
     }
 
     public function delete($id)

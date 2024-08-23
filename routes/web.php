@@ -26,6 +26,7 @@ use App\Http\Livewire\CategoryManagement;
 use App\Http\Livewire\LocationManagement;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\UserAPIController;
+use App\Http\Controllers\VehicleController;
 
 
 //FOR API
@@ -108,10 +109,19 @@ Route::middleware('api')->group(function () {
     Route::post('/api/v1/user/confirmOTP', [UserAPIController::class, 'confirmOtp']);
     Route::post('/api/v1/user/login', [UserAPIController::class, 'login']);
     Route::post('/api/v1/resendOTP', [UserAPIController::class, 'resendOTP']);
+    Route::post('/api/v1/sendOTP', [UserAPIController::class, 'sendOTP']);
+    Route::post('/api/v1/changePassword', [UserAPIController::class, 'changePassword']);
+
+    Route::group(['middleware' => ['auth.jwt']], function() {
+        Route::get('/api/v1/vehicles', [VehicleController::class, 'vehicles']);
+        Route::get('/api/v1/singleVehicle/{vehID}', [VehicleController::class, 'singleVehicle']);
+        Route::post('/api/v1/logout', [UserAPIController::class, 'logout']);
+
+    });
+
     Route::middleware('auth:api')->group(function () {
         Route::get('/user-profile', [UserAPIController::class, 'userProfile']);
     });
-
 
 });
 

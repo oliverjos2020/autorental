@@ -212,14 +212,14 @@
                                     @foreach ($vehImage as $image)
                                         @if ($image instanceof \Livewire\TemporaryUploadedFile)
                                             <div class="col-md-3">
-                                                <img src="{{ $image->temporaryUrl() }}" class="img-fluid mb-2" style="max-width: 100%">
+                                                <img src="{{ asset($image->temporaryUrl()) }}" class="img-fluid mb-2" style="max-width: 100%">
                                             </div>
                                         @endif
                                     @endforeach
                                 @elseif ($existingvehImage)
                                     @foreach ($existingvehImage as $existingImage)
                                         <div class="col-md-3">
-                                            <img src="{{ $existingImage->image_path }}" class="img-fluid mb-2" style="max-width: 100%">
+                                            <img src="{{ asset($existingImage->image_path) }}" class="img-fluid mb-2" style="max-width: 100%">
                                         </div>
                                     @endforeach
                                 @endif

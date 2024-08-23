@@ -12,11 +12,10 @@ class VehicleFactory extends Factory
      * @return array
      */
     public function definition()
-    {
+    { 
         return [
             'user_id' => $this->faker->numberBetween(2, 11),
             'status' => $this->faker->numberBetween(2, 3),
-            'driverLicense' => $this->faker->randomElement(['yes','no']),
             'transmission' => $this->faker->randomElement(['automatic','manual']),
             'doors' => $this->faker->numberBetween(2, 4),
             'seats' => $this->faker->numberBetween(2, 16),
@@ -64,12 +63,13 @@ class VehicleFactory extends Factory
                 "Range Rover",
                 "488"
             ]),
-            'passengers' => $this->faker->numberBetween(2, 16),
-            'category_id' => $this->faker->numberBetween(1, 3),
+            'vehicleYear' => $this->faker->year(),
+            // 'category_id' => $this->faker->numberBetween(1, 3),
             'airCondition' => $this->faker->randomElement(['yes','no']),
-            'location' => $this->faker->city(),
-            'price_setup_id' => $this->faker->numberBetween(1, 4),
-            'dateApproved' => now()
+            'price_setup_id' => $this->faker->numberBetween(2, 7),
+            'station_id' => $this->faker->numberBetween(1, 3),
+            'moreInfo' => $this->faker->sentence(),
+            // 'dateApproved' => now()
         ];
     }
 }

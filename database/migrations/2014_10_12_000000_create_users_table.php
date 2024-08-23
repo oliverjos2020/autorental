@@ -23,15 +23,12 @@ class CreateUsersTable extends Migration
             $table->string('phone_no')->nullable();
             $table->string('address')->nullable();
             $table->string('nin')->nullable();
-            // $table->string('bank')->nullable();
-            // $table->string('accountNumber')->nullable();
-            // $table->string('accountName')->nullable();
-            // $table->string('accountType')->nullable();
             $table->string('otp')->nullable();
             $table->string('driverLicense')->nullable();
             $table->string('insurance')->nullable();
+            $table->string('passport')->nullable();
             $table->string('password');
-            $table->rememberToken();
+            $table->rememberToken(); 
             $table->timestamps();
         });
     }
@@ -43,6 +40,7 @@ class CreateUsersTable extends Migration
      */
     public function down()
     {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         Schema::dropIfExists('users');
     }
 }

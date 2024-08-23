@@ -16,24 +16,18 @@ class UserFactory extends Factory
      */
     public function definition()
     {
-        return [
+        return [ 
             'name' => $this->faker->name(),
             'email' => $this->faker->unique()->safeEmail(),
             'email_verified_at' => now(),
             'created_at' => now(),
-            'role_id' => $this->faker->numberBetween(2, 3),
-            'address' => $this->faker->address(),
+            'role_id' => $this->faker->numberBetween(2, 5),
             'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
             'remember_token' => Str::random(10),
             'phone_no' => $this->faker->phoneNumber(),
             'passport' => 'img/team/3.jpg',
-            'bank' => $this->faker->name(),
-            'meansOfIdentification' => $this->faker->randomElement(['Driver License']),
-            'identificationDocument' => 'img/passport.jpg',
-            'accountNumber' => $this->faker->numerify('###-###-####'),
-            'accountName' => $this->faker->name(),
-            'accountType' => $this->faker->randomElement(['savings','current'])
-        ];
+            'nin' => $this->faker->numerify('###-###-####')
+        ]; 
     }
 
     /**

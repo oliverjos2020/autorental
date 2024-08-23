@@ -53,7 +53,7 @@
         </div>
         <div class="content">
             <p>Dear {{ $name }},</p>
-            <p>Thank you for registering with us. Please use the following One-Time Password (OTP) to complete your registration:</p>
+            <p>Please use the following One-Time Password (OTP) to confirm your account:</p>
             <h2 style="text-align: center; font-size: 36px; margin: 20px 0;">{{ $otp }}</h2>
             <p> If you did not request this, please ignore this email.</p>
             <p>Best regards,<br>Auto Rentals</p>

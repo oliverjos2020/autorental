@@ -6,6 +6,7 @@ use Livewire\Component;
 use App\Models\PriceSetup;
 use Livewire\WithPagination;
 use Illuminate\Support\Str;
+use App\Models\Category;
 
 use Exception;
 
@@ -41,7 +42,7 @@ class PriceSetupManagement extends Component
     {
         $validateData = $this->validate([
             // 'brand' => ['required', 'unique:car_brands,brand', 'min:2', 'max:50']
-            'item' => ['required'],
+            'item' => ['required', 'unique:price_setups,item'],
             'duration' => ['required'],
             'amount' => ['required']
         ]);
@@ -128,8 +129,9 @@ class PriceSetupManagement extends Component
     public function render()
     {
         $priceSetups = PriceSetup::query()->where('item', 'like', '%' . $this->search . '%')->latest()->paginate($this->limit);
+        $category = Category::all();
         return view('livewire.price-setup-management', [
-            'priceSetups' => $priceSetups,
+            'priceSetups' => $priceSetups, 'categories' => $category
         ])->layout('components.dashboard.dashboard-master');
 
         // return view('livewire.price-setup-management');

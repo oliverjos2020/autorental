@@ -5,6 +5,10 @@ namespace App\Exceptions;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
+use Tymon\JWTAuth\Exceptions\TokenExpiredException;
+use Tymon\JWTAuth\Exceptions\TokenInvalidException;
+use Tymon\JWTAuth\Exceptions\JWTException;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class Handler extends ExceptionHandler
 {
@@ -47,6 +51,19 @@ class Handler extends ExceptionHandler
                 'error' => 'The method is not allowed for the requested route. Please use POST.',
             ], 405);
         }
+
+        if ($exception instanceof UnauthorizedHttpException && $exception->getPrevious() instanceof TokenExpiredException) {
+            return response()->json(['error' => 'Token has expired', 'responseCode' => 401], 401);
+        }
+    
+        if ($exception instanceof UnauthorizedHttpException && $exception->getPrevious() instanceof TokenInvalidException) {
+            return response()->json(['error' => 'Token is invalid', 'responseCode' => 401], 401);
+        }
+    
+        if ($exception instanceof UnauthorizedHttpException && $exception->getPrevious() instanceof JWTException) {
+            return response()->json(['error' => 'Token not provided', 'responseCode' => 401], 401);
+        }
+    
 
         return parent::render($request, $exception);
     }

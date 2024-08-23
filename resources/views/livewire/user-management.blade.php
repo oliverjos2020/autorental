@@ -141,7 +141,7 @@
                                 <td><a href="/profile/{{ $user->id }}">{{ $user->name }}</a></td>
                                 <td>{{ $user->email }}</td>
                                 <td>{{ $user->role->role }}</td>
-                                <td>{{ $user->station->stationName }}</td>
+                                <td>{{ $user->station->stationName ?? '' }}</td>
                                 <td>{{ $user->created_at->diffForHumans() }}</td>
                                 <td><a class="btn btn-primary btn-sm text-light" style="cursor:pointer;"
                                         wire:click="edit({{$user->id}})"><i class="fa fa-edit"></i> Edit</a> </td>
@@ -168,6 +168,7 @@
                                 </td>
                                 <td colspan="2">
                                     <select wire:model="editingRole" class="form-control">
+                                        <option value="">Select Role</option>
                                         @if(Auth::user()->role_id == 1)
                                             @forelse($roles as $role)
                                                 <option value="{{ $role->id }}">{{ $role->role }}</option>
@@ -185,6 +186,7 @@
                                 <td colspan="2">
                                     
                                         <select wire:model="editingStation" class="form-control">
+                                            <option value="">Select station</option>
                                             @if(Auth::user()->role_id == 1)
                                                 @forelse($stations as $station)
                                                     <option value="{{ $station->id }}">{{ $station->stationName }}</option>
