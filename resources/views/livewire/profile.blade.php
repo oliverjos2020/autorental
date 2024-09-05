@@ -177,9 +177,9 @@
                                         <td>{{ $vehicle->vehicleMake }}</td>
                                         <td>{{ $vehicle->vehicleModel }}</td>
                                         <td>{{ $vehicle->vehicleYear }}</td>
-                                        <td><span class="badge bg-{{ $vehicle->category->slug == 'booking'? 'primary': 'success'}}">{{ $vehicle->category->category }}</span></td>
+                                        <td><span>{{ $vehicle->priceSetup->item }}</span></td>
                                         <td>{{ $vehicle->airCondition }}</td>
-                                        <td><span class="badge bg-{{ $vehicle->transmission == 'automatic' ? 'warning' : 'danger'}}">{{ $vehicle->transmission }}</span></td>
+                                        <td><span>{{ $vehicle->transmission }}</span></td>
                                         <td>{{ $vehicle->seats }}</td>
                                         <td>{{ $vehicle->priceSetup->amount }}</td>
                                         <td>

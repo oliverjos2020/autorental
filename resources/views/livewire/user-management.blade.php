@@ -91,6 +91,7 @@
                     <span class="text-danger"> {{ $message }} </span>
                     @enderror
                 </div>
+                
 
                 <button class="btn btn-primary btn-sm mt-3" wire:click.prevent="createUser">
                     Create User
@@ -175,7 +176,6 @@
                                             @empty
                                             @endforelse
                                         @else
-                                        <option value="">Select Role</option>
                                             <option value="3">Driver</option>
                                         @endif
                                                     </select>

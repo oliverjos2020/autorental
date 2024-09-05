@@ -264,6 +264,12 @@
                                     <span>Vehicles</span>
                                 </a>
                             </li>
+                            <li>
+                                <a href="/myVehicles" class="waves-effect">
+                                    <i class="mdi mdi-car-info"></i>
+                                    <span>Map Vehicles to Driver</span>
+                                </a>
+                            </li>
                             {{--<li>
                                 <a href="/bookingOrder/ongoing" class="waves-effect">
                                     <i class="mdi mdi-car-multiple"></i>
