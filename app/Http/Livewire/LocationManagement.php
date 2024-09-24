@@ -34,7 +34,7 @@ class LocationManagement extends Component
     {
         $this->resetPage();
     }
-    
+
 
     public function createLocation()
     {
@@ -80,8 +80,8 @@ class LocationManagement extends Component
 
     public function update()
     {
-        try {
-            $this->validateOnly('editinglocation', ['editinglocation' => 'required', 'editinglatitude' => 'required', 'editinglongitude']);
+        // try {
+            $this->validate(['editinglocation' => ['required'], 'editingLatitude' => ['required'], 'editingLongitude' => ['required']]);
             Location::find($this->editingID)->update([
                 'location' => $this->editinglocation,
                 'slug' => Str::slug($this->editinglocation),
@@ -89,14 +89,14 @@ class LocationManagement extends Component
                 'longitude' => $this->editingLongitude
             ]);
             $this->cancelEdit();
-        }catch(Exception $e){
-            $this->dispatchBrowserEvent('notify', [
-                'type' => 'error',
-                'message' => $e->getMessage(),
-            ]);
-            return;
+        // }catch(Exception $e){
+        //     $this->dispatchBrowserEvent('notify', [
+        //         'type' => 'error',
+        //         'message' => $e->getMessage(),
+        //     ]);
+        //     return;
 
-        }
+        // }
     }
 
     public function delete($id)

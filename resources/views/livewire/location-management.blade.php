@@ -80,6 +80,8 @@
                             <tr>
                                 <th>#ID</th>
                                 <th>Location</th>
+                                <th>Longitude</th>
+                                <th>Latitude</th>
                                 <th>Edit</th>
                                 <th>Delete</th>
 
@@ -95,7 +97,13 @@
                                     {{ $location->location }}
                                 </td>
                                 <td>
-                                    <a class="btn btn-primary btn-sm text-light" style="cursor:pointer;" wire:click="edit({{$location->id}})"><i class="fa fa-edit"></i> Edit</a> 
+                                    {{ $location->longitude }}
+                                </td>
+                                <td>
+                                    {{ $location->latitude }}
+                                </td>
+                                <td>
+                                    <a class="btn btn-primary btn-sm text-light" style="cursor:pointer;" wire:click="edit({{$location->id}})"><i class="fa fa-edit"></i> Edit</a>
                                 </td>
                                 <td><a class="text-light btn btn-danger btn-sm"
                                         wire:click="delete({{$location->id}})"><i class="fa fa-trash"></i>
@@ -104,7 +112,7 @@
 
                             @if($editingID === $location->id)
                             <tr>
-                                <td colspan="4">
+                                <td colspan="2">
                                     <input type="text" wire:model="editinglocation" placeholder="location.." id=""
                                         class="form-control mx-1">
                                     @error('editinglocation')
@@ -114,6 +122,20 @@
                                     <button type="submit" wire:click="update"
                                         class="btn btn-success btn-sm">Update</button> <button type="submit"
                                         wire:click="cancelEdit" class="btn btn-danger btn-sm">Cancel</button>
+                                </td>
+                                <td colspan ="2">
+                                    <input type="text" wire:model="editingLongitude" placeholder="longitude.." id=""
+                                        class="form-control mx-1">
+                                    @error('editingLongitude')
+                                    <span class="text-danger">{{ $message }}</span>
+                                    @enderror
+                                </td>
+                                <td colspan ="2">
+                                    <input type="text" wire:model="editingLatitude" placeholder="latitude.." id=""
+                                        class="form-control mx-1">
+                                    @error('editingLatitude')
+                                    <span class="text-danger">{{ $message }}</span>
+                                    @enderror
                                 </td>
                             </tr>
                             @endif

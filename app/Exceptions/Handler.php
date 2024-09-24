@@ -55,15 +55,15 @@ class Handler extends ExceptionHandler
         if ($exception instanceof UnauthorizedHttpException && $exception->getPrevious() instanceof TokenExpiredException) {
             return response()->json(['error' => 'Token has expired', 'responseCode' => 401], 401);
         }
-    
+
         if ($exception instanceof UnauthorizedHttpException && $exception->getPrevious() instanceof TokenInvalidException) {
             return response()->json(['error' => 'Token is invalid', 'responseCode' => 401], 401);
         }
-    
+
         if ($exception instanceof UnauthorizedHttpException && $exception->getPrevious() instanceof JWTException) {
             return response()->json(['error' => 'Token not provided', 'responseCode' => 401], 401);
         }
-    
+
 
         return parent::render($request, $exception);
     }

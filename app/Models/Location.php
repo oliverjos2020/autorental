@@ -10,7 +10,9 @@ class Location extends Model
     use HasFactory;
     protected $fillable = [
         'location',
-        'slug'
+        'slug',
+        'longitude',
+        'latitude'
     ];
 
     public function station(){

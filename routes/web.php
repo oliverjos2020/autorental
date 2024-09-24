@@ -24,9 +24,12 @@ use App\Http\Livewire\StationManagement;
 use App\Http\Livewire\CarBrandManagement;
 use App\Http\Livewire\CategoryManagement;
 use App\Http\Livewire\LocationManagement;
+use App\Http\Livewire\DriverVehicleAssignment;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\UserAPIController;
 use App\Http\Controllers\VehicleController;
+use App\Http\Controllers\BrandController;
+use App\Http\Controllers\BookingAPIController;
 
 
 //FOR API
@@ -52,6 +55,28 @@ Route::get('/processCancel', [PaymentController::class, 'processCancel'])->name(
 Route::get('/', function () {
     return view('auth.login');
 });
+Route::get('/link', function(){
+    try{
+        Artisan::call('storage:link');
+         echo "linked successfully!";
+    } catch (Exception $e) {
+        echo "An error occurred: " . $e->getMessage();
+    }
+});
+Route::get('/unlink', function () {
+    try {
+        $link = public_path('storage');  // Path to the symbolic link
+        if (file_exists($link)) {
+            unlink($link);  // Remove the symbolic link
+            echo "Symbolic link unlinked successfully!";
+        } else {
+            echo "Symbolic link does not exist.";
+        }
+    } catch (Exception $e) {
+        echo "An error occurred: " . $e->getMessage();
+    }
+});
+
 Route::get('/clear/cache', function () {
 
     try {
@@ -75,6 +100,7 @@ Route::get('/ride-results', RideResults::class)->name('ride.results');
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/mybooking-orders', MyBookingOrders::class)->name('MyBookingOrders');
+    Route::get('/assign-driver-vehicle', DriverVehicleAssignment::class)->name('assignDriverVehicle');
     Route::get('/checkout', Checkout::class)->name('checkout');
     Route::get('/dashboard2', Dashboard::class)->name('dashboard2');
     Route::get('/role', RoleManagement::class)->name('role');
@@ -105,18 +131,20 @@ Route::get('/dashboard', function () {
 //API V1
 
 Route::middleware('api')->group(function () {
+    Route::get('/api/v1/refresh', [UserAPIController::class, 'refresh']);
     Route::post('/api/v1/user/register', [UserAPIController::class, 'register']);
     Route::post('/api/v1/user/confirmOTP', [UserAPIController::class, 'confirmOtp']);
     Route::post('/api/v1/user/login', [UserAPIController::class, 'login']);
     Route::post('/api/v1/resendOTP', [UserAPIController::class, 'resendOTP']);
     Route::post('/api/v1/sendOTP', [UserAPIController::class, 'sendOTP']);
     Route::post('/api/v1/changePassword', [UserAPIController::class, 'changePassword']);
-
+    Route::post('/api/v1/ConfirmJustOTP', [UserAPIController::class, 'confirmJustOTP']);
     Route::group(['middleware' => ['auth.jwt']], function() {
+        Route::post('/api/v1/booking', [BookingAPIController::class, 'booking']);
         Route::get('/api/v1/vehicles', [VehicleController::class, 'vehicles']);
+        Route::get('/api/v1/brands', [BrandController::class, 'brands']);
         Route::get('/api/v1/singleVehicle/{vehID}', [VehicleController::class, 'singleVehicle']);
         Route::post('/api/v1/logout', [UserAPIController::class, 'logout']);
-
     });
 
     Route::middleware('auth:api')->group(function () {

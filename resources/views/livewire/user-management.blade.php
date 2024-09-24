@@ -58,18 +58,8 @@
                     <span class="text-danger"> {{ $message }} </span>
                     @enderror
                 </div>
-                @if(Auth::user()->role_id !== 1)
-                    <div class="form-group mt-3">
-                        <label for="station">Station</label>
-                        <select wire:model="station" class="form-control">
-                            <option value="">Select Station</option>
-                                <option value="{{Auth::user()->station_id}}">{{Auth::user()->station->stationName}}</option>
-                        </select>
-                        @error('station')
-                        <span class="text-danger"> {{ $message }} </span>
-                        @enderror
-                    </div>
-                @else
+
+                @if(Auth::user()->role_id == 1)
                 <div class="form-group mt-3">
                     <label for="station">Station</label>
                     <select wire:model="station" class="form-control">
@@ -83,6 +73,17 @@
                     <span class="text-danger"> {{ $message }} </span>
                     @enderror
                 </div>
+                @else
+                    <div class="form-group mt-3">
+                        <label for="station">Station </label>
+                        <select wire:model="station" class="form-control">
+                            <option value="">Select Station</option>
+                                <option value="{{Auth::user()->station_id ?? ''}}">{{Auth::user()->station->stationName ?? ''}}</option>
+                        </select>
+                        @error('station')
+                        <span class="text-danger"> {{ $message }} </span>
+                        @enderror
+                    </div>
                 @endif
                 <div class="form-group mt-3">
                     <label for="password">Password</label>
@@ -91,7 +92,7 @@
                     <span class="text-danger"> {{ $message }} </span>
                     @enderror
                 </div>
-                
+
 
                 <button class="btn btn-primary btn-sm mt-3" wire:click.prevent="createUser">
                     Create User
@@ -142,7 +143,7 @@
                                 <td><a href="/profile/{{ $user->id }}">{{ $user->name }}</a></td>
                                 <td>{{ $user->email }}</td>
                                 <td>{{ $user->role->role }}</td>
-                                <td>{{ $user->station->stationName ?? '' }}</td>
+                                <td>{{ $user->station_id ? $user->station->stationName : 'No station assigned' }}</td>
                                 <td>{{ $user->created_at->diffForHumans() }}</td>
                                 <td><a class="btn btn-primary btn-sm text-light" style="cursor:pointer;"
                                         wire:click="edit({{$user->id}})"><i class="fa fa-edit"></i> Edit</a> </td>
@@ -151,7 +152,7 @@
                                         Delete</a></a></td>
                             </tr>
 
-                            @if($editingID === $user->id) 
+                            @if($editingID === $user->id)
                             <tr>
                                 <td colspan="2">
                                     <input type="text" wire:model="editingName" placeholder="Name"
@@ -184,7 +185,7 @@
                                     @enderror
                                 </td>
                                 <td colspan="2">
-                                    
+
                                         <select wire:model="editingStation" class="form-control">
                                             <option value="">Select station</option>
                                             @if(Auth::user()->role_id == 1)
@@ -196,7 +197,7 @@
                                                 <option value="{{Auth::user()->station_id}}">{{Auth::user()->station->stationName}}</option>
                                             @endif
                                         </select>
-                                    
+
                                     @error('editingStation')
                                     <span class="text-danger">{{ $message }}</span>
                                     @enderror

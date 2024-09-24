@@ -2,9 +2,9 @@
     <x-auth-card>
         <x-slot name="logo">
             <a href="/">
-                {{-- <img src="logo/logo-dark.png" class="logo-img" alt="" style="max-height:100px;"> --}}
+                <img src="logo/auto-logo.png" class="logo-img" alt="" style="max-height:100px;">
                 {{-- <x-application-logo class="w-20 h-20 fill-current text-gray-500" /> --}}
-                <h2>AR</h2>
+                {{-- <h2>AR</h2> --}}
             </a>
         </x-slot>
 

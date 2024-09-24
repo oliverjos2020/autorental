@@ -22,7 +22,6 @@ class Vehicle extends Model
     // }
     public function priceSetup()
     {
-        // return $this->hasOne(PriceSetup::class, 'category', 'id');
         return $this->belongsTo(PriceSetup::class);
     }
 

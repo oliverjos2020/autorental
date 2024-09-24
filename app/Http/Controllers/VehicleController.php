@@ -14,10 +14,11 @@ class VehicleController extends Controller
         try {
             // Default limit
             $limit = $request->input('limit', 20);
-    
+
             // Query builder
-            $query = Vehicle::with('photos');
-    
+            // $query = Vehicle::with('photos');
+            $query = Vehicle::with(['photos', 'priceSetup']);
+
             // Apply filters
             if ($request->has('vehicleMake')) {
                 $query->where('vehicleMake', $request->input('vehicleMake'));
@@ -31,20 +32,20 @@ class VehicleController extends Controller
             if ($request->has('station_id')) {
                 $query->where('station_id', $request->input('station_id'));
             }
-    
+
             // Get the results with the limit
             $data = $query->limit($limit)->get();
-    
+
             return response()->json([
                 'responseCode' => 200,
                 'responseMessage' => 'success',
                 'data' => $data
             ], 200);
-    
+
         } catch (Exception $e) {
             return response()->json([
                 'errors' => $e->getMessage(),
-                'responseCode' => 422, 
+                'responseCode' => 422,
             ], 422);
         }
     }
@@ -63,7 +64,7 @@ class VehicleController extends Controller
             if (!$data) {
                 return response()->json(['responseCode' =>404, 'responseMessage' => 'Vehicle not found'], 404);
             }
-    
+
             return response()->json(['data' => $data], 200);
         } catch (Exception $e) {
             return response()->json([

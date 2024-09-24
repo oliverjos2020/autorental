@@ -62,7 +62,11 @@ class EditVehicle extends Component
             'vehicleYear' => 'required',
             'category' => 'required'
         ]);
-        $vehicle = Vehicle::find($this->vehID)->update([
+        // First, retrieve the vehicle instance and then update it
+        $vehicle = Vehicle::find($this->vehID);
+
+        // Update the vehicle's attributes
+        $vehicle->update([
             'vehicleMake' => $this->vehicleMake,
             'vehicleModel' => $this->vehicleModel,
             'seats' => $this->seats,
@@ -73,19 +77,26 @@ class EditVehicle extends Component
             'price_setup_id' => $this->category,
             'moreInfo' => $this->moreInfo
         ]);
-        if (!empty($this->vehImage)):
+
+        // Check if there are new images
+        if (!empty($this->vehImage)) {
+            // Delete old photos for this vehicle
             Photo::where('vehicle_id', $this->vehID)->delete();
 
-            foreach ($this->vehImage as $image):
+            // Loop through each new image and store it
+            foreach ($this->vehImage as $image) {
                 $filename = 'vehImage-' . Str::random(10) . '.' . $image->extension();
                 $path = $image->storeAs('uploads/vehicle', $filename, 'public');
                 $storedImages = Storage::url($path);
+
+                // Create new Photo record with the vehicle's ID
                 Photo::create([
-                    'vehicle_id' => $vehicle,
+                    'vehicle_id' => $vehicle->id, // Use the vehicle's actual ID
                     'image_path' => $storedImages
                 ]);
-            endforeach;
-        endif;
+            }
+        }
+
         $this->dispatchBrowserEvent('notify', [
             'type' => 'success',
             'message' => 'Vehicle Updated Successfully',

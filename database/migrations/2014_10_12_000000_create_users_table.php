@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Schema;
 class CreateUsersTable extends Migration
 {
     /**
-     * Run the migrations. 
+     * Run the migrations.
      *
      * @return void
      */
@@ -25,10 +25,10 @@ class CreateUsersTable extends Migration
             $table->string('nin')->nullable();
             $table->string('otp')->nullable();
             $table->string('driverLicense')->nullable();
-            $table->string('insurance')->nullable();
+            $table->string('identity_card')->nullable();
             $table->string('passport')->nullable();
             $table->string('password');
-            $table->rememberToken(); 
+            $table->rememberToken();
             $table->timestamps();
         });
     }

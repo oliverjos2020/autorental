@@ -24,7 +24,7 @@
     <link href="{{asset('css/toastr.min.css')}}" id="app-style" rel="stylesheet" type="text/css" />
     {{-- <script src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_API_KEY') }}&libraries=places"></script> --}}
     {{-- <script src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_API_KEY') }}&libraries=places&callback=initMap" async defer></script> --}}
-
+    <script src="https://code.highcharts.com/highcharts.js"></script>
     @livewireStyles
 <style>
     input, select, textarea {
@@ -265,13 +265,13 @@
                                 </a>
                             </li>
                             <li>
-                                <a href="/myVehicles" class="waves-effect">
+                                <a href="/assign-driver-vehicle" class="waves-effect">
                                     <i class="mdi mdi-car-info"></i>
                                     <span>Map Vehicles to Driver</span>
                                 </a>
                             </li>
-                            {{--<li>
-                                <a href="/bookingOrder/ongoing" class="waves-effect">
+                            {{-- <li>
+                                <a href="/assignd-driver-vehicle" class="waves-effect">
                                     <i class="mdi mdi-car-multiple"></i>
                                     <span>Booking Ongoing Trips</span>
                                 </a>
@@ -333,11 +333,11 @@
                             <div class="col-sm-6">
                                 <script>
                                     document.write(new Date().getFullYear())
-                                </script> © D'PRESIDENTIAL LUXXETOUR.
+                                </script> © AUTORENTALS
                             </div>
                             <div class="col-sm-6">
                                 <div class="text-sm-end d-none d-sm-block">
-                                    Design & Oliver's Concept
+                                    Design by Oliver's Concept
                                 </div>
                             </div>
                         </div>
