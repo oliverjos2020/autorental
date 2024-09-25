@@ -39,12 +39,18 @@ class RegistrationType extends Component
     public $existingvehImage = [];
     public $category;
     public $moreInfo;
-
+    public $fuelCapacity;
+    public $maxSpeed;
+    public $maxPower;
+    public $motor;
+    public $keylessEntry;
+    public $musicPlayer;
+    public $airBags;
 
     public function submit()
     {
 
-        // dd($this->moreInfo);
+        // dd(($this->airCondition)?$this->airCondition: 'no');
         $this->validate([
             'vehicleMake' => 'required',
             'vehicleModel' => 'required',
@@ -55,7 +61,11 @@ class RegistrationType extends Component
             'vehImage' => 'required|array|min:1',
             'vehImage.*' => 'required|image|max:300',
             'vehicleYear' => 'required',
-            'category' => 'required'
+            'category' => 'required',
+            'motor' => 'required',
+            'maxPower' => 'required',
+            'maxSpeed' => 'required',
+            'fuelCapacity' => 'required',
         ]);
 
         $vehicle = Vehicle::create([
@@ -65,12 +75,19 @@ class RegistrationType extends Component
             'vehicleModel' => $this->vehicleModel,
             'seats' => $this->seats,
             'transmission' => $this->transmission,
-            'airCondition' => $this->airCondition,
+            'airCondition' => ($this->airCondition)?$this->airCondition: 'no',
             'doors' => $this->doors,
             'vehicleYear' => $this->vehicleYear,
             'status' => 1,
             'price_setup_id' => $this->category,
-            'moreInfo' => $this->moreInfo
+            'moreInfo' => $this->moreInfo,
+            'keylessEntry' => ($this->keylessEntry)?$this->keylessEntry: 'no',
+            'musicPlayer' => ($this->musicPlayer)?$this->musicPlayer: 'no',
+            'airBags' => ($this->airBags)?$this->airBags: 'no',
+            'fuelCapacity' => $this->fuelCapacity,
+            'maxSpeed' => $this->maxSpeed,
+            'maxPower' => $this->maxPower,
+            'motor' => $this->motor
         ]);
 
 

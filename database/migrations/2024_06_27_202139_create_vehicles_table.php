@@ -28,7 +28,14 @@ class CreateVehiclesTable extends Migration
             $table->char('status', 1)->default('0')->nullable();
             $table->char('on_trip', 1)->default('0')->nullable();
             $table->text('moreInfo')->nullable();
-            $table->string('passport')->nullable();
+            $table->enum('keylessEntry', ['yes', 'no'])->nullable();
+            $table->enum('musicPlayer', ['yes', 'no'])->nullable();
+            $table->enum('airBags', ['yes', 'no'])->nullable();
+            $table->string('doors')->nullable();
+            $table->string('fuelCapacity')->nullable();
+            $table->string('maxSpeed')->nullable();
+            $table->string('maxPower')->nullable();
+            $table->string('motor')->nullable();
             $table->timestamps();
         });
     }

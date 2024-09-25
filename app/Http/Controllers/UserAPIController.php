@@ -10,65 +10,55 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rules;
 use Illuminate\Validation\ValidationException;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use Exception;
 
 class UserAPIController extends Controller
 {
     public function register(Request $request)
     {
         try {
+
             $request->validate([
                 'name' => ['required', 'string', 'max:255'],
                 'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
                 'phone_no' => ['required', 'max:15', 'unique:users'],
-                'category_id' => ['required'],
-                'workplace' => ['required'],
-                'state' => ['required'],
-                'gender' => ['required'],
-                'expertise' => ['required'],
-                'yrs_of_exp' => ['required'],
-                'photo' => ['required'],
-                'password' => ['required', 'confirmed', Rules\Password::defaults()],
+                // 'nin' => ['required'],
+                'password' => ['required', 'confirmed', Rules\Password::defaults()]
             ]);
 
-            $roleId = 2;
-
+            $roleId = 5;
             $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
                 'phone_no' => $request->phone_no,
                 'password' => Hash::make($request->password),
                 'role_id' => $roleId,
-                'category_id' => $request->category_id,
-                'workplace' => $request->workplace,
-                'state' => $request->state,
-                'gender' => $request->gender,
-                'expertise' => $request->expertise,
-                'yrs_of_exp' => $request->yrs_of_exp,
-                'photo' => $request->photo
+                'nin' => $request->nin,
             ]);
 
             $otp = $this->generateOTP();
-
             // Save OTP to the user's record (assuming you have a column in the users table for this)
             $user->otp = $otp;
             $user->save();
 
             Mail::to($user->email)->send(new SendOtpMail($otp, $request->name));
 
+            // Generate JWT token for the new user
+            unset($user['role_id']);
+            unset($user['otp']);
+            unset($user['updated_at']);
+            unset($user['created_at']);
+
             return response()->json([
                 'responseCode' => 201,
-                'responseMessage' => 'Account Created successfully'
+                'responseMessage' => 'Registration successful. OTP has been sent to confirm account',
             ], 201);
         } catch (ValidationException $e) {
             return response()->json([
-                'status' => 'error',
-                'responseCode' => 422,
-                'responseMessage' => 'The given data was invalid.',
                 'errors' => $e->errors(),
+                'responseCode' => 422, // Adding the response code
             ], 422);
         }
-
-
     }
 
     public function resendOTP(Request $request)
@@ -76,6 +66,7 @@ class UserAPIController extends Controller
         $request->validate([
             'email' => ['required', 'string', 'max:255']
         ]);
+
         $user = User::where('email', $request->email)->first();
         if($user):
             $otp = $this->generateOTP();
@@ -114,24 +105,15 @@ class UserAPIController extends Controller
             return response()->json(['error' => 'Invalid credentials', 'responseCode' => 401], 401);
         }
 
-        return response()->json(['responseCode' => 200, 'responseMessage' => 'success', 'token' => $token, 'user' => $user->only(['id', 'name', 'email', 'phone_no', 'passport'])]);
+        return response()->json(['responseCode' => 200, 'responseMessage' => 'success', 'token' => $token, 'data' => $user]);
     }
 
     public function refresh()
-{
-    try {
-        // Parse the expired token and refresh it
-        $newToken = JWTAuth::parseToken()->refresh();
-
+    {
         return response()->json([
-            'token' => $newToken,
+            'token' => JWTAuth::refresh(),
         ]);
-    } catch (JWTException $e) {
-        return response()->json([
-            'error' => 'Token is missing or invalid',
-        ], 401);
     }
-}
 
     public function generateOTP($length = 6)
     {
@@ -169,10 +151,8 @@ class UserAPIController extends Controller
     public function logout()
     {
         JWTAuth::invalidate(JWTAuth::getToken());
-        return response()->json([
-            'responseCode' => 200,
-            'responseMessage' => 'User logged out successfully'
-        ], 200);
+
+        return response()->json(['message' => 'User logged out successfully']);
     }
 
     public function sendOTP(Request $request)
@@ -233,7 +213,6 @@ class UserAPIController extends Controller
             ], 422);
         }
     }
-
     public function changePassword(Request $request)
     {
         try{

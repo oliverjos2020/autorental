@@ -32,6 +32,13 @@ class EditVehicle extends Component
     public $existingvehImage = [];
     public $category;
     public $moreInfo;
+    public $fuelCapacity;
+    public $maxSpeed;
+    public $maxPower;
+    public $motor;
+    public $keylessEntry;
+    public $musicPlayer;
+    public $airBags;
     public function mount()
     {
         $vehicle = Vehicle::where('id', $this->vehID)->first();
@@ -40,10 +47,17 @@ class EditVehicle extends Component
         $this->vehicleYear = $vehicle->vehicleYear ?? '';
         $this->seats = $vehicle->seats ?? '';
         $this->transmission = $vehicle->transmission ?? '';
-        $this->airCondition = $vehicle->airCondition ?? '';
+        $this->airCondition = $vehicle->airCondition == 'no'? '':'yes';
         $this->doors = $vehicle->doors ?? '';
         $this->moreInfo = $vehicle->moreInfo ?? '';
         $this->category = $vehicle->price_setup_id ?? '';
+        $this->fuelCapacity = $vehicle->fuelCapacity ?? '';
+        $this->maxSpeed = $vehicle->maxSpeed ?? '';
+        $this->maxPower = $vehicle->maxPower ?? '';
+        $this->motor = $vehicle->motor ?? '';
+        $this->keylessEntry = $vehicle->keylessEntry == 'no'? '':'yes';
+        $this->musicPlayer = $vehicle->musicPlayer == 'no'? '':'yes';
+        $this->airBags = $vehicle->airBags == 'no'? '':'yes';
         $this->existingvehImage = Photo::where('vehicle_id', $this->vehID)->get();
     }
 
@@ -60,7 +74,11 @@ class EditVehicle extends Component
             // 'vehImage' => 'required|array|min:1',
             // 'vehImage.*' => 'required|image|max:300',
             'vehicleYear' => 'required',
-            'category' => 'required'
+            'category' => 'required',
+            'motor' => 'required',
+            'maxPower' => 'required',
+            'maxSpeed' => 'required',
+            'fuelCapacity' => 'required'
         ]);
         // First, retrieve the vehicle instance and then update it
         $vehicle = Vehicle::find($this->vehID);
@@ -71,11 +89,18 @@ class EditVehicle extends Component
             'vehicleModel' => $this->vehicleModel,
             'seats' => $this->seats,
             'transmission' => $this->transmission,
-            'airCondition' => $this->airCondition,
+            'airCondition' => ($this->airCondition)?$this->airCondition: 'no',
             'doors' => $this->doors,
             'vehicleYear' => $this->vehicleYear,
             'price_setup_id' => $this->category,
-            'moreInfo' => $this->moreInfo
+            'moreInfo' => $this->moreInfo,
+            'keylessEntry' => ($this->keylessEntry)?$this->keylessEntry: 'no',
+            'musicPlayer' => ($this->musicPlayer)?$this->musicPlayer: 'no',
+            'airBags' => ($this->airBags)?$this->airBags: 'no',
+            'fuelCapacity' => $this->fuelCapacity,
+            'maxSpeed' => $this->maxSpeed,
+            'maxPower' => $this->maxPower,
+            'motor' => $this->motor
         ]);
 
         // Check if there are new images
