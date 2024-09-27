@@ -55,7 +55,7 @@ class UserAPIController extends Controller
             ], 201);
         } catch (ValidationException $e) {
             return response()->json([
-                'errors' => $e->errors(),
+                'responseMessage' => $e->errors(),
                 'responseCode' => 422, // Adding the response code
             ], 422);
         }
@@ -87,22 +87,22 @@ class UserAPIController extends Controller
     public function login(Request $request)
     {
         if ($request->method() !== 'POST') {
-            return response()->json(['error' => 'The request method is invalid. Please use POST.'], 405);
+            return response()->json(['responseMessage' => 'The request method is invalid. Please use POST.', 'responseCode' => 405], 405);
         }
         $credentials = $request->only('email', 'password');
 
         $user = User::where('email', $credentials['email'])->first();
 
         if (!$user) {
-            return response()->json(['error' => 'Invalid credentials', 'responseCode' => 401], 401);
+            return response()->json(['responseMessage' => 'Invalid credentials', 'responseCode' => 401], 401);
         }
 
         if (is_null($user->email_verified_at)) {
-            return response()->json(['error' => 'Account not verified. Please verify your account with the OTP sent to your email.', 'responseCode' => 403], 403);
+            return response()->json(['responseMessage' => 'Account not verified. Please verify your account with the OTP sent to your email.', 'responseCode' => 403], 403);
         }
 
         if (!$token = JWTAuth::attempt($credentials)) {
-            return response()->json(['error' => 'Invalid credentials', 'responseCode' => 401], 401);
+            return response()->json(['responseMessage' => 'Invalid credentials', 'responseCode' => 401], 401);
         }
 
         return response()->json(['responseCode' => 200, 'responseMessage' => 'success', 'token' => $token, 'data' => $user]);
@@ -136,13 +136,13 @@ class UserAPIController extends Controller
                 $user->email_verified_at = now();
                 $user->save();
                 $token = JWTAuth::fromUser($user);
-                return response()->json(['message' => 'OTP confirmed successfully.', 'token' => $token, 'responseCode' => 200], 200);
+                return response()->json(['responseMessage' => 'OTP confirmed successfully.', 'token' => $token, 'responseCode' => 200], 200);
             }
 
-            return response()->json(['error' => 'Invalid Email or OTP.', 'responseCode' => 400], 400);
+            return response()->json(['responseMessage' => 'Invalid Email or OTP.', 'responseCode' => 400], 400);
         } catch (ValidationException $e) {
             return response()->json([
-                'errors' => $e->errors(),
+                'responseMessage' => $e->errors(),
                 'responseCode' => 422, // Adding the response code
             ], 422);
         }
@@ -152,7 +152,7 @@ class UserAPIController extends Controller
     {
         JWTAuth::invalidate(JWTAuth::getToken());
 
-        return response()->json(['message' => 'User logged out successfully']);
+        return response()->json(['responseMessage' => 'User logged out successfully']);
     }
 
     public function sendOTP(Request $request)
@@ -181,7 +181,7 @@ class UserAPIController extends Controller
             endif;
         } catch (ValidationException $e){
             return response()->json([
-                'errors' => $e->errors(),
+                'responseMessage' => $e->errors(),
                 'responseCode' => 422, // Adding the response code
             ], 422);
         }
@@ -208,7 +208,7 @@ class UserAPIController extends Controller
             endif;
         } catch (ValidationException $e){
             return response()->json([
-                'errors' => $e->errors(),
+                'responseMessage' => $e->errors(),
                 'responseCode' => 422, // Adding the response code
             ], 422);
         }
@@ -239,7 +239,7 @@ class UserAPIController extends Controller
             endif;
         } catch (ValidationException $e){
             return response()->json([
-                'errors' => $e->errors(),
+                'responseMessage' => $e->errors(),
                 'responseCode' => 422, // Adding the response code
             ], 422);
         }

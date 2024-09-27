@@ -30,6 +30,7 @@ use App\Http\Controllers\UserAPIController;
 use App\Http\Controllers\VehicleController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\BookingAPIController;
+use App\Http\Controllers\TransactionController;
 
 
 //FOR API
@@ -144,6 +145,7 @@ Route::middleware('api')->group(function () {
         Route::get('/api/v1/vehicles', [VehicleController::class, 'vehicles']);
         Route::get('/api/v1/brands', [BrandController::class, 'brands']);
         Route::get('/api/v1/singleVehicle/{vehID}', [VehicleController::class, 'singleVehicle']);
+        Route::post('/api/v1/transaction/create', [TransactionController::class, 'create']);
         Route::post('/api/v1/logout', [UserAPIController::class, 'logout']);
     });
 
