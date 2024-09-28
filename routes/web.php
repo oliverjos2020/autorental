@@ -146,6 +146,7 @@ Route::middleware('api')->group(function () {
         Route::get('/api/v1/brands', [BrandController::class, 'brands']);
         Route::get('/api/v1/singleVehicle/{vehID}', [VehicleController::class, 'singleVehicle']);
         Route::post('/api/v1/transaction/create', [TransactionController::class, 'create']);
+        Route::post('/api/v1/transaction/update', [TransactionController::class, 'update']);
         Route::post('/api/v1/logout', [UserAPIController::class, 'logout']);
     });
 

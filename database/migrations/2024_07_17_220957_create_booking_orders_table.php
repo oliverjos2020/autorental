@@ -25,6 +25,7 @@ class CreateBookingOrdersTable extends Migration
             $table->decimal('amount');
             $table->char('payment_status', 1)->default('0');
             $table->char('status', 1)->default('0');
+            $table->char('wth_driver', 1)->default('0');
             $table->timestamps();
         });
     }

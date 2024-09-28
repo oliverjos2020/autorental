@@ -34,7 +34,7 @@ class VehicleController extends Controller
             }
 
             // Get the results with the limit
-            $data = $query->limit($limit)->get();
+            $data = $query->where('on_trip', 0)->limit($limit)->get();
 
             return response()->json([
                 'responseCode' => 200,

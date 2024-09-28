@@ -17,8 +17,8 @@ class BookingAPIController extends Controller
             $request->validate([
                 'user_id' => ['required'],
                 'address' => ['required', 'string'],
+                'wth_driver' => ['required'],
                 'identity_card' => 'required|file|mimes:jpg,png,jpeg|max:300',
-                'driverLicense' => 'required|file|mimes:jpg,png,jpeg|max:300',
                 'vehicle_id' => ['required'],
                 'pickup_location' => ['required'],
                 'dropoff_location' => ['required'],
@@ -26,6 +26,11 @@ class BookingAPIController extends Controller
                 'dropoffDate' => ['required', 'date'],
                 'amount' => ['required'],
             ]);
+
+            $request->validate([
+                'driverLicense' => 'sometimes|file|mimes:jpg,png,jpeg|max:300'
+            ]);
+
 
             // Handle identity card upload
             if ($request->hasFile('identity_card')) {
@@ -63,6 +68,7 @@ class BookingAPIController extends Controller
             return response()->json([
                 'responseCode' => 201,
                 'responseMessage' => 'Success',
+                'data' => $bookingOrder
             ], 201);
 
         } catch (ValidationException $e) {
