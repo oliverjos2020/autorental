@@ -13,6 +13,7 @@ use App\Http\Livewire\MyVehicles;
 use App\Http\Livewire\EditVehicle;
 use App\Http\Livewire\RideBooking;
 use App\Http\Livewire\RideResults;
+use App\Http\Livewire\BookingReport;
 use App\Http\Livewire\PayPalPayment;
 use App\Http\Livewire\RoleManagement;
 use App\Http\Livewire\UserManagement;
@@ -21,21 +22,22 @@ use App\Http\Livewire\MyBookingOrders;
 use App\Http\Livewire\RegistrationType;
 use Illuminate\Support\Facades\Artisan;
 use App\Http\Livewire\StationManagement;
+use App\Http\Controllers\BrandController;
 use App\Http\Livewire\CarBrandManagement;
 use App\Http\Livewire\CategoryManagement;
 use App\Http\Livewire\LocationManagement;
-use App\Http\Livewire\DriverVehicleAssignment;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\StationController;
 use App\Http\Controllers\UserAPIController;
 use App\Http\Controllers\VehicleController;
-use App\Http\Controllers\BrandController;
-use App\Http\Controllers\BookingAPIController;
-use App\Http\Controllers\TransactionController;
+use App\Http\Livewire\PriceSetupManagement;
 
 
 //FOR API
-use App\Http\Livewire\PriceSetupManagement;
 use App\Http\Livewire\BookingOrderManagement;
+use App\Http\Controllers\BookingAPIController;
+use App\Http\Livewire\DriverVehicleAssignment;
+use App\Http\Controllers\TransactionController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -116,6 +118,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/bookingOrder/{status}', BookingOrderManagement::class)->name('bookingOrder');
     Route::get('/start-ride', StartRide::class)->name('startRide');
     Route::get('/users', UserManagement::class)->name('userSetup');
+    Route::get('/booking-report', BookingReport::class)->name('bookingReport');
     Route::middleware('can:admin-only')->group(function () {
 
         // Route::get('/vendorManagement/{type}', VendorManagement::class)->name('vendorSetup');
@@ -141,13 +144,16 @@ Route::middleware('api')->group(function () {
     Route::post('/api/v1/changePassword', [UserAPIController::class, 'changePassword']);
     Route::post('/api/v1/ConfirmJustOTP', [UserAPIController::class, 'confirmJustOTP']);
     Route::group(['middleware' => ['auth.jwt']], function() {
+        Route::post('/api/v1/user/update', [UserAPIController::class, 'update']);
         Route::post('/api/v1/booking', [BookingAPIController::class, 'booking']);
+        Route::post('/api/v1/mybookings', [BookingAPIController::class, 'getMyBookings']);
         Route::get('/api/v1/vehicles', [VehicleController::class, 'vehicles']);
         Route::get('/api/v1/brands', [BrandController::class, 'brands']);
         Route::get('/api/v1/singleVehicle/{vehID}', [VehicleController::class, 'singleVehicle']);
         Route::post('/api/v1/transaction/create', [TransactionController::class, 'create']);
         Route::post('/api/v1/transaction/update', [TransactionController::class, 'update']);
         Route::post('/api/v1/logout', [UserAPIController::class, 'logout']);
+        Route::get('/api/v1/getStations', [StationController::class, 'getAllStations']);
     });
 
     Route::middleware('auth:api')->group(function () {
@@ -155,6 +161,5 @@ Route::middleware('api')->group(function () {
     });
 
 });
-
 
 require __DIR__.'/auth.php';

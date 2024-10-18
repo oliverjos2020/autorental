@@ -22,7 +22,7 @@ class DriverVehicleAssignment extends Component
     {
         // dd($this->vehicle);
         $this->validate([
-            'vehicle' => 'required|array|min:1',
+            'vehicle' => 'required',
             'driver' => 'required',
         ]);
          foreach($this->vehicle as $i):
@@ -56,9 +56,9 @@ class DriverVehicleAssignment extends Component
     public function render()
     {
         $mappedVehicleIds = MapVehicleDriver::pluck('vehicle_id');
-        $vehicle = Vehicle::whereNotIn('id', $mappedVehicleIds)->get();
+        $vehicle = Vehicle::whereNotIn('id', $mappedVehicleIds)->where('station_id', Auth()->user()->station_id)->get();
         $mappedDriversIds = MapVehicleDriver::pluck('user_id');
-        $user = User::where('role_id', 3)->whereNotIn('id', $mappedDriversIds)->get();
+        $user = User::where('role_id', 3)->whereNotIn('id', $mappedDriversIds)->where('station_id', Auth()->user()->station_id)->get();
         $records = MapVehicleDriver::latest()->paginate($this->limit);
         return view('livewire.driver-vehicle-assignment', ['users' => $user, 'vehicles' => $vehicle, 'records' => $records])->layout('components.dashboard.dashboard-master');
     }

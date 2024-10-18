@@ -54,7 +54,7 @@
                         <tbody>
                             @forelse($vehicles as $vehicle)
                             <tr>
-                                <td><img src="{{ url($vehicle->photos->first()->image_path) }}" style="height:50px; width:70px;" alt="{{ $vehicle->vehicleMake }}"></td>
+                                <td><img src="{{ url($vehicle->photos->first()->image_path?? 'logo/auto-logo.png') }}" style="height:50px; width:70px;" alt="{{ $vehicle->vehicleMake }}"></td>
                                 <td>{{ $vehicle->vehicleMake }}</td>
                                 <td>{{ $vehicle->vehicleModel }}</td>
                                 <td>{{ $vehicle->vehicleYear }}</td>

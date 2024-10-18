@@ -14,8 +14,8 @@ class VehicleFactory extends Factory
     public function definition()
     {
         return [
-            'user_id' => $this->faker->numberBetween(2, 11),
-            'station_id' => 1,
+            'user_id' => $this->faker->numberBetween(1, 10),
+            'station_id' => $this->faker->numberBetween(1, 6),
             'transmission' => $this->faker->randomElement(['automatic','manual']),
             'doors' => $this->faker->numberBetween(2, 4),
             'seats' => $this->faker->numberBetween(2, 16),
@@ -66,9 +66,16 @@ class VehicleFactory extends Factory
             'vehicleYear' => $this->faker->year(),
             'status' => $this->faker->numberBetween(1, 3),
             'airCondition' => $this->faker->randomElement(['yes','no']),
-            'price_setup_id' => $this->faker->numberBetween(1, 4),
+            'price_setup_id' => $this->faker->numberBetween(1, 6),
             'on_trip' => 0,
             'moreInfo' => $this->faker->sentence(),
+            'keylessEntry' => $this->faker->randomElement(['yes','no']),
+            'airBags' => $this->faker->randomElement(['yes','no']),
+            'fuelCapacity' => $this->faker->numberBetween(0, 5),
+            'maxSpeed' => $this->faker->numberBetween(0, 5),
+            'maxPower' => $this->faker->numberBetween(0, 5),
+            'motor' => $this->faker->numberBetween(0, 5)
+
             // 'dateApproved' => now()
         ];
     }

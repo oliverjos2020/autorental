@@ -32,4 +32,9 @@ class Vehicle extends Model
     public function station() {
         return $this->belongsTo(Station::class);
     }
+
+    public function firstPhoto()
+    {
+        return $this->hasOne(Photo::class, 'vehicle_id')->orderBy('created_at', 'asc');
+    }
 }

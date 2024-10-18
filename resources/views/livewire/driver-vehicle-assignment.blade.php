@@ -23,9 +23,9 @@
                     <span class="text-danger"> {{ $message }} </span><br>
                     @enderror
 
-                    <label class="mt-2" for="driver">Vehicles</label>
+                    <label class="mt-2" for="vehicle">Vehicles</label>
                     <select wire:model="vehicle" multiple class="form-control">
-                        <option value="">Select vehicles</option>
+                        {{-- <option value="">Select vehicles</option> --}}
                         @forelse($vehicles as $vehicle)
                             <option value="{{$vehicle->id}}">{{$vehicle->vehicleMake}} {{$vehicle->vehicleModel}} {{$vehicle->vehicleYear}}</option>
                         @empty

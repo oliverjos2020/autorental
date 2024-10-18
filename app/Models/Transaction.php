@@ -17,6 +17,6 @@ class Transaction extends Model
         'response_message',
         'raw_json',
         'status',
-        'booking_id'
+        'booking_order_id'
     ];
 }

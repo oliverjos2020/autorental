@@ -49,6 +49,9 @@ class User extends Authenticatable implements JWTSubject
     public function vehicle(){
         return $this->hasMany(Vehicle::class);
     }
+    // public function booking(){
+    //     return $this->hasMany(BookingOrder::class);
+    // }
 
     public function role(){
         return $this->belongsTo(Role::class);

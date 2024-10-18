@@ -25,7 +25,7 @@
     <div class="col-md-4">
         <div class="card">
             <div class="card-body">
-                
+
                     <div class="form-group">
                         <label for="station">Station name</label>
                         <input type="text" wire:model="station" class="form-control" placeholder="Station Name">
@@ -50,7 +50,7 @@
                         <span class="text-danger"> {{ $message }} </span>
                         @enderror
                     </div>
-                    
+
                     <button class="btn btn-primary btn-sm mt-3" wire:click.prevent="create">
                         Create Station
                     </button>
@@ -60,7 +60,7 @@
     <div class="col-md-8">
         <div class="card">
             <div class="card-body">
-                
+
                 <div class="row">
                     <div class="col-md-1">
                         <select name="limit" wire:model="limit" class="form-control form-control-sm mt-2">
@@ -96,7 +96,7 @@
                                     <td><a class="btn btn-primary btn-sm text-light" style="cursor:pointer;" wire:click="edit({{$station->id}})"><i class="fa fa-edit"></i> Edit</a> </td>
                                     <td><a  @if(in_array($station->slug, ['admin', 'users', 'partners'])) class="text-light btn btn-secondary btn-sm" @else class="text-light btn btn-danger btn-sm" wire:click="delete({{$station->id}})" @endif ><i class="fa fa-trash"></i> Delete</a></a></td>
                                 </tr>
-                                
+
                                     @if($editingID === $station->id)
                                         <tr>
                                             <td colspan="2">
@@ -118,11 +118,11 @@
                                                 </select>
                                                 @error('editingLocation')
                                                 <span class="text-danger">{{ $message }}</span>
-                                                @enderror 
+                                                @enderror
                                             </td>
                                         </tr>
                                     @endif
-                                
+
                             @empty
                                 <tr>
                                     <td colspan="4" class="text-center text-danger"> No record available</td>

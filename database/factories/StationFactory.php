@@ -2,11 +2,10 @@
 
 namespace Database\Factories;
 
-use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
-
-class LocationFactory extends Factory
+class StationFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -15,8 +14,7 @@ class LocationFactory extends Factory
      */
     public function definition()
     {
-        // $location = $this->faker->city();
-        $location = $this->faker->unique()->randomElement([
+        $brand = $this->faker->unique()->randomElement([
             "Garki Station",
             "Lugbe Station",
             "Airport Road Station",
@@ -25,10 +23,12 @@ class LocationFactory extends Factory
             "Dei Dei Station"
 
         ]);
-        $slug = Str::slug($location);
+        $location_id = $this->faker->unique()->numberBetween(1, 6);
+        $slug = Str::slug($brand);
         return [
-            'location' => $location,
-            'slug' => $slug
+            'stationName' => $brand,
+            'slug' => $slug,
+            'location_id' => $location_id
         ];
     }
 }

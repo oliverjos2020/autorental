@@ -227,13 +227,13 @@
                                     <li><a href="/priceSetup">Hire Price Setup</a></li>
                                 </ul>
                             </li>
-                            {{-- <li>
-                                <a href="/bookingOrder/pending" class="waves-effect">
+                            <li>
+                                <a href="/booking-report" class="waves-effect">
                                     <i class="mdi mdi-car-info"></i>
-                                    <span>Pending Booking Orders</span>
+                                    <span>Bookings</span>
                                 </a>
                             </li>
-                            <li>
+                            {{-- <li>
                                 <a href="/bookingOrder/ongoing" class="waves-effect">
                                     <i class="mdi mdi-car-multiple"></i>
                                     <span>Booking Ongoing Trips</span>
@@ -268,6 +268,12 @@
                                 <a href="/assign-driver-vehicle" class="waves-effect">
                                     <i class="mdi mdi-car-info"></i>
                                     <span>Map Vehicles to Driver</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/booking-report" class="waves-effect">
+                                    <i class="mdi mdi-car-info"></i>
+                                    <span>Bookings</span>
                                 </a>
                             </li>
                             {{-- <li>

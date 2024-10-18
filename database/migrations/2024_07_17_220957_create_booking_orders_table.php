@@ -1,8 +1,9 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
 
 class CreateBookingOrdersTable extends Migration
 {
@@ -18,13 +19,13 @@ class CreateBookingOrdersTable extends Migration
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('vehicle_id')->constrained()->cascadeOnDelete();
             $table->date('pickupDate');
-            $table->string('pickupTime');
+            $table->string('pickupTime')->nullable();
             $table->date('dropoffDate');
-            $table->string('dropoffTime');
+            $table->string('dropoffTime')->nullable();
             $table->integer('duration');
             $table->decimal('amount');
             $table->char('payment_status', 1)->default('0');
-            $table->char('status', 1)->default('0');
+            // $table->char('status', 1)->default('0');
             $table->char('wth_driver', 1)->default('0');
             $table->timestamps();
         });

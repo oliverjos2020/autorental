@@ -16,9 +16,9 @@ class MyVehicles extends Component
     protected $queryString = ['limit', 'search'];
 
     public function updatingSearch()
-   {
-       $this->resetPage();
-   }
+    {
+        $this->resetPage();
+    }
 
    public function updatingLimit()
    {

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\User;
+use App\Models\BookingOrder;
 use App\Models\Transaction;
 use App\Models\Vehicle;
 use Illuminate\Validation\ValidationException;
@@ -14,7 +14,7 @@ class TransactionController extends Controller
     {
         try{
             $transaction = $request->validate([
-                'booking_id' => 'required',
+                'booking_order_id' => 'required',
                 'transaction_id' => ['required', 'unique:transactions'],
                 'transaction_desc' => 'required',
                 'user_id' => 'required',
@@ -51,6 +51,7 @@ class TransactionController extends Controller
                 'raw_json' => 'required',
                 'status' => 'required'
             ]);
+
             $update = Transaction::where('transaction_id', $request->transaction_id)->update([
                 'response_code' => $request->response_code,
                 'response_message' => $request->response_message,
@@ -58,11 +59,16 @@ class TransactionController extends Controller
                 'status' => $request->status
             ]);
 
-            if(!$update):
+            if($update < 1):
                 return response()->json(['responseMessage' => 'Transaction ID not found', 'responseCode' => 404], 404);
             endif;
 
             $getVehicleID = Transaction::where('transaction_id', $request->transaction_id)->first();
+            // print_r($getVehicleID->booking_order_id);
+            // exit;
+            BookingOrder::where('id', $getVehicleID->booking_order_id)->update([
+                'payment_status' => 1
+            ]);
             Vehicle::where('id', $getVehicleID->vehicle_id)->update([
                 'on_trip' => 1
             ]);

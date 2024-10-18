@@ -18,7 +18,8 @@ class BookingAPIController extends Controller
                 'user_id' => ['required'],
                 'address' => ['required', 'string'],
                 'wth_driver' => ['required'],
-                'identity_card' => 'required|file|mimes:jpg,png,jpeg|max:300',
+                'duration' => ['required'],
+                // 'identity_card' => 'required|file|mimes:jpg,png,jpeg|max:300',
                 'vehicle_id' => ['required'],
                 'pickup_location' => ['required'],
                 'dropoff_location' => ['required'],
@@ -27,8 +28,15 @@ class BookingAPIController extends Controller
                 'amount' => ['required'],
             ]);
 
+            $filePath = "";
+            $filePath2 = "";
+
+
             $request->validate([
                 'driverLicense' => 'sometimes|file|mimes:jpg,png,jpeg|max:300'
+            ]);
+            $request->validate([
+                'identity_card' => 'sometimes|file|mimes:jpg,png,jpeg|max:300'
             ]);
 
 
@@ -60,6 +68,8 @@ class BookingAPIController extends Controller
                 'pickupDate' => $request->pickupDate,
                 'dropoffDate' => $request->dropoffDate,
                 'amount' => $request->amount,
+                'duration' => $request->duration,
+                'wth_driver' => $request->wth_driver, // 0 for no, 1 for yes
                 'payment_status' => 0,
                 'status' => 0, // pending status for booking request
             ]);
@@ -79,4 +89,36 @@ class BookingAPIController extends Controller
         }
     }
 
+    public function getMyBookings(Request $request)
+    {
+        try{
+            $request->validate([
+                'user_id' => ['required']
+            ]);
+
+            $myBookings = BookingOrder::with(['vehicle', 'vehicle.firstPhoto'])->where('user_id', $request->user_id)->get();
+
+            if ($myBookings->isEmpty()) {
+                // If no bookings found for the user
+                return response()->json([
+                    'responseCode' => 404,
+                    'responseMessage' => 'No bookings found'
+                ], 404);
+            } else {
+                // If bookings exist
+                return response()->json([
+                    'responseCode' => 200,
+                    'responseMessage' => 'Success',
+                    'data' => $myBookings
+                ], 201);
+            }
+        } catch (ValidationException $e) {
+            return response()->json([
+                'errors' => $e->errors(),
+                'responseCode' => 422,
+            ], 422);
+        }
+
+
+    }
 }

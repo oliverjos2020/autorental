@@ -16,6 +16,6 @@ class Location extends Model
     ];
 
     public function station(){
-        return $this->belongsTo(Station::class);
+        return $this->hasMany(Station::class);
     }
 }

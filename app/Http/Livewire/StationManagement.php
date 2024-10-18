@@ -31,7 +31,7 @@ class StationManagement extends Component
     {
         $this->resetPage();
     }
-    
+
 
     public function create()
     {

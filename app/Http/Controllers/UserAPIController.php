@@ -1,16 +1,18 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Mail\SendOtpMail;
-use App\Mail\ResetPasswordOtpMail;
+use Exception;
 use App\Models\User;
+use App\Mail\SendOtpMail;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rules;
+use App\Mail\ResetPasswordOtpMail;
+use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Validation\Rules;
+use Tymon\JWTAuth\Exceptions\JWTException;
 use Illuminate\Validation\ValidationException;
-use Tymon\JWTAuth\Facades\JWTAuth;
-use Exception;
+use Tymon\JWTAuth\Exceptions\TokenInvalidException;
 
 class UserAPIController extends Controller
 {
@@ -61,6 +63,37 @@ class UserAPIController extends Controller
         }
     }
 
+    public function update(Request $request)
+    {
+        try{
+            $request->validate([
+                'user_id' => 'required',
+                'passport' => 'required|file|mimes:jpg,png,jpeg|max:300'
+            ]);
+
+            $passport = "";
+            if ($request->hasFile('passport')) {
+                $fileName = time() . 'Passport_' . $request->file('passport')->getClientOriginalName();
+                $passport = $request->file('passport')->storeAs('uploads', $fileName, 'public');
+            }
+
+            User::where('id', $request->user_id)->update([
+                'passport' => '/storage/'. $passport?? null,
+            ]);
+            return response()->json([
+               'responseCode' => 200,
+               'responseMessage' => 'Profile updated successfully',
+               'data' =>[
+                            'passport' => '/storage/'. $passport
+                        ]
+            ], 200);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'errors' => $e->errors(),
+                'responseCode' => 422,
+            ], 422);
+        }
+    }
     public function resendOTP(Request $request)
     {
         $request->validate([
@@ -110,9 +143,37 @@ class UserAPIController extends Controller
 
     public function refresh()
     {
-        return response()->json([
-            'token' => JWTAuth::refresh(),
-        ]);
+        try {
+            // Check if a token is present in the request
+            if (!$token = JWTAuth::getToken()) {
+                return response()->json([
+                    'responseMessage' => 'Token not provided',
+                    'responseCode' => 400
+                ], 400);
+            }
+
+            // Refresh the token and return it
+            $newToken = JWTAuth::refresh($token);
+
+            return response()->json([
+                'token' => $newToken,
+            ]);
+        } catch (TokenInvalidException $e) {
+            return response()->json([
+                'responseMessage' => 'Token is invalid',
+                'responseCode' => 401
+            ], 401);
+        } catch (JWTException $e) {
+            return response()->json([
+                'responseMessage' => 'Could not refresh token',
+                'responseCode' => 500
+            ], 500);
+        } catch (Exception $e) {
+            return response()->json([
+                'responseMessage' => $e->getMessage(),
+                'responseCode' => 500
+            ], 500);
+        }
     }
 
     public function generateOTP($length = 6)

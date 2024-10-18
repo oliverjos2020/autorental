@@ -1,8 +1,9 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
 
 class CreateVehiclesTable extends Migration
 {
@@ -31,7 +32,6 @@ class CreateVehiclesTable extends Migration
             $table->enum('keylessEntry', ['yes', 'no'])->nullable();
             $table->enum('musicPlayer', ['yes', 'no'])->nullable();
             $table->enum('airBags', ['yes', 'no'])->nullable();
-            $table->string('doors')->nullable();
             $table->string('fuelCapacity')->nullable();
             $table->string('maxSpeed')->nullable();
             $table->string('maxPower')->nullable();

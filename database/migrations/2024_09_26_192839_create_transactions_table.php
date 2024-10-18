@@ -1,8 +1,9 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
 
 class CreateTransactionsTable extends Migration
 {
@@ -15,7 +16,7 @@ class CreateTransactionsTable extends Migration
     {
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('booking_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('booking_order_id')->constrained()->cascadeOnDelete();
             $table->string('transaction_id');
             $table->string('transaction_desc');
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
@@ -36,5 +37,10 @@ class CreateTransactionsTable extends Migration
     public function down()
     {
         Schema::dropIfExists('transactions');
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        Schema::table('transactions', function (Blueprint $table) {
+            // $table->dropColumn('user_id');
+            $table->dropColumn('product_id');
+        });
     }
 }
