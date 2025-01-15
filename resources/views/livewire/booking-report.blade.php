@@ -50,15 +50,17 @@
                             <tr>
                                 <th>Name</th>
                                 <th>Vehicle</th>
+                                <th>Driver</th>
                                 <th>Pick Up</th>
                                 <th>Drop Off</th>
                                 <th>Amount</th>
                                 <th>Pick Up</th>
                                 <th>Payment</th>
+                                <th>Type</th>
                                 <th>Created</th>
                                 {{-- <th>Booking Price</th>
-                                <th>Edit</th>
-                                <th>Delete</th> --}}
+                                <th>Edit</th> --}}
+                                <th>Action</th>
 
                                 {{-- <th>Vehicle Status</th> --}}
                             </tr>
@@ -68,12 +70,21 @@
                             <tr>
                                 <td>{{ $booking->user->name ?? '' }}</td>
                                 <td>{{ $booking->vehicle->vehicleMake ?? '' }} {{ $booking->vehicle->vehicleModel ?? ''}} {{ $booking->vehicle->vehicleYear ?? ''}}</td>
+                                <td>{{ $booking->vehicle->user->name ?? '' }}</td>
                                 <td>{{ $booking->pickupDate ?? '' }}</td>
                                 <td>{{ $booking->dropoffDate ?? ''}}</td>
                                 <td>&#8358;{{ $booking->amount ?? ''}}</td>
                                 <td>{{ $booking->pickup_location ?? ''}}</td>
                                 <td><span class="badge bg-{{ $booking->payment_status == '0' ? 'danger' : 'success'}}">{{ $booking->payment_status == '0' ? 'Unpaid' : 'Paid' }}</span></td>
+                                <td>{{ $booking->type }}</td>
                                 <td>{{ $booking->created_at }}</td>
+                                <td>
+                                    @if($booking->status == 0)
+                                        <button class="btn btn-danger btn-sm" wire:click="approve({{$booking->id}})">Approve</button>
+                                    @elseif($booking->status == 1)
+                                        <button class="btn btn-success btn-sm"><i class="fa fa-check"></i> Approved</button>
+                                    @endif
+                                </td>
                                 {{-- <td>{{ $vehicle->priceSetup->amount }}</td>
                                 <td><a class="btn btn-success btn-sm" href="/editVehicles/{{$vehicle->id}}">Edit</a></td>
                                 <td><a class="btn btn-danger btn-sm" wire:click="delete({{$vehicle->id}})">Delete</a></td> --}}

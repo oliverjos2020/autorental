@@ -15,12 +15,12 @@ class Dashboard extends Component
 {
     public function render()
     {
-
+        $dd = User::where('station_id', auth()->user()->station_id)->whereIn('role_id', [3])->pluck('id');
         $drivers = User::whereIn('role_id', [3])->where('station_id', auth()->user()->station_id)->get();
         $vehicles = Vehicle::where('station_id', auth()->user()->station_id)->get();
         $mappedVehicleIds = MapVehicleDriver::pluck('vehicle_id');
-        $MappedVehicle = Vehicle::whereIn('id', $mappedVehicleIds)->get();
-        $mappedDriver = MapVehicleDriver::pluck('user_id')->unique();
+        $MappedVehicle = Vehicle::whereIn('id', $mappedVehicleIds)->where('station_id', auth()->user()->station_id)->get();
+        $mappedDriver = MapVehicleDriver::whereIn('user_id', $dd)->get();
         $currentYear = Carbon::now()->year;
         $data2 = DB::table('users')
                 ->select(DB::raw('MONTH(created_at) as month'), DB::raw('COUNT(*) as count'))

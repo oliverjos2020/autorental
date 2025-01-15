@@ -36,13 +36,13 @@ class PriceSetupManagement extends Component
     {
         $this->resetPage();
     }
-    
+
 
     public function createPriceSetup()
     {
         $validateData = $this->validate([
             // 'brand' => ['required', 'unique:car_brands,brand', 'min:2', 'max:50']
-            'item' => ['required', 'unique:price_setups,item'],
+            'item' => ['required'],
             'duration' => ['required'],
             'amount' => ['required']
         ]);

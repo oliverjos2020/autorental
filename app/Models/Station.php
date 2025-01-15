@@ -21,6 +21,6 @@ class Station extends Model
         return $this->belongsTo(User::class);
     }
     public function vehicles(){
-        return $this->belongsTo(vehicle::class);
+        return $this->hasMany(Vehicle::class);
     }
 }

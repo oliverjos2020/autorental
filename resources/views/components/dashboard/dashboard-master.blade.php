@@ -11,32 +11,37 @@
     <link rel="shortcut icon" href="{{ asset('logo/icon-dark.png') }}">
     {{-- <link rel="icon" type="image/x-icon" href="{{ asset('logo/icon-dark.png') }}"> --}}
     <!-- jquery.vectormap css -->
-    <link href="{{asset('assets/libs/admin-resources/jquery.vectormap/jquery-jvectormap-1.2.2.css')}}" rel="stylesheet"
-        type="text/css" />
+    <link href="{{ asset('assets/libs/admin-resources/jquery.vectormap/jquery-jvectormap-1.2.2.css') }}"
+        rel="stylesheet" type="text/css" />
 
     <!-- Bootstrap Css -->
-    <link href="{{asset('assets/css/bootstrap.min.css')}}" id="bootstrap-style" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/css/bootstrap.min.css') }}" id="bootstrap-style" rel="stylesheet" type="text/css" />
     <!-- Icons Css -->
-    <link href="{{asset('assets/css/icons.min.css')}}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/css/icons.min.css') }}" rel="stylesheet" type="text/css" />
     <!-- App Css-->
-    <link href="{{asset('assets/css/app.min.css')}}" id="app-style" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/css/app.min.css') }}" id="app-style" rel="stylesheet" type="text/css" />
 
-    <link href="{{asset('css/toastr.min.css')}}" id="app-style" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('css/toastr.min.css') }}" id="app-style" rel="stylesheet" type="text/css" />
     {{-- <script src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_API_KEY') }}&libraries=places"></script> --}}
     {{-- <script src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_API_KEY') }}&libraries=places&callback=initMap" async defer></script> --}}
     <script src="https://code.highcharts.com/highcharts.js"></script>
     @livewireStyles
-<style>
-    input, select, textarea {
-        border: 1px solid #ced4da !important;
-    }
-    input::placeholder, textarea::placeholder {
-    color: #7c7e81 !important;
-    }
-    .bg-not-active{
-        background:#c3cef8 !important;
-    }
-</style>
+    <style>
+        input,
+        select,
+        textarea {
+            border: 1px solid #ced4da !important;
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            color: #7c7e81 !important;
+        }
+
+        .bg-not-active {
+            background: #c3cef8 !important;
+        }
+    </style>
 </head>
 
 <body data-layout="detached" data-topbar="colored">
@@ -91,7 +96,8 @@
                                     id="page-header-user-dropdown" data-bs-toggle="dropdown" aria-haspopup="true"
                                     aria-expanded="false">
                                     <img class="rounded-circle header-profile-user"
-                                        src="http://127.0.0.1:8000/assets/images/users/avatar-2.jpg" alt="Header Avatar">
+                                        src="http://127.0.0.1:8000/assets/images/users/avatar-2.jpg"
+                                        alt="Header Avatar">
                                     <span class="d-none d-xl-inline-block ms-1">{{ Auth::user()->name }}</span>
                                     <i class="mdi mdi-chevron-down d-none d-xl-inline-block"></i>
                                 </button>
@@ -125,22 +131,22 @@
                                 <a href="/" class="logo logo-dark">
                                     <span class="logo-sm">
 
-                                        <img src="{{asset('logo/main-logo.png')}}" alt="" height="50">
+                                        <img src="{{ asset('logo/main-logo.png') }}" alt="" height="50">
                                     </span>
                                     <span class="logo-lg">
 
-                                        <img src="{{asset('logo/main-logo.png')}}" alt="" height="50">
+                                        <img src="{{ asset('logo/main-logo.png') }}" alt="" height="50">
                                     </span>
                                 </a>
 
                                 <a href="/" class="logo logo-light">
                                     <span class="logo-sm">
 
-                                        <img src="{{asset('logo/main-logo.png')}}" alt="" height="50">
+                                        <img src="{{ asset('logo/main-logo.png') }}" alt="" height="50">
                                     </span>
                                     <span class="logo-lg">
 
-                                        <img src="{{asset('logo/main-logo.png')}}" alt="" height="50">
+                                        <img src="{{ asset('logo/main-logo.png') }}" alt="" height="50">
                                     </span>
                                 </a>
                             </div>
@@ -166,13 +172,14 @@
 
                     <div class="user-wid text-center py-4">
                         <div class="user-img">
-                            <img src="{{asset('assets/images/users/avatar-2.jpg')}}" alt="" class="avatar-md mx-auto rounded-circle">
+                            <img src="{{ asset('assets/images/users/avatar-2.jpg') }}" alt=""
+                                class="avatar-md mx-auto rounded-circle">
                         </div>
 
                         <div class="mt-3">
 
                             <a href="#" class="text-body fw-medium font-size-16">{{ Auth::user()->name }}</a>
-                            <p class="text-muted mt-1 mb-0 font-size-13">{{ Auth::user()->role->role}}</p>
+                            <p class="text-muted mt-1 mb-0 font-size-13">{{ Auth::user()->role->role }}</p>
 
                         </div>
                     </div>
@@ -190,50 +197,61 @@
                                 </a>
 
                             </li>
-                            @if(Auth::user()->role_id == 1)
-
-                            <li>
-                                <a href="javascript: void(0);" class="has-arrow waves-effecxt">
-                                    <i class="mdi mdi-account-supervisor-outline"></i>
-                                    <span>User Management</span>
-                                </a>
-                                <ul class="sub-menu" aria-expanded="false">
-                                    <li><a href="/users">All Users</a></li>
-                                    {{-- <li><a href="/vendorManagement/pending">Pending Requests</a></li>
+                            @if (Auth::user()->role_id == 1)
+                                <li>
+                                    <a href="javascript: void(0);" class="has-arrow waves-effecxt">
+                                        <i class="mdi mdi-account-supervisor-outline"></i>
+                                        <span>User Management</span>
+                                    </a>
+                                    <ul class="sub-menu" aria-expanded="false">
+                                        <li><a href="/users">All Users</a></li>
+                                        {{-- <li><a href="/vendorManagement/pending">Pending Requests</a></li>
                                     <li><a href="/vendorManagement/declined">Declined Requests</a></li>
                                     <li><a href="/vendorManagement/approved">Approved Requests </a></li> --}}
-                                </ul>
-                            </li>
-                            <li>
-                                <a href="javascript: void(0);" class="has-arrow waves-effecxt">
-                                    <i class="mdi mdi-settings-outline"></i>
-                                    <span>Authorization</span>
-                                </a>
-                                <ul class="sub-menu" aria-expanded="false">
-                                    <li><a href="/role">Role Setup</a></li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <a href="javascript: void(0);" class="has-arrow waves-effecxt">
+                                        <i class="mdi mdi-settings-outline"></i>
+                                        <span>Authorization</span>
+                                    </a>
+                                    <ul class="sub-menu" aria-expanded="false">
+                                        <li><a href="/role">Role Setup</a></li>
 
-                                </ul>
-                            </li>
-                            <li>
-                                <a href="javascript: void(0);" class="has-arrow waves-effecxt">
-                                    <i class="mdi mdi-hexagon-multiple-outline"></i>
-                                    <span>Setup</span>
-                                </a>
-                                <ul class="sub-menu" aria-expanded="false">
-                                    <li><a href="/category">Vehicle Category</a></li>
-                                    <li><a href="/location">Location</a></li>
-                                    <li><a href="/station">Stations</a></li>
-                                    <li><a href="/brand">Car Brand</a></li>
-                                    <li><a href="/priceSetup">Hire Price Setup</a></li>
-                                </ul>
-                            </li>
-                            <li>
-                                <a href="/booking-report" class="waves-effect">
-                                    <i class="mdi mdi-car-info"></i>
-                                    <span>Bookings</span>
-                                </a>
-                            </li>
-                            {{-- <li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <a href="javascript: void(0);" class="has-arrow waves-effecxt">
+                                        <i class="mdi mdi-hexagon-multiple-outline"></i>
+                                        <span>Setup</span>
+                                    </a>
+                                    <ul class="sub-menu" aria-expanded="false">
+                                        <li><a href="/category">Vehicle Category</a></li>
+                                        <li><a href="/location">Location</a></li>
+                                        <li><a href="/station">Stations</a></li>
+                                        <li><a href="/brand">Car Brand</a></li>
+                                        <li><a href="/priceSetup">Hire Price Setup</a></li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <a href="/booking-report" class="waves-effect">
+                                        <i class="mdi mdi-car-info"></i>
+                                        <span>Bookings</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="/register-vehicle" class="waves-effect">
+                                        <i class="mdi mdi-car"></i>
+                                        <span>Add Vehicle</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="/myVehicles" class="waves-effect">
+                                        <i class="mdi mdi-car-info"></i>
+                                        <span>Vehicles</span>
+                                    </a>
+                                </li>
+                                {{-- <li>
                                 <a href="/bookingOrder/ongoing" class="waves-effect">
                                     <i class="mdi mdi-car-multiple"></i>
                                     <span>Booking Ongoing Trips</span>
@@ -246,37 +264,37 @@
                                 </a>
                             </li> --}}
                             @elseif(Auth::user()->role_id == 2)
-                            <li>
-                                <a href="/users" class="waves-effect">
-                                    <i class="mdi mdi-account-multiple-check-outline"></i>
-                                    <span>Users</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="/register-vehicle" class="waves-effect">
-                                    <i class="mdi mdi-car"></i>
-                                    <span>Add Vehicle</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="/myVehicles" class="waves-effect">
-                                    <i class="mdi mdi-car-info"></i>
-                                    <span>Vehicles</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="/assign-driver-vehicle" class="waves-effect">
-                                    <i class="mdi mdi-car-info"></i>
-                                    <span>Map Vehicles to Driver</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="/booking-report" class="waves-effect">
-                                    <i class="mdi mdi-car-info"></i>
-                                    <span>Bookings</span>
-                                </a>
-                            </li>
-                            {{-- <li>
+                                <li>
+                                    <a href="/users" class="waves-effect">
+                                        <i class="mdi mdi-account-multiple-check-outline"></i>
+                                        <span>Users</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="/register-vehicle" class="waves-effect">
+                                        <i class="mdi mdi-car"></i>
+                                        <span>Add Vehicle</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="/myVehicles" class="waves-effect">
+                                        <i class="mdi mdi-car-info"></i>
+                                        <span>Vehicles</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="/assign-driver-vehicle" class="waves-effect">
+                                        <i class="mdi mdi-car-info"></i>
+                                        <span>Map Vehicles to Driver</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="/booking-report" class="waves-effect">
+                                        <i class="mdi mdi-car-info"></i>
+                                        <span>Bookings</span>
+                                    </a>
+                                </li>
+                                {{-- <li>
                                 <a href="/assignd-driver-vehicle" class="waves-effect">
                                     <i class="mdi mdi-car-multiple"></i>
                                     <span>Booking Ongoing Trips</span>
@@ -302,7 +320,8 @@
                                 <form method="POST" action="{{ route('logout') }}">
                                     @csrf
 
-                                    <x-dropdown-link :href="route('logout')" onclick="event.preventDefault(); this.closest('form').submit();">
+                                    <x-dropdown-link :href="route('logout')"
+                                        onclick="event.preventDefault(); this.closest('form').submit();">
                                         {{ __('Log Out') }}
                                     </x-dropdown-link>
                                 </form>
@@ -330,6 +349,27 @@
                     {{ $slot }}
 
 
+                    <!-- Modal -->
+                    <div class="modal" id="notificationModal" tabindex="-1" aria-hidden="true"
+                        style="display: none; background:#171515c4;">
+                        {{-- <div class="modal fade" id="staticBackdrop" style="display: none;" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true"> --}}
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Enable Notifications</h5>
+                                </div>
+                                <div class="modal-body">
+                                    <p>Do you want to receive sound notifications for new messages?</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button id="allowNotifications" class="btn btn-primary">Yes</button>
+                                    <button id="denyNotifications" class="btn btn-secondary">No</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <audio id="beepSound" src="{{ asset('notification/simple-notification-152054.mp3') }}"></audio>
                 </div>
                 <!-- End Page-content -->
 
@@ -363,42 +403,120 @@
 
     <!-- JAVASCRIPT -->
     <!-- JAVASCRIPT -->
-    <script src="{{asset('assets/libs/jquery/jquery.min.js')}}"></script>
-    <script src="{{asset('assets/libs/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
-    <script src="{{asset('assets/libs/metismenu/metisMenu.min.js')}}"></script>
-    <script src="{{asset('assets/libs/simplebar/simplebar.min.js')}}"></script>
-    <script src="{{asset('assets/libs/node-waves/waves.min.js')}}"></script>
-    <script src="{{asset('assets/libs/jquery-sparkline/jquery.sparkline.min.js')}}"></script>
+    <script src="{{ asset('assets/libs/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('assets/libs/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ asset('assets/libs/metismenu/metisMenu.min.js') }}"></script>
+    <script src="{{ asset('assets/libs/simplebar/simplebar.min.js') }}"></script>
+    <script src="{{ asset('assets/libs/node-waves/waves.min.js') }}"></script>
+    <script src="{{ asset('assets/libs/jquery-sparkline/jquery.sparkline.min.js') }}"></script>
 
     <!-- apexcharts -->
     {{-- <script src="{{asset('assets/libs/apexcharts/apexcharts.min.js')}}"></script> --}}
 
     <!-- jquery.vectormap map -->
-    <script src="{{asset('assets/libs/admin-resources/jquery.vectormap/jquery-jvectormap-1.2.2.min.js')}}"></script>
-    <script src="{{asset('assets/libs/admin-resources/jquery.vectormap/maps/jquery-jvectormap-us-merc-en.js')}}"></script>
-    <script src="{{asset('assets/libs/jquery-steps/build/jquery.steps.min.js')}}"></script>
+    <script src="{{ asset('assets/libs/admin-resources/jquery.vectormap/jquery-jvectormap-1.2.2.min.js') }}"></script>
+    <script src="{{ asset('assets/libs/admin-resources/jquery.vectormap/maps/jquery-jvectormap-us-merc-en.js') }}">
+    </script>
+    <script src="{{ asset('assets/libs/jquery-steps/build/jquery.steps.min.js') }}"></script>
 
     <!-- form wizard init -->
-    <script src="{{asset('assets/js/pages/form-wizard.init.js')}}"></script>
+    {{-- <script src="{{ asset('assets/js/pages/form-wizard.init.js') }}"></script>
 
-    <script src="{{asset('assets/js/pages/dashboard.init.js')}}"></script>
+    <script src="{{ asset('assets/js/pages/dashboard.init.js') }}"></script> --}}
 
-    <script src="{{asset('assets/js/app.js')}}"></script>
-    <script src="{{asset('js/toastr.min.js')}}"></script>
-    <script src="{{asset('assets/libs/tinymce/tinymce.min.js')}}"></script>
-    <script src="{{asset('assets/js/pages/form-editor.init.js')}}"></script>
+    <script src="{{ asset('assets/js/app.js') }}"></script>
+    <script src="{{ asset('js/toastr.min.js') }}"></script>
+    <script src="{{ asset('assets/libs/tinymce/tinymce.min.js') }}"></script>
+    <script src="{{ asset('assets/js/pages/form-editor.init.js') }}"></script>
 
 
-   <script>
-    document.addEventListener('livewire:load', function () {
-        window.addEventListener('notify', event => {
-            toastr[event.detail.type](event.detail.message);
+    <script>
+        document.addEventListener('livewire:load', function() {
+            window.addEventListener('notify', event => {
+                toastr[event.detail.type](event.detail.message);
+            });
         });
-    });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const notificationModal = new bootstrap.Modal(document.getElementById('notificationModal'), {
+                backdrop: 'static', // Prevents closing by clicking outside
+                keyboard: false // Prevents closing with the 'Esc' key
+            });
 
-</script>
-@livewire('paypal-payment')
-@livewireScripts
+            const allowNotifications = document.getElementById('allowNotifications');
+            const denyNotifications = document.getElementById('denyNotifications');
+            const beepSound = document.getElementById('beepSound');
+            let notificationEnabled = false;
+
+            // Check if the user has already made a decision
+            const notificationPreference = localStorage.getItem('notificationPreference');
+            const notificationExpiry = localStorage.getItem('notificationExpiry');
+
+            if (!notificationPreference || new Date().getTime() > notificationExpiry) {
+                // Show the modal if no preference or preference has expired
+                notificationModal.show();
+
+                allowNotifications.addEventListener('click', function() {
+                    notificationEnabled = true;
+                    setNotificationPreference(true);
+                    notificationModal.hide();
+                    startNotificationPolling();
+                });
+
+                denyNotifications.addEventListener('click', function() {
+                    setNotificationPreference(false);
+                    notificationModal.hide();
+                    alert('Notifications disabled.');
+                });
+            } else if (notificationPreference === 'true') {
+                // Start notifications if previously allowed
+                notificationEnabled = true;
+                startNotificationPolling();
+            }
+
+            function setNotificationPreference(enabled) {
+                const expirationTime = new Date().getTime() + 24 * 60 * 60 * 1000; // 1 day in milliseconds
+                localStorage.setItem('notificationPreference', enabled);
+                localStorage.setItem('notificationExpiry', expirationTime);
+            }
+
+            function playBeep() {
+                if (notificationEnabled) {
+                    beepSound.play().catch(error => {
+                        console.error('Error playing sound:', error);
+                    });
+                }
+            }
+
+            function startNotificationPolling() {
+                setInterval(() => {
+                    fetch('/check-message', {
+                            method: 'GET',
+                            headers: {
+                                'Accept': 'application/json',
+                            }
+                        })
+                        .then(response => {
+                            if (response.status === 200) {
+                                return response.json(); // Parse JSON
+                            }
+                            return null; // No new messages or an error occurred
+                        })
+                        .then(data => {
+                            if (data.responseCode == 200) {
+                                toastr.success(data.message, 'New Message');
+                                console.log('New Message:', data.message); // Log message for debugging
+                                playBeep(); // Play sound
+                            }
+                        })
+                        .catch(error => console.error('Error during AJAX call:', error));
+                }, 15000); // 15-second interval
+            }
+        });
+    </script>
+    @livewire('paypal-payment')
+    @livewireScripts
 </body>
 
 </html>

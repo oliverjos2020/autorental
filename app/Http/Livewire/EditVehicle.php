@@ -4,11 +4,12 @@ namespace App\Http\Livewire;
 
 use App\Models\Photo;
 use App\Models\Vehicle;
-use Livewire\WithFileUploads;
 use Livewire\Component;
 use App\Models\CarBrand;
+use App\Models\Category;
 use App\Models\PriceSetup;
 use Illuminate\Support\Str;
+use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Storage;
 
 class EditVehicle extends Component
@@ -131,7 +132,7 @@ class EditVehicle extends Component
     {
         return view('livewire.registration-type', [
             'brands' => CarBrand::all(),
-            'priceCategory' => PriceSetup::all()
+            'priceCategory' => Category::all()
         ])->layout('components.dashboard.dashboard-master');
     }
 }

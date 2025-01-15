@@ -17,7 +17,9 @@ class VehicleController extends Controller
 
             // Query builder
             // $query = Vehicle::with('photos');
-            $query = Vehicle::with(['photos', 'priceSetup']);
+            // $query = Vehicle::with(['photos', 'priceSetup']);
+            // $query = Vehicle::with(['photos', 'priceSetup', 'relatedPriceSetups'])->get();
+            $query = Vehicle::with(['photos', 'priceSetup.related']);
 
             // Apply filters
             if ($request->has('vehicleMake')) {
@@ -33,8 +35,10 @@ class VehicleController extends Controller
                 $query->where('station_id', $request->input('station_id'));
             }
 
+            $query->where('on_trip', 0)->orderBy('created_at', 'desc');
+
             // Get the results with the limit
-            $data = $query->where('on_trip', 0)->limit($limit)->get();
+            $data = $query->limit($limit)->get();
 
             return response()->json([
                 'responseCode' => 200,
@@ -73,4 +77,6 @@ class VehicleController extends Controller
             ], 422);
         }
     }
+
+   
 }

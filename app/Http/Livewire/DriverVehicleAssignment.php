@@ -59,7 +59,8 @@ class DriverVehicleAssignment extends Component
         $vehicle = Vehicle::whereNotIn('id', $mappedVehicleIds)->where('station_id', Auth()->user()->station_id)->get();
         $mappedDriversIds = MapVehicleDriver::pluck('user_id');
         $user = User::where('role_id', 3)->whereNotIn('id', $mappedDriversIds)->where('station_id', Auth()->user()->station_id)->get();
-        $records = MapVehicleDriver::latest()->paginate($this->limit);
+        $dd = User::where('station_id', auth()->user()->station_id)->whereIn('role_id', [3])->pluck('id');
+        $records = MapVehicleDriver::whereIn('user_id', $dd)->paginate($this->limit);
         return view('livewire.driver-vehicle-assignment', ['users' => $user, 'vehicles' => $vehicle, 'records' => $records])->layout('components.dashboard.dashboard-master');
     }
 }

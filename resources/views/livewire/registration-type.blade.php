@@ -156,7 +156,7 @@
                         <div class="col-md-6">
                             <div class="form-group mt-2">
                                 <label for="motor">Motor</label>
-                                <input type="text" wire:model="motor" placeholder="Input Motor" class="form-control">
+                                <input type="text" wire:model="motor" placeholder="Motor e.g 5000cc" class="form-control">
                                 @error('motor')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
@@ -165,7 +165,7 @@
                         <div class="col-md-6">
                             <div class="form-group mt-2">
                                 <label for="fuelCapacity">Fuel Capacity</label>
-                                <input type="text" wire:model="fuelCapacity" placeholder="Input Fuel Capacity"
+                                <input type="text" wire:model="fuelCapacity" placeholder="Fuel Capacity e.g 70ltr"
                                     class="form-control">
                                 @error('fuelCapacity')
                                     <span class="text-danger">{{ $message }}</span>
@@ -175,7 +175,7 @@
                         <div class="col-md-6">
                             <div class="form-group mt-2">
                                 <label for="maxSpeed">Max Speed</label>
-                                <input type="text" wire:model="maxSpeed" placeholder="Input Max Speed"
+                                <input type="text" wire:model="maxSpeed" placeholder="Max Speed e.g 120km/hr"
                                     class="form-control">
                                 @error('maxSpeed')
                                     <span class="text-danger">{{ $message }}</span>
@@ -185,7 +185,7 @@
                         <div class="col-md-6">
                             <div class="form-group mt-2">
                                 <label for="maxPower">Max Power</label>
-                                <input type="text" wire:model="maxPower" placeholder="Input Max Power"
+                                <input type="text" wire:model="maxPower" placeholder="Max Power e.g 300HP"
                                     class="form-control mt-2">
                                 @error('maxPower')
                                     <span class="text-danger">{{ $message }}</span>
@@ -302,7 +302,7 @@
                             <select wire:model="category" class="form-control">
                                 <option value="">Select Vehicle category</option>
                                 @foreach ($priceCategory as $category)
-                                    <option value="{{ $category->id }}">{{ $category->item }}</option>
+                                    <option value="{{ $category->id }}">{{ $category->category }}</option>
                                 @endforeach
                             </select>
                             @error('category')

@@ -19,10 +19,11 @@ class BookingOrder extends Model
         'duration',
         'amount',
         'payment_status',
-        'status'
+        'status',
+        'type'
     ];
 
-    
+
     public function user()
     {
         return $this->belongsTo(User::class);

@@ -41,8 +41,8 @@
                     @enderror
                 </div>
                 <div class="form-group mt-3">
-                    <label for="priceSetup">Duration [in days]</label>
-                    <input type="number" wire:model="duration" class="form-control" value="1" placeholder="Duration">
+                    <label for="priceSetup">Duration</label>
+                    <input type="text" wire:model="duration" class="form-control" value="1" placeholder="Duration">
                     @error('duration')
                     <span class="text-danger"> {{ $message }} </span>
                     @enderror
@@ -129,7 +129,7 @@
                                     <span class="text-danger">{{ $message }}</span>
                                     @enderror
                                 </td>
-                                
+
                             </tr>
                             <tr>
                                 <td colspan="6">

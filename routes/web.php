@@ -38,6 +38,7 @@ use App\Http\Livewire\BookingOrderManagement;
 use App\Http\Controllers\BookingAPIController;
 use App\Http\Livewire\DriverVehicleAssignment;
 use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\NotificationController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -102,6 +103,7 @@ Route::get('/ridebooking', RideBooking::class)->name('ridebooking');
 Route::get('/ride-results', RideResults::class)->name('ride.results');
 
 Route::middleware(['auth'])->group(function () {
+    Route::get('/check-message', [NotificationController::class, 'checkMessage']);
     Route::get('/mybooking-orders', MyBookingOrders::class)->name('MyBookingOrders');
     Route::get('/assign-driver-vehicle', DriverVehicleAssignment::class)->name('assignDriverVehicle');
     Route::get('/checkout', Checkout::class)->name('checkout');
@@ -152,6 +154,7 @@ Route::middleware('api')->group(function () {
         Route::get('/api/v1/singleVehicle/{vehID}', [VehicleController::class, 'singleVehicle']);
         Route::post('/api/v1/transaction/create', [TransactionController::class, 'create']);
         Route::post('/api/v1/transaction/update', [TransactionController::class, 'update']);
+        Route::post('/api/v1/trip/update', [BookingAPIController::class, 'updateTrip']);
         Route::post('/api/v1/logout', [UserAPIController::class, 'logout']);
         Route::get('/api/v1/getStations', [StationController::class, 'getAllStations']);
     });

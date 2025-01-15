@@ -20,4 +20,9 @@ class PriceSetup extends Model
     {
         return $this->hasMany(Vehicle::class);
     }
+
+    public function related()
+    {
+        return $this->hasMany(PriceSetup::class, 'category_id', 'category_id');
+    }
 }

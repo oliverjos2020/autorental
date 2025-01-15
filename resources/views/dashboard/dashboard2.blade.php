@@ -210,6 +210,23 @@
 <div class="row">
     <div id="container" style="width:100%; height:400px;"></div>
 </div>
+<div class="modal" id="notificationModal" tabindex="-1" aria-hidden="true" style="display: none; background:#171515c4;">
+    {{-- <div class="modal fade" id="staticBackdrop" style="display: none;" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true"> --}}
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Enable Notifications</h5>
+            </div>
+            <div class="modal-body">
+                <p>Do you want to receive sound notifications for new messages?</p>
+            </div>
+            <div class="modal-footer">
+                <button id="allowNotifications" class="btn btn-primary">Yes</button>
+                <button id="denyNotifications" class="btn btn-secondary">No</button>
+            </div>
+        </div>
+    </div>
+</div>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const stationAdminData = @json($stationAdminGraph);
