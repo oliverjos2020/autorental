@@ -96,7 +96,7 @@
                                     id="page-header-user-dropdown" data-bs-toggle="dropdown" aria-haspopup="true"
                                     aria-expanded="false">
                                     <img class="rounded-circle header-profile-user"
-                                        src="http://127.0.0.1:8000/assets/images/users/avatar-2.jpg"
+                                        src="{{asset('assets/images/users/avatar-2.jpg')}}"
                                         alt="Header Avatar">
                                     <span class="d-none d-xl-inline-block ms-1">{{ Auth::user()->name }}</span>
                                     <i class="mdi mdi-chevron-down d-none d-xl-inline-block"></i>
