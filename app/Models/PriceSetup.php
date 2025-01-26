@@ -15,9 +15,13 @@ class PriceSetup extends Model
         'amount'
     ];
 
+    // public function vehicles()
+    // {
+    //     return $this->hasMany(Vehicle::class);
+    // }
     public function vehicles()
     {
-        return $this->hasMany(Vehicle::class);
+        return $this->hasMany(Vehicle::class, 'price_setup_id', 'category_id');
     }
     public function category(){
         return $this->belongsTo(Category::class);

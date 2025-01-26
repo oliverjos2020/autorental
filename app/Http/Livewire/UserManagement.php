@@ -97,7 +97,8 @@ class UserManagement extends Component
                         'business_name' => $this->business_name,
                         'bank_code' => $this->bank_code,
                         'account_number' => $this->account_number,
-                        'percentage_charge' => $this->percentage_charge
+                        'percentage_charge' => $this->percentage_charge,
+                        'account_code' => $response['data']['subaccount_code']
                     ]);
                     $this->dispatchBrowserEvent('notify', [
                         'type' =>'success',

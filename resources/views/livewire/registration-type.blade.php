@@ -301,11 +301,23 @@
                             <label for="SelectPrice">Select Vehicle placement category</label>
                             <select wire:model="category" class="form-control">
                                 <option value="">Select Vehicle category</option>
-                                @foreach ($priceCategory as $category)
+                                @foreach ($categories as $category)
                                     <option value="{{ $category->id }}">{{ $category->category }}</option>
                                 @endforeach
                             </select>
                             @error('category')
+                                <span class="text-danger">{{ $message }}</span>
+                            @enderror
+                        </div>
+                        <div class="form-group mt-3">
+                            <label for="SelectPrice">Car Owner</label>
+                            <select wire:model="owner" class="form-control">
+                                <option value="">Select Car Owner</option>
+                                @foreach ($carOwners as $carOwner)
+                                    <option value="{{ $carOwner->id }}">{{ $carOwner->name }}</option>
+                                @endforeach
+                            </select>
+                            @error('owner')
                                 <span class="text-danger">{{ $message }}</span>
                             @enderror
                         </div>

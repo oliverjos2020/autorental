@@ -2,16 +2,17 @@
 
 namespace App\Http\Livewire;
 
-use Livewire\Component;
-use Livewire\WithFileUploads;
+use Exception;
 use App\Models\User;
-use App\Models\CarBrand;
-use App\Models\Location;
 use App\Models\Photo;
 use App\Models\Vehicle;
+use Livewire\Component;
+use App\Models\CarBrand;
+use App\Models\Category;
+use App\Models\Location;
 use App\Models\PriceSetup;
-use Exception;
 use Illuminate\Support\Str;
+use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 
@@ -46,6 +47,7 @@ class RegistrationType extends Component
     public $keylessEntry;
     public $musicPlayer;
     public $airBags;
+    public $owner;
 
     public function submit()
     {
@@ -66,10 +68,11 @@ class RegistrationType extends Component
             'maxPower' => 'required',
             'maxSpeed' => 'required',
             'fuelCapacity' => 'required',
+            'owner' => 'required'
         ]);
 
         $vehicle = Vehicle::create([
-            'user_id' => Auth()->User()->id,
+            'user_id' => $this->owner,
             'station_id' => Auth()->User()->station_id,
             'vehicleMake' => $this->vehicleMake,
             'vehicleModel' => $this->vehicleModel,
@@ -88,6 +91,7 @@ class RegistrationType extends Component
             'maxSpeed' => $this->maxSpeed,
             'maxPower' => $this->maxPower,
             'motor' => $this->motor
+            // 'owner' => $this->owner
         ]);
 
 
@@ -116,7 +120,8 @@ class RegistrationType extends Component
 
     public function render()
     {
-        return view('livewire.registration-type', ['brands' => CarBrand::all(), 'priceCategory' => PriceSetup::all()])->layout('components.dashboard.dashboard-master');
+        $carOwners = User::where('id', 6)->get();
+        return view('livewire.registration-type', ['brands' => CarBrand::all(), 'categories' => Category::all(), 'carOwners' => $carOwners])->layout('components.dashboard.dashboard-master');
 
     }
 }

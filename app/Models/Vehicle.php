@@ -25,9 +25,14 @@ class Vehicle extends Model
     //     return $this->hasMany(PriceSetup::class);
     // }
 
+    // public function priceSetup()
+    // {
+    //     return $this->belongsTo(PriceSetup::class, 'price_setup_id');
+    // }
+
     public function priceSetup()
     {
-        return $this->belongsTo(PriceSetup::class, 'price_setup_id');
+        return $this->hasOne(PriceSetup::class, 'category_id', 'price_setup_id');
     }
 
     public function relatedPriceSetups()
