@@ -10,8 +10,7 @@ class PriceSetup extends Model
     use HasFactory;
 
     protected $fillable = [
-        'item',
-        'slug',
+        'category_id',
         'duration',
         'amount'
     ];
@@ -19,6 +18,9 @@ class PriceSetup extends Model
     public function vehicles()
     {
         return $this->hasMany(Vehicle::class);
+    }
+    public function category(){
+        return $this->belongsTo(Category::class);
     }
 
     public function related()

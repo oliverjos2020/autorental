@@ -29,10 +29,10 @@
                 <div class="form-group">
                     <label for="priceSetup">Vehicle Category</label>
                     {{-- <input type="text" wire:model="item" class="form-control" placeholder="Vehicle category/Class"> --}}
-                    <select wire:model="item" id="" class="form-control">
+                    <select wire:model="category_id" id="" class="form-control">
                         <option value="">Select an option</option>
                         @forelse($categories as $category)
-                            <option value="{{ $category->category }}">{{ $category->category }}</option>
+                            <option value="{{ $category->id }}">{{ $category->category }}</option>
                         @empty
                         @endforelse
                     </select>
@@ -76,7 +76,7 @@
                     </div>
                     <div class="col-md-7"></div>
                     <div class="col-md-4">
-                        <input type="search" wire:model.live.debounce.500ms="search" placeholder="Search..."
+                        <input type="search" wire:model.live.debounce.500ms="search" placeholder="Search by duration..."
                             class="form-control form-control-sm mt-2">
                     </div>
                 </div>
@@ -87,7 +87,7 @@
                             <tr>
                                 <th>#ID</th>
                                 <th>Item</th>
-                                <th>Duration [hours]</th>
+                                <th>Duration</th>
                                 <th>Amount</th>
                                 <th>Edit</th>
                                 <th>Delete</th>
@@ -99,7 +99,7 @@
                             <tr>
                                 <td>{{ ($priceSetups->currentPage() - 1) * $priceSetups->perPage() + $loop->iteration }}
                                 </td>
-                                <td>{{ $priceSetup->item }}</td>
+                                <td>{{ $priceSetup->category->category }}</td>
                                 <td>{{ $priceSetup->duration }}</td>
                                 <td>{{ $priceSetup->amount }}</td>
                                 <td><a class="btn btn-primary btn-sm text-light" style="cursor:pointer;"
@@ -111,19 +111,19 @@
 
                             @if($editingID === $priceSetup->id)
                             <tr>
-                                <td colspan="2">
+                                {{-- <td colspan="2">
                                     <input type="text" wire:model="editingitem" placeholder="Item" class="form-control mx-1">
                                     @error('editingitem')
                                     <span class="text-danger">{{ $message }}</span>
                                     @enderror
-                                </td>
-                                <td colspan="2">
+                                </td> --}}
+                                <td colspan="3">
                                     <input type="text" wire:model="editingduration" placeholder="Duration" class="form-control mx-1">
                                     @error('editingduration')
                                     <span class="text-danger">{{ $message }}</span>
                                     @enderror
                                 </td>
-                                <td colspan="2">
+                                <td colspan="3">
                                     <input type="text" wire:model="editingamount" placeholder="Amount" class="form-control mx-1">
                                     @error('editingamount')
                                     <span class="text-danger">{{ $message }}</span>

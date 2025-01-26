@@ -16,7 +16,7 @@ class PriceSetupManagement extends Component
     use WithPagination;
     protected $paginationTheme = 'bootstrap';
     public $search;
-    public $item;
+    public $category_id;
     public $duration;
     public $amount;
     public $editingID;
@@ -42,19 +42,19 @@ class PriceSetupManagement extends Component
     {
         $validateData = $this->validate([
             // 'brand' => ['required', 'unique:car_brands,brand', 'min:2', 'max:50']
-            'item' => ['required'],
+            'category_id' => ['required'],
             'duration' => ['required'],
             'amount' => ['required']
         ]);
         try{
         // PriceSetup::create($validateData);
         PriceSetup::create([
-            'item' => $this->item,
-            'slug' => Str::of(Str::lower($this->item))->slug('-'),
+            'category_id' => $this->category_id,
+            // 'slug' => Str::of(Str::lower($this->category_id))->slug('-'),
             'duration' => $this->duration,
             'amount' => $this->amount
         ]);
-        $this->reset(['item', 'duration', 'amount']);
+        $this->reset(['category_id', 'duration', 'amount']);
         $this->dispatchBrowserEvent('notify', [
             'type' => 'success',
             'message' => 'Item Setup Successfully',
@@ -86,14 +86,14 @@ class PriceSetupManagement extends Component
         // try {
             // $this->validateOnly('editingitem', ['editingitem' => 'required', 'editingduration' => 'required', 'editingamount' => 'required']);
             $this->validate([
-                'editingitem' => ['required',],
+                // 'editingitem' => ['required'],
                 'editingduration' => ['required'],
                 'editingamount' => ['required',],
             ]);
 
             PriceSetup::find($this->editingID)->update([
-                'item' => $this->editingitem,
-                'slug' => Str::of(Str::lower($this->editingitem))->slug('-'),
+                // 'item' => $this->editingitem,
+                // 'slug' => Str::of(Str::lower($this->editingitem))->slug('-'),
                 'duration' => $this->editingduration,
                 'amount' => $this->editingamount
             ]);
@@ -128,7 +128,7 @@ class PriceSetupManagement extends Component
     }
     public function render()
     {
-        $priceSetups = PriceSetup::query()->where('item', 'like', '%' . $this->search . '%')->latest()->paginate($this->limit);
+        $priceSetups = PriceSetup::query()->where('duration', 'like', '%' . $this->search . '%')->latest()->paginate($this->limit);
         $category = Category::all();
         return view('livewire.price-setup-management', [
             'priceSetups' => $priceSetups, 'categories' => $category

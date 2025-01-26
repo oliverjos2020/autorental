@@ -10,6 +10,8 @@ use Livewire\WithPagination;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 
 
@@ -22,6 +24,7 @@ class UserManagement extends Component
     public $search;
     public $name;
     public $role;
+    public $owner = false;
     public $station;
     public $email;
     public $password;
@@ -32,6 +35,11 @@ class UserManagement extends Component
     public $editingRole;
     public $editingStation;
     public $limit = '10';
+    public $business_name;
+    public $bank_code;
+    public $account_number;
+    public $percentage_charge;
+
 
     protected $queryString = ['limit', 'search'];
 
@@ -44,29 +52,84 @@ class UserManagement extends Component
     {
         $this->resetPage();
     }
-    
+    public function updatedRole()
+    {
+        $this->owner = $this->role;
+    }
+
 
     public function createUser()
     {
         $validateData = $this->validate([
-            
             'name' => ['required'],
             'email' => ['required', 'unique:users,email'],
             'role' => ['required'],
             'station' => ['required'],
-            'password' => ['required']
+            'password' => ['required'],
+            'business_name' => $this->role == 6 ? ['required'] : ['nullable'],
+            'bank_code' => $this->role == 6 ? ['required'] : ['nullable'],
+            'account_number' => $this->role == 6 ? ['required'] : ['nullable'],
+            'percentage_charge' => $this->role == 6 ? ['required'] : ['nullable']
         ]);
         // dd($validateData['name']);
         try{
-        User::create([
-            'name' => $validateData['name'],
-            'email' => $validateData['email'],
-            'role_id' => $validateData['role'],
-            'station_id' => $validateData['station'],
-            'password' => Hash::make($validateData['password'])
-        ]);
+            if($this->role == 6)
+            {
+                $response = Http::withHeaders([
+                    'Authorization' => 'Bearer '.env('PAYSTACK_TEST_KEY'), // Replace with your actual Paystack API key
+                    'Content-Type' => 'application/json',
+                    'Cache-Control' => 'no-cache',
+                ])->post('https://api.paystack.co/subaccount', [
+                    'business_name' => $this->business_name,
+                    'settlement_bank' => $this->bank_code,
+                    'account_number' => $this->account_number,
+                    'percentage_charge' => $this->percentage_charge
+                ]);
+                // Log::info("Received API Response: " . json_encode($response->json(), JSON_PRETTY_PRINT));
+                if($response['status'] == true)
+                {
+                    User::create([
+                        'name' => $validateData['name'],
+                        'email' => $validateData['email'],
+                        'role_id' => $validateData['role'],
+                        'station_id' => $validateData['station'],
+                        'password' => Hash::make($validateData['password']),
+                        'business_name' => $this->business_name,
+                        'bank_code' => $this->bank_code,
+                        'account_number' => $this->account_number,
+                        'percentage_charge' => $this->percentage_charge
+                    ]);
+                    $this->dispatchBrowserEvent('notify', [
+                        'type' =>'success',
+                        'message' => 'User Created Successfully',
+                    ]);
+                    // return;
+                }elseif($response['status'] == false){
+                    $this->dispatchBrowserEvent('notify', [
+                        'type' => 'error',
+                        'message' => $response['message']
+                    ]);
+                    return;
+                }
+
+
+            }else{
+                User::create([
+                    'name' => $validateData['name'],
+                    'email' => $validateData['email'],
+                    'role_id' => $validateData['role'],
+                    'station_id' => $validateData['station'],
+                    'password' => Hash::make($validateData['password']),
+                    'business_name' => $this->business_name,
+                    'bank_code' => $this->bank_code,
+                    'account_number' => $this->account_number,
+                    'percentage_charge' => $this->percentage_charge
+                ]);
+            }
+
+
         // User::create($validateData);
-        $this->reset(['name', 'email', 'role', 'station', 'password']);
+        $this->reset(['name', 'email', 'role', 'station', 'password', 'business_name', 'bank_code', 'account_number', 'percentage_charge']);
         $this->dispatchBrowserEvent('notify', [
             'type' => 'success',
             'message' => 'User Created Successfully',
@@ -152,7 +215,7 @@ class UserManagement extends Component
         $roles = Role::all();
         $stations = Station::all();
         return view('livewire.user-management', [
-            'users' => $userManagement, 
+            'users' => $userManagement,
             'roles' => $roles,
             'stations' => $stations
         ])->layout('components.dashboard.dashboard-master');
