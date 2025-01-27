@@ -48,12 +48,14 @@ class RegistrationType extends Component
     public $musicPlayer;
     public $airBags;
     public $owner;
+    public $uniqueID;
 
     public function submit()
     {
 
         // dd(($this->airCondition)?$this->airCondition: 'no');
         $this->validate([
+            'uniqueID' => 'required',
             'vehicleMake' => 'required',
             'vehicleModel' => 'required',
             'seats' => 'required',
@@ -72,6 +74,7 @@ class RegistrationType extends Component
         ]);
 
         $vehicle = Vehicle::create([
+            'vehicleID' => $this->uniqueID,
             'user_id' => $this->owner,
             'station_id' => Auth()->User()->station_id,
             'vehicleMake' => $this->vehicleMake,

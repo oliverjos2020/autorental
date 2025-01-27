@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire;
 
+use App\Models\User;
 use App\Models\Photo;
 use App\Models\Vehicle;
 use Livewire\Component;
@@ -40,6 +41,8 @@ class EditVehicle extends Component
     public $keylessEntry;
     public $musicPlayer;
     public $airBags;
+    public $owner;
+    public $uniqueID;
     public function mount()
     {
         $vehicle = Vehicle::where('id', $this->vehID)->first();
@@ -60,12 +63,15 @@ class EditVehicle extends Component
         $this->musicPlayer = $vehicle->musicPlayer == 'no'? '':'yes';
         $this->airBags = $vehicle->airBags == 'no'? '':'yes';
         $this->existingvehImage = Photo::where('vehicle_id', $this->vehID)->get();
+        $this->owner = $vehicle->user_id ?? '';
+        $this->uniqueID = $vehicle->vehicleID ?? '';
     }
 
     public function submit()
     {
 
         $this->validate([
+            'uniqueID' => 'required',
             'vehicleMake' => 'required',
             'vehicleModel' => 'required',
             'seats' => 'required',
@@ -86,6 +92,8 @@ class EditVehicle extends Component
 
         // Update the vehicle's attributes
         $vehicle->update([
+            'user_id' => $this->owner,
+            'vehicleID' => $this->uniqueID,
             'vehicleMake' => $this->vehicleMake,
             'vehicleModel' => $this->vehicleModel,
             'seats' => $this->seats,
@@ -130,9 +138,11 @@ class EditVehicle extends Component
     }
     public function render()
     {
+        $carOwners = User::where('id', 6)->get();
         return view('livewire.registration-type', [
             'brands' => CarBrand::all(),
-            'priceCategory' => Category::all()
+            'categories' => Category::all(),
+            'carOwners' => $carOwners
         ])->layout('components.dashboard.dashboard-master');
     }
 }

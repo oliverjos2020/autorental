@@ -51,7 +51,16 @@
                 <div>
                     <h4><strong>Vehicle Information</strong></h4>
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-12">
+                            <div class="form-group mt-2">
+                                <label for="vehicleID">Vehicle ID</label>
+                                <input type="text" id="vehicleID" placeholder="vehicle ID" class="form-control" wire:model="uniqueID">
+                                @error('uniqueID')
+                                    <span class="text-danger">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="col-md-6 mt-3">
                             @if (!$addtionalMake)
                                 <div class="form-group">
                                     <label for="vehicleMake">Vehicle Make</label>
@@ -79,7 +88,7 @@
                                 </div>
                             @endif
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-6 mt-3">
                             <div class="form-group">
                                 @php
                                     $years = range(2000, date('Y'));

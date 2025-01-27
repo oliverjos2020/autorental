@@ -226,6 +226,7 @@
                                         <span>Setup</span>
                                     </a>
                                     <ul class="sub-menu" aria-expanded="false">
+                                        <li><a href="/duration">Duration</a></li>
                                         <li><a href="/category">Vehicle Category</a></li>
                                         <li><a href="/location">Location</a></li>
                                         <li><a href="/station">Stations</a></li>

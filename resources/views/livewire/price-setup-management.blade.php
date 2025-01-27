@@ -36,13 +36,19 @@
                         @empty
                         @endforelse
                     </select>
-                    @error('item')
+                    @error('category_id')
                     <span class="text-danger"> {{ $message }} </span>
                     @enderror
                 </div>
-                <div class="form-group mt-3">
-                    <label for="priceSetup">Duration</label>
-                    <input type="text" wire:model="duration" class="form-control" value="1" placeholder="Duration">
+                <div class="form-group mt-2">
+                    <label for="duration">Duration</label>
+                    <select wire:model="duration" class="form-control">
+                        <option value="">Select an option</option>
+                        @forelse($durations as $duration)
+                            <option value="{{ $duration->duration }}">{{ $duration->duration }}</option>
+                        @empty
+                        @endforelse
+                    </select>
                     @error('duration')
                     <span class="text-danger"> {{ $message }} </span>
                     @enderror
@@ -118,10 +124,17 @@
                                     @enderror
                                 </td> --}}
                                 <td colspan="3">
-                                    <input type="text" wire:model="editingduration" placeholder="Duration" class="form-control mx-1">
+                                    <select wire:model="editingduration" class="form-select">
+                                        <option value="">Select an option</option>
+                                        @forelse($durations as $duration)
+                                            <option value="{{ $duration->duration }}">{{ $duration->duration }}</option>
+                                        @empty
+                                        @endforelse
+                                    </select>
                                     @error('editingduration')
                                     <span class="text-danger">{{ $message }}</span>
                                     @enderror
+
                                 </td>
                                 <td colspan="3">
                                     <input type="text" wire:model="editingamount" placeholder="Amount" class="form-control mx-1">

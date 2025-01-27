@@ -25,15 +25,16 @@ use App\Http\Livewire\StationManagement;
 use App\Http\Controllers\BrandController;
 use App\Http\Livewire\CarBrandManagement;
 use App\Http\Livewire\CategoryManagement;
+use App\Http\Livewire\DurationManagement;
 use App\Http\Livewire\LocationManagement;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\StationController;
 use App\Http\Controllers\UserAPIController;
 use App\Http\Controllers\VehicleController;
-use App\Http\Livewire\PriceSetupManagement;
 
 
 //FOR API
+use App\Http\Livewire\PriceSetupManagement;
 use App\Http\Livewire\BookingOrderManagement;
 use App\Http\Controllers\BookingAPIController;
 use App\Http\Livewire\DriverVehicleAssignment;
@@ -110,6 +111,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard2', Dashboard::class)->name('dashboard2');
     Route::get('/role', RoleManagement::class)->name('role');
     Route::get('/station', StationManagement::class)->name('station');
+    Route::get('/duration', DurationManagement::class)->name('duration');
     Route::get('/category', CategoryManagement::class)->name('category');
     Route::get('/location', LocationManagement::class)->name('location');
     Route::get('/brand', CarBrandManagement::class)->name('carbrand');

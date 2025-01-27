@@ -357,7 +357,6 @@
                                     <span class="text-danger">{{ $message }}</span>
                                     @enderror
                                 </td>
-
                             </tr>
                             <tr>
                                 <td colspan="8">

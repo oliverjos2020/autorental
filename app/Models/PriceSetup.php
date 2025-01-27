@@ -11,6 +11,7 @@ class PriceSetup extends Model
 
     protected $fillable = [
         'category_id',
+        'slug',
         'duration',
         'amount'
     ];

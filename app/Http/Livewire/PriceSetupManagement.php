@@ -7,6 +7,7 @@ use App\Models\PriceSetup;
 use Livewire\WithPagination;
 use Illuminate\Support\Str;
 use App\Models\Category;
+use App\Models\Duration;
 
 use Exception;
 
@@ -50,7 +51,7 @@ class PriceSetupManagement extends Component
         // PriceSetup::create($validateData);
         PriceSetup::create([
             'category_id' => $this->category_id,
-            // 'slug' => Str::of(Str::lower($this->category_id))->slug('-'),
+            'slug' => Str::of(Str::lower($this->duration))->slug('-'),
             'duration' => $this->duration,
             'amount' => $this->amount
         ]);
@@ -93,7 +94,7 @@ class PriceSetupManagement extends Component
 
             PriceSetup::find($this->editingID)->update([
                 // 'item' => $this->editingitem,
-                // 'slug' => Str::of(Str::lower($this->editingitem))->slug('-'),
+                'slug' => Str::of(Str::lower($this->editingduration))->slug('-'),
                 'duration' => $this->editingduration,
                 'amount' => $this->editingamount
             ]);
@@ -130,8 +131,9 @@ class PriceSetupManagement extends Component
     {
         $priceSetups = PriceSetup::query()->where('duration', 'like', '%' . $this->search . '%')->latest()->paginate($this->limit);
         $category = Category::all();
+        $duration = Duration::all();
         return view('livewire.price-setup-management', [
-            'priceSetups' => $priceSetups, 'categories' => $category
+            'priceSetups' => $priceSetups, 'categories' => $category, 'durations' => $duration
         ])->layout('components.dashboard.dashboard-master');
 
         // return view('livewire.price-setup-management');
