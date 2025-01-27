@@ -46,7 +46,12 @@ class MyVehicles extends Component
 
     public function render()
     {
-        $vehicleManagement = Vehicle::query()->where('vehicleMake', 'like', '%' . $this->search . '%')->where('station_id', Auth()->user()->station_id)->latest()->paginate($this->limit);
+        if(auth()->user()->role_id == 1){
+            $vehicleManagement = Vehicle::query()->where('vehicleMake', 'like', '%' . $this->search . '%')->latest()->paginate($this->limit);
+        }else{
+            $vehicleManagement = Vehicle::query()->where('vehicleMake', 'like', '%' . $this->search . '%')->where('station_id', Auth()->user()->station_id)->latest()->paginate($this->limit);
+        }
+        
         return view('livewire.my-vehicles', [
             'vehicles' => $vehicleManagement,
         ])->layout('components.dashboard.dashboard-master');
