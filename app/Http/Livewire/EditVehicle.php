@@ -138,7 +138,7 @@ class EditVehicle extends Component
     }
     public function render()
     {
-        $carOwners = User::where('id', 6)->get();
+        $carOwners = User::where('role_id', 6)->get();
         return view('livewire.registration-type', [
             'brands' => CarBrand::all(),
             'categories' => Category::all(),
