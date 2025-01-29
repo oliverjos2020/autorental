@@ -12,6 +12,7 @@ use App\Models\PriceSetup;
 use Illuminate\Support\Str;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Facades\Image;
 
 class EditVehicle extends Component
 {
@@ -129,6 +130,7 @@ class EditVehicle extends Component
                     'image_path' => $storedImages
                 ]);
             }
+            
         }
 
         $this->dispatchBrowserEvent('notify', [

@@ -9,13 +9,15 @@
         "bluemmb/faker-picsum-photos-provider": "^2.0",
         "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^7.0.1",
+        "intervention/image": "^3.11",
         "laravel/framework": "^8.75",
         "laravel/sanctum": "^2.11",
         "laravel/tinker": "^2.5",
+        "lcobucci/clock": "^3.0",
         "livewire/livewire": "^2.12",
         "paypal/rest-api-sdk-php": "^1.14",
         "srmklive/paypal": "^3.0",
-        "tymon/jwt-auth": "^1.0@dev"
+        "tymon/jwt-auth": "^1.0.2"
     },
     "require-dev": {
         "facade/ignition": "^2.5",
@@ -30,7 +32,8 @@
         "psr-4": {
             "App\\": "app/",
             "Database\\Factories\\": "database/factories/",
-            "Database\\Seeders\\": "database/seeders/"
+            "Database\\Seeders\\": "database/seeders/",
+            "Intervention\\Image\\": "vendor/intervention/image/src"
         }
     },
     "autoload-dev": {

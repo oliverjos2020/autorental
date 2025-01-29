@@ -20,13 +20,13 @@ class BookingAPIController extends Controller
                 // Validate the incoming request
                 $request->validate([
                     'user_id' => ['required'],
-                    'address' => ['required', 'string'],
+                    'address' => ['required'],
                     'wth_driver' => ['required'],
                     'duration' => ['required','sometimes'],
                     // 'identity_card' => 'required|file|mimes:jpg,png,jpeg|max:300',
                     'vehicle_id' => ['required'],
                     'pickup_location' => ['required'],
-                    'dropoff_location' => ['required'],
+                    'dropoff_location' => ['sometimes'],
                     'pickupDate' => ['required', 'date'],
                     'dropoffDate' => ['required', 'date'],
                     'amount' => ['required'],
