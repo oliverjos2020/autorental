@@ -34,6 +34,10 @@ class UserManagement extends Component
     public $editingPassword;
     public $editingRole;
     public $editingStation;
+    public $editingBusinessName;
+    public $editingBankCode;
+    public $editingAccountNumber;
+    public $editingPercentageCharge;
     public $limit = '10';
     public $business_name;
     public $bank_code;
@@ -151,11 +155,15 @@ class UserManagement extends Component
         $this->editingEmail = User::find($id)->email;
         $this->editingRole = User::find($id)->role->id;
         $this->editingStation = User::find($id)->station->id ?? null;
+        $this->editingBusinessName = User::find($id)->business_name ?? null;
+        $this->editingBankCode = User::find($id)->bank_code ?? null;
+        $this->editingAccountNumber = User::find($id)->account_number ?? null;
+        $this->editingPercentageCharge = User::find($id)->percentage_charge ?? null;
     }
 
     public function cancelEdit()
     {
-        $this->reset('editingID', 'editingName', 'editingEmail', 'editingRole', 'editingStation');
+        $this->reset('editingID', 'editingName', 'editingEmail', 'editingRole', 'editingStation', 'editingBusinessName', 'editingBankCode', 'editingAccountNumber', 'editingPercentageCharge');
     }
 
     public function update()
@@ -174,7 +182,11 @@ class UserManagement extends Component
                 'name' => $this->editingName,
                 'email' => $this->editingEmail,
                 'role_id' => $this->editingRole,
-                'station_id' => $this->editingStation
+                'station_id' => $this->editingStation,
+                'business_name' => $this->editingBusinessName,
+                'bank_code' => $this->editingBankCode,
+                'account_number' => $this->editingAccountNumber,
+                'percentage_charge' => $this->editingPercentageCharge,
             ]);
             $this->cancelEdit();
         // }catch(Exception $e){
