@@ -63,7 +63,7 @@ class RegistrationType extends Component
             'airCondition' => 'required',
             'doors' => 'required',
             'vehImage' => 'required|array|min:1',
-            'vehImage.*' => 'required|image|max:300',
+            'vehImage.*' => 'required|image|max:500',
             'vehicleYear' => 'required',
             'category' => 'required',
             'motor' => 'required',

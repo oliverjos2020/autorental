@@ -12,13 +12,14 @@ class StationController extends Controller
         try{
             $stations = Station::with([
                 'location:id,longitude,latitude',
-                'vehicles.priceSetup:id,amount,item' // Include the price from the price_setup table
+                'vehicles.priceSetup:id,duration,slug', // Include the price from the price_setup table
             ])->get();
+            
 
             // Return or process data as needed (e.g., for an API or view)
             // return response()->json($stations);
             return response()->json([
-                'responseMessage' => 'Success',
+                'responseMessage' => 'Success', 
                 'responseCode' => 200,
                 'data' => $stations
             ], 200);

@@ -20,6 +20,7 @@ class VehicleController extends Controller
             // $query = Vehicle::with(['photos', 'priceSetup']);
             // $query = Vehicle::with(['photos', 'priceSetup', 'relatedPriceSetups'])->get();
             $query = Vehicle::with(['photos', 'user:id,bank_code,account_number,percentage_charge,account_code', 'priceSetup.related']);
+            
 
             // Apply filters
             if ($request->has('vehicleMake')) {
