@@ -23,4 +23,12 @@ class Station extends Model
     public function vehicles(){
         return $this->hasMany(Vehicle::class);
     }
+
+    public function relatedPriceSetups()
+    {
+        return $this->belongsTo(PriceSetup::class, 'price_setup_id')
+            ->whereHas('related', function($query) {
+                $query->whereColumn('price_setups.id', '!=', 'price_setups.price_setup_id');
+            });
+    }
 }

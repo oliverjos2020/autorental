@@ -54,6 +54,53 @@ class VehicleController extends Controller
             ], 422);
         }
     }
+    public function station(Request $request)
+    {
+        try {
+            // Default limit
+            $limit = $request->input('limit', 20);
+
+            $query = Vehicle::with([
+                'station:id,slug,location_id:id', 
+                'station.location:id,longitude,latitude', 
+                'photos', 
+                'user:id,bank_code,account_number,percentage_charge,account_code', 
+                'priceSetup.related'
+            ]);
+            
+
+            // Apply filters
+            if ($request->has('vehicleMake')) {
+                $query->where('vehicleMake', $request->input('vehicleMake'));
+            }
+            if ($request->has('vehicleModel')) {
+                $query->where('vehicleModel', $request->input('vehicleModel'));
+            }
+            if ($request->has('vehicleYear')) {
+                $query->where('vehicleYear', $request->input('vehicleYear'));
+            }
+            if ($request->has('station_id')) {
+                $query->where('station_id', $request->input('station_id'));
+            }
+
+            $query->where('on_trip', 0)->orderBy('created_at', 'desc');
+
+            // Get the results with the limit
+            $data = $query->limit($limit)->get();
+
+            return response()->json([
+                'responseCode' => 200,
+                'responseMessage' => 'success',
+                'data' => $data
+            ], 200);
+
+        } catch (Exception $e) {
+            return response()->json([
+                'errors' => $e->getMessage(),
+                'responseCode' => 422,
+            ], 422);
+        }
+    }
 
     public function singleVehicle($vehID)
     {

@@ -159,6 +159,7 @@ Route::middleware('api')->group(function () {
         Route::post('/api/v1/trip/update', [BookingAPIController::class, 'updateTrip']);
         Route::post('/api/v1/logout', [UserAPIController::class, 'logout']);
         Route::get('/api/v1/getStations', [StationController::class, 'getAllStations']);
+        Route::get('/api/v1/stations', [VehicleController::class, 'station']);
     });
 
     Route::middleware('auth:api')->group(function () {
