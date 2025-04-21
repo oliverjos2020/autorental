@@ -13,14 +13,14 @@ class VehicleController extends Controller
     {
         try {
             // Default limit
-            $limit = $request->input('limit', 20);
-
+            $limit = $request->input('limit', 50);
+ 
             // Query builder
             // $query = Vehicle::with('photos');
             // $query = Vehicle::with(['photos', 'priceSetup']);
             // $query = Vehicle::with(['photos', 'priceSetup', 'relatedPriceSetups'])->get();
-            $query = Vehicle::with(['photos', 'user:id,bank_code,account_number,percentage_charge,account_code', 'priceSetup.related']);
-            
+            $query = Vehicle::with(['photos', 'user:id,bank_code,account_number,percentage_charge,account_code', 'priceSetup.related', 'station:id,stationName,location_id', 'station.location:id,location,longitude,latitude']);
+
 
             // Apply filters
             if ($request->has('vehicleMake')) {
@@ -36,7 +36,7 @@ class VehicleController extends Controller
                 $query->where('station_id', $request->input('station_id'));
             }
 
-            $query->where('on_trip', 0)->orderBy('created_at', 'desc');
+            $query->where('on_trip', 0)->inRandomOrder();
 
             // Get the results with the limit
             $data = $query->limit($limit)->get();
@@ -61,13 +61,13 @@ class VehicleController extends Controller
             $limit = $request->input('limit', 20);
 
             $query = Vehicle::with([
-                'station:id,slug,location_id:id', 
-                'station.location:id,longitude,latitude', 
-                'photos', 
-                'user:id,bank_code,account_number,percentage_charge,account_code', 
+                'station:id,slug,location_id:id',
+                'station.location:id,longitude,latitude',
+                'photos',
+                'user:id,bank_code,account_number,percentage_charge,account_code',
                 'priceSetup.related'
             ]);
-            
+
 
             // Apply filters
             if ($request->has('vehicleMake')) {

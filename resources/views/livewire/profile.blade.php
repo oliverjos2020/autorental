@@ -177,14 +177,14 @@
                                         <td>{{ $vehicle->vehicleMake }}</td>
                                         <td>{{ $vehicle->vehicleModel }}</td>
                                         <td>{{ $vehicle->vehicleYear }}</td>
-                                        <td><span>{{ $vehicle->priceSetup->item }}</span></td>
+                                        <td><span>{{ $vehicle->priceSetup->item ?? '' }}</span></td>
                                         <td>{{ $vehicle->airCondition }}</td>
                                         <td><span>{{ $vehicle->transmission }}</span></td>
                                         <td>{{ $vehicle->seats }}</td>
-                                        <td>{{ $vehicle->priceSetup->amount }}</td>
+                                        <td>{{ $vehicle->priceSetup->amount ?? ''}}</td>
                                         <td>
                                             @if($vehicle->status == 1)
-                                                <a class="badge bg-primary btn-sm"><i class="fas fa-sync-alt"> Pending</a>
+                                                <a class="badge bg-primary btn-sm"><i class="fas fa-sync-alt"></i> Pending</a>
                                             @elseif($vehicle->status == 2)
                                                 <a class="badge bg-success btn-sm"><i class="fa fa-check"></i> Approved</a>
                                             @elseif($vehicle->status == 3)

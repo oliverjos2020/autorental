@@ -13,7 +13,9 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        \App\Models\User::factory(20)->create();
+        $this->call(subAccountSeeder::class);
+        // $this->call(FixUserAccountNumbersSeeder::class);
+        // \App\Models\User::factory(20)->create();
         // \App\Models\Vehicle::factory(10)->create();
         // \App\Models\CarBrand::factory(20)->create();
         // \App\Models\Location::factory(6)->create();
