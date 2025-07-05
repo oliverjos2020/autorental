@@ -227,7 +227,7 @@ class UserManagement extends Component
         endif;
         $roles = Role::all();
         $stations = Station::all();
-        return view('livewire.user-management', [
+        return view('livewire.user-management', [ 
             'users' => $userManagement,
             'roles' => $roles,
             'stations' => $stations
