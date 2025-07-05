@@ -54,11 +54,20 @@ use App\Http\Controllers\NotificationController;
 Route::get('/processPaypal', [PaymentController::class, 'processPaypal'])->name('processPaypal');
 Route::get('/processSuccess', [PaymentController::class, 'processSuccess'])->name('processSuccess');
 Route::get('/processCancel', [PaymentController::class, 'processCancel'])->name('processCancel');
-
+// Route::post('/delete/account', [UserAPIController::class, 'deleteAccount']); 
+Route::post('/delete/account', [UserAPIController::class, 'deleteAccount'])->name('delete.account');
 
 
 Route::get('/', function () {
     return view('auth.login');
+});
+
+Route::get('/delete-account', function () {
+    return view('auth.delete');
+});
+
+Route::get('/privacy-policy', function () {
+    return view('livewire.privacy-policy');
 });
 Route::get('/link', function(){
     try{

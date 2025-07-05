@@ -80,7 +80,7 @@ class UserManagement extends Component
             if($this->role == 6)
             {
                 $response = Http::withHeaders([
-                    'Authorization' => 'Bearer '.env('PAYSTACK_TEST_KEY'), // Replace with your actual Paystack API key
+                    'Authorization' => 'Bearer '.env('PAYSTACK_LIVE_KEY'), // Replace with your actual Paystack API key
                     'Content-Type' => 'application/json',
                     'Cache-Control' => 'no-cache',
                 ])->post('https://api.paystack.co/subaccount', [
@@ -178,25 +178,37 @@ class UserManagement extends Component
                 // 'editingStation' => ['required']
             ]);
 
-            User::find($this->editingID)->update([
-                'name' => $this->editingName,
-                'email' => $this->editingEmail,
-                'role_id' => $this->editingRole,
-                'station_id' => $this->editingStation,
-                'business_name' => $this->editingBusinessName,
-                'bank_code' => $this->editingBankCode,
-                'account_number' => $this->editingAccountNumber,
-                'percentage_charge' => $this->editingPercentageCharge,
-            ]);
-            $this->cancelEdit();
-        // }catch(Exception $e){
-        //     $this->dispatchBrowserEvent('notify', [
-        //         'type' => 'error',
-        //         'message' => $e->getMessage(),
-        //     ]);
-        //     return;
-
-        // }
+        $response = Http::withHeaders([
+                    'Authorization' => 'Bearer '.env('PAYSTACK_LIVE_KEY'), // Replace with your actual Paystack API key
+                    'Content-Type' => 'application/json',
+                    'Cache-Control' => 'no-cache',
+                ])->post('https://api.paystack.co/subaccount', [
+                    'business_name' => $this->editingBusinessName,
+                    'settlement_bank' => $this->editingBankCode,
+                    'account_number' => (string)$this->editingAccountNumber,
+                    'percentage_charge' => $this->editingPercentageCharge
+                ]);
+                // Log::info("Received API Response: " . json_encode($response->json(), JSON_PRETTY_PRINT));
+                if($response['status'] == true)
+                {
+                    User::find($this->editingID)->update([
+                        'name' => $this->editingName,
+                        'email' => $this->editingEmail,
+                        'role_id' => $this->editingRole,
+                        'station_id' => $this->editingStation,
+                        'business_name' => $this->editingBusinessName,
+                        'bank_code' => $this->editingBankCode,
+                        'account_number' => $this->editingAccountNumber,
+                        'percentage_charge' => $this->editingPercentageCharge,
+                    ]);
+                    $this->cancelEdit();
+                }elseif($response['status'] == false){
+                    $this->dispatchBrowserEvent('notify', [
+                        'type' => 'error',
+                        'message' => $response['message']
+                    ]);
+                    return;
+                }
     }
 
     public function delete($id)

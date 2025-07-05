@@ -16,6 +16,27 @@ use Tymon\JWTAuth\Exceptions\TokenInvalidException;
 
 class UserAPIController extends Controller
 {
+    public function deleteAccount(Request $request)
+    {
+        // Validate the email from the request
+        $validated = $request->validate([
+            'email' => 'required|email|exists:users,email',
+        ]);
+    
+        // Find and delete the user
+        $user = User::where('email', $validated['email'])->first();
+        
+        if ($user) {
+            $user->delete();
+            
+            // Add a success flash message
+            return redirect()->back()->with('success', 'User account has been successfully deleted.');
+        }
+        
+        // If user not found (though validation should prevent this)
+        return redirect()->back()->with('error', 'User account could not be found.');
+    }
+    
     public function register(Request $request)
     {
         try {

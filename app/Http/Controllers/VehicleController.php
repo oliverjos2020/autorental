@@ -13,8 +13,8 @@ class VehicleController extends Controller
     {
         try {
             // Default limit
-            $limit = $request->input('limit', 20);
-
+            $limit = $request->input('limit', 50);
+ 
             // Query builder
             // $query = Vehicle::with('photos');
             // $query = Vehicle::with(['photos', 'priceSetup']);
@@ -36,7 +36,7 @@ class VehicleController extends Controller
                 $query->where('station_id', $request->input('station_id'));
             }
 
-            $query->where('on_trip', 0)->orderBy('created_at', 'desc');
+            $query->where('on_trip', 0)->inRandomOrder();
 
             // Get the results with the limit
             $data = $query->limit($limit)->get();

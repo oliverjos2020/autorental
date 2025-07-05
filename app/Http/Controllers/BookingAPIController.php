@@ -15,7 +15,9 @@ class BookingAPIController extends Controller
 {
     public function booking(Request $request)
     {
+       
         try {
+            
             if($request->type == 'booking'){
                 // Validate the incoming request
                 $request->validate([
@@ -46,22 +48,27 @@ class BookingAPIController extends Controller
 
 
                 // Handle identity card upload
-                if ($request->hasFile('identity_card')) {
-                    $fileName = time() . 'ID_' . $request->file('identity_card')->getClientOriginalName();
-                    $filePath = $request->file('identity_card')->storeAs('uploads', $fileName, 'public');
+               if ($request->hasFile('identity_card')) {
+                    $file = $request->file('identity_card');
+                    $fileName = time() . '_ID_' . $file->getClientOriginalName();
+                    $filePath = $file->storeAs('uploads', $fileName, 'public');
+                
+                    // return response()->json(['file_path' => asset('storage/uploads/' . $fileName)]);
                 }
+
 
                 // Handle driver license upload
                 if ($request->hasFile('driverLicense')) {
                     $fileName2 = time() . 'DL_' . $request->file('driverLicense')->getClientOriginalName();
                     $filePath2 = $request->file('driverLicense')->storeAs('uploads', $fileName2, 'public');
                 }
+                // dd('/storage/' . $filePath);
 
                 // Update user details
                 User::where('id', $request->user_id)->update([
                     'address' => $request->address,
-                    'identity_card' => '/storage/' . $filePath ?? null,
-                    'driverLicense' => '/storage/' . $filePath2 ?? null,
+                    'identity_card' => '/storage/' . $filePath,
+                    'driverLicense' => '/storage/' . $filePath2,
                 ]);
 
                 // Create booking order
@@ -141,7 +148,7 @@ class BookingAPIController extends Controller
                 'user_id' => ['required']
             ]);
 
-            $myBookings = BookingOrder::with(['vehicle', 'vehicle.firstPhoto'])->where('user_id', $request->user_id)->get();
+            $myBookings = BookingOrder::with(['vehicle', 'vehicle.firstPhoto'])->where('user_id', $request->user_id)->orderBy('created_at', 'desc')->get();
 
             if ($myBookings->isEmpty()) {
                 // If no bookings found for the user
