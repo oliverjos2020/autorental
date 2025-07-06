@@ -14,12 +14,14 @@ class VehicleController extends Controller
         try {
             // Default limit
             $limit = $request->input('limit', 50);
- 
-            // Query builder
-            // $query = Vehicle::with('photos');
-            // $query = Vehicle::with(['photos', 'priceSetup']);
-            // $query = Vehicle::with(['photos', 'priceSetup', 'relatedPriceSetups'])->get();
-            $query = Vehicle::with(['photos', 'user:id,bank_code,account_number,percentage_charge,account_code', 'priceSetup.related', 'station:id,stationName,location_id', 'station.location:id,location,longitude,latitude']);
+            $query = Vehicle::with([
+                'photos',
+                'user:id,bank_code,account_number,percentage_charge,account_code',
+                'priceSetup.related',
+                'priceSetup.duration:slug,duration', // 👈 include duration here
+                'station:id,stationName,location_id',
+                'station.location:id,location,longitude,latitude'
+            ]);
 
 
             // Apply filters

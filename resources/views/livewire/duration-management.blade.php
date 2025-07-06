@@ -27,18 +27,29 @@
             <div class="card-body">
 
                 <div class="form-group">
-                    <label for="duration">Duration name</label>
-                    <input type="text" wire:model="duration" class="form-control" placeholder="Duration Name">
-                    @error('duration')
-                    <span class="text-danger"> {{ $message }} </span>
+                    <label for="duration">Item</label>
+                    <input type="text" wire:model="item" class="form-control" placeholder="Item Name">
+                    @error('item')
+                        <span class="text-danger"> {{ $message }} </span>
                     @enderror
 
-                    @if(session('message'))
-                    <div class="bg-success p-2 text-light mx-2 mt-3">{{session('message')}}</div>
+                    @if (session('message'))
+                        <div class="bg-success p-2 text-light mx-2 mt-3">{{ session('message') }}</div>
+                    @endif
+                </div>
+                <div class="form-group mt-2">
+                    <label for="duration">Duration (hours)</label>
+                    <input type="number" wire:model="duration" class="form-control" placeholder="hour(s) Name">
+                    @error('duration')
+                        <span class="text-danger"> {{ $message }} </span>
+                    @enderror
+
+                    @if (session('message'))
+                        <div class="bg-success p-2 text-light mx-2 mt-3">{{ session('message') }}</div>
                     @endif
                 </div>
 
-                <button class="btn btn-primary btn-sm mt-3" wire:click.prevent="createCategory">
+                <button class="btn btn-primary btn-md mt-3" wire:click.prevent="createCategory">
                     Create Duration
                 </button>
             </div>
@@ -69,7 +80,8 @@
                         <thead>
                             <tr>
                                 <th>#ID</th>
-                                <th>Duration</th>
+                                <th>Item</th>
+                                <th>Duration (hours)</th>
                                 <th>Edit</th>
                                 <th>Delete</th>
 
@@ -77,42 +89,53 @@
                         </thead>
                         <tbody>
                             @forelse($durations as $duration)
-                            <tr>
-                                <td>{{ ($durations->currentPage() - 1) * $durations->perPage() + $loop->iteration }}</td>
-                                <td>{{ $duration->duration }}</td>
-                                <td>
-                                    <a class="btn btn-primary btn-sm text-light" style="cursor:pointer;"
-                                        wire:click="edit({{$duration->id}})"><i class="fa fa-edit"></i> Edit</a> </td>
-                                <td><a class="text-light btn btn-danger btn-sm" wire:click="delete({{$duration->id}})"><i
-                                            class="fa fa-trash"></i> Delete</a></a></td>
-                            </tr>
+                                <tr>
+                                    <td>{{ ($durations->currentPage() - 1) * $durations->perPage() + $loop->iteration }}
+                                    </td>
+                                    <td>{{ $duration->item }}</td>
+                                    <td>{{ $duration->duration }}</td>
+                                    <td>
+                                        <a class="btn btn-primary btn-sm text-light" style="cursor:pointer;"
+                                            wire:click="edit({{ $duration->id }})"><i class="fa fa-edit"></i> Edit</a>
+                                    </td>
+                                    <td><a class="text-light btn btn-danger btn-sm"
+                                            wire:click="delete({{ $duration->id }})"><i class="fa fa-trash"></i>
+                                            Delete</a></a></td>
+                                </tr>
 
-                            @if($editingID === $duration->id)
-                            <tr>
-                                <td colspan="4">
-                                    <input type="text" wire:model="editingDuration" placeholder="duration.." id=""
-                                        class="form-control mx-1">
-                                    @error('editingDuration')
-                                    <span class="text-danger">{{ $message }}</span>
-                                    @enderror
-                                    <br>
-                                    <button type="submit" wire:click="update"
-                                        class="btn btn-success btn-sm">Update</button> <button type="submit"
-                                        wire:click="cancelEdit" class="btn btn-danger btn-sm">Cancel</button>
-                                </td>
-                            </tr>
-                            @endif
+                                @if ($editingID === $duration->id)
+                                    <tr>
+                                        <td colspan="3">
+                                            <input type="text" wire:model="editingItem" placeholder="item"
+                                                class="form-control mx-1">
+                                            @error('editingItem')
+                                                <span class="text-danger">{{ $message }}</span>
+                                            @enderror
+                                            <br>
+                                            <button type="submit" wire:click="update"
+                                                class="btn btn-success btn-sm">Update</button> <button type="submit"
+                                                wire:click="cancelEdit" class="btn btn-danger btn-sm">Cancel</button>
+                                        </td>
+                                        <td colspan="3">
+                                            <input type="number" wire:model="editingDuration" placeholder="duration.."
+                                                class="form-control mx-1">
+                                            @error('editingDuration')
+                                                <span class="text-danger">{{ $message }}</span>
+                                            @enderror
+                                        </td>
+                                    </tr>
+                                @endif
 
                             @empty
-                            <tr>
-                                <td colspan="4" class="text-center text-danger"> No record available</td>
-                            </tr>
+                                <tr>
+                                    <td colspan="5" class="text-center text-danger"> No record available</td>
+                                </tr>
                             @endforelse
                         </tbody>
                     </table>
                     <div class="loader text-center">
                         <div class="my-2">
-                            {{ $durations->links()}}
+                            {{ $durations->links() }}
                         </div>
                     </div>
                 </div>

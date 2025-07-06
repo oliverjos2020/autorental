@@ -12,9 +12,11 @@ class DurationManagement extends Component
     use WithPagination;
     protected $paginationTheme = 'bootstrap';
     public $search;
+    public $item;
     public $duration;
     public $editingID;
     public $editingDuration;
+    public $editingItem;
     public $limit = '10';
 
     protected $queryString = ['limit', 'search'];
@@ -33,14 +35,16 @@ class DurationManagement extends Component
     public function createCategory()
     {
         $this->validate([
+            'item' => ['required'],
             'duration' => ['required', 'unique:durations,duration', 'min:2', 'max:50']
         ]);
         try{
         Duration::create([
+            'item' => $this->item,
             'duration' => $this->duration,
-            'slug'=>Str::of(Str::lower($this->duration))->slug('-')
+            'slug'=>Str::of(Str::lower($this->item))->slug('-')
         ]);
-        $this->reset(['duration']);
+        $this->reset(['item','duration']);
         $this->dispatchBrowserEvent('notify', [
             'type' => 'success',
             'message' => 'Duration Created Successfully',
@@ -56,22 +60,25 @@ class DurationManagement extends Component
 
     public function edit($id)
     {
+        $data = Duration::find($id);
         $this->editingID = $id;
-        $this->editingDuration = Duration::find($id)->duration;
+        $this->editingItem = $data->item;
+        $this->editingDuration = $data->duration;
     }
 
     public function cancelEdit()
     {
-        $this->reset('editingID', 'editingDuration');
+        $this->reset('editingID', 'editingDuration', 'editingItem');
     }
 
     public function update()
     {
         try {
-            $this->validateOnly('editingDuration', ['editingDuration' => 'required']);
+            $this->validate(['editingDuration' => 'required', 'editingItem' => 'required']);
             Duration::find($this->editingID)->update([
+                'item' => $this->editingItem,
                 'duration' => $this->editingDuration,
-                'slug' => Str::slug($this->editingDuration)
+                'slug' => Str::slug($this->editingItem)
             ]);
             $this->cancelEdit();
         }catch(Exception $e){
@@ -105,7 +112,7 @@ class DurationManagement extends Component
     public function render()
     {
         $durations = Duration::query()
-        ->where('duration', 'like', '%' . $this->search . '%')
+        ->where('item', 'like', '%' . $this->search . '%')
         ->latest()
         ->paginate($this->limit);
         return view('livewire.duration-management', [

@@ -37,7 +37,7 @@
                         @endforelse
                     </select>
                     @error('category_id')
-                    <span class="text-danger"> {{ $message }} </span>
+                        <span class="text-danger"> {{ $message }} </span>
                     @enderror
                 </div>
                 <div class="form-group mt-2">
@@ -45,19 +45,19 @@
                     <select wire:model="duration" class="form-control">
                         <option value="">Select an option</option>
                         @forelse($durations as $duration)
-                            <option value="{{ $duration->duration }}">{{ $duration->duration }}</option>
+                            <option value="{{ $duration->item }}">{{ $duration->item }}</option>
                         @empty
                         @endforelse
                     </select>
                     @error('duration')
-                    <span class="text-danger"> {{ $message }} </span>
+                        <span class="text-danger"> {{ $message }} </span>
                     @enderror
                 </div>
                 <div class="form-group mt-3">
                     <label for="priceSetup">Price</label>
                     <input type="number" wire:model="amount" class="form-control" placeholder="Price">
                     @error('amount')
-                    <span class="text-danger"> {{ $message }} </span>
+                        <span class="text-danger"> {{ $message }} </span>
                     @enderror
                 </div>
 
@@ -82,8 +82,8 @@
                     </div>
                     <div class="col-md-7"></div>
                     <div class="col-md-4">
-                        <input type="search" wire:model.live.debounce.500ms="search" placeholder="Search by duration..."
-                            class="form-control form-control-sm mt-2">
+                        <input type="search" wire:model.live.debounce.500ms="search"
+                            placeholder="Search by duration..." class="form-control form-control-sm mt-2">
                     </div>
                 </div>
                 <div class="table-responsive mt-3">
@@ -102,66 +102,70 @@
                         </thead>
                         <tbody>
                             @forelse($priceSetups as $priceSetup)
-                            <tr>
-                                <td>{{ ($priceSetups->currentPage() - 1) * $priceSetups->perPage() + $loop->iteration }}
-                                </td>
-                                <td>{{ $priceSetup->category->category }}</td>
-                                <td>{{ $priceSetup->duration }}</td>
-                                <td>{{ $priceSetup->amount }}</td>
-                                <td><a class="btn btn-primary btn-sm text-light" style="cursor:pointer;"
-                                        wire:click="edit({{$priceSetup->id}})"><i class="fa fa-edit"></i> Edit</a> </td>
-                                <td><a class="text-light btn btn-danger btn-sm" wire:click="delete({{$priceSetup->id}})"><i
-                                            class="fa fa-trash"></i>
-                                        Delete</a></a></td>
-                            </tr>
+                                <tr>
+                                    <td>{{ ($priceSetups->currentPage() - 1) * $priceSetups->perPage() + $loop->iteration }}
+                                    </td>
+                                    <td>{{ $priceSetup->category->category }}</td>
+                                    <td>{{ $priceSetup->duration }}</td>
+                                    <td>{{ $priceSetup->amount }}</td>
+                                    <td><a class="btn btn-primary btn-sm text-light" style="cursor:pointer;"
+                                            wire:click="edit({{ $priceSetup->id }})"><i class="fa fa-edit"></i>
+                                            Edit</a> </td>
+                                    <td><a class="text-light btn btn-danger btn-sm"
+                                            wire:click="delete({{ $priceSetup->id }})"><i class="fa fa-trash"></i>
+                                            Delete</a></a></td>
+                                </tr>
 
-                            @if($editingID === $priceSetup->id)
-                            <tr>
-                                {{-- <td colspan="2">
+                                @if ($editingID === $priceSetup->id)
+                                    <tr>
+                                        {{-- <td colspan="2">
                                     <input type="text" wire:model="editingitem" placeholder="Item" class="form-control mx-1">
                                     @error('editingitem')
                                     <span class="text-danger">{{ $message }}</span>
                                     @enderror
                                 </td> --}}
-                                <td colspan="3">
-                                    <select wire:model="editingduration" class="form-select">
-                                        <option value="">Select an option</option>
-                                        @forelse($durations as $duration)
-                                            <option value="{{ $duration->duration }}">{{ $duration->duration }}</option>
-                                        @empty
-                                        @endforelse
-                                    </select>
-                                    @error('editingduration')
-                                    <span class="text-danger">{{ $message }}</span>
-                                    @enderror
+                                        <td colspan="3">
+                                            <select wire:model="editingduration" class="form-select">
+                                                <option value="">Select an option</option>
+                                                @forelse($durations as $duration)
+                                                    <option value="{{ $duration->duration }}">
+                                                        {{ $duration->duration }}</option>
+                                                @empty
+                                                @endforelse
+                                            </select>
+                                            @error('editingduration')
+                                                <span class="text-danger">{{ $message }}</span>
+                                            @enderror
 
-                                </td>
-                                <td colspan="3">
-                                    <input type="text" wire:model="editingamount" placeholder="Amount" class="form-control mx-1">
-                                    @error('editingamount')
-                                    <span class="text-danger">{{ $message }}</span>
-                                    @enderror
-                                </td>
+                                        </td>
+                                        <td colspan="3">
+                                            <input type="text" wire:model="editingamount" placeholder="Amount"
+                                                class="form-control mx-1">
+                                            @error('editingamount')
+                                                <span class="text-danger">{{ $message }}</span>
+                                            @enderror
+                                        </td>
 
-                            </tr>
-                            <tr>
-                                <td colspan="6">
-                                    <button type="submit" wire:click="update" class="btn btn-success btn-sm">Update</button> <button type="submit"
-                                        wire:click="cancelEdit" class="btn btn-danger btn-sm">Cancel</button>
-                                </td>
-                            </tr>
-                            @endif
+                                    </tr>
+                                    <tr>
+                                        <td colspan="6">
+                                            <button type="submit" wire:click="update"
+                                                class="btn btn-success btn-sm">Update</button> <button type="submit"
+                                                wire:click="cancelEdit" class="btn btn-danger btn-sm">Cancel</button>
+                                        </td>
+                                    </tr>
+                                @endif
 
                             @empty
-                            <tr>
-                                <td colspan="6" class="text-center text-danger"> No record available</td>
-                            </tr>
+                                <tr>
+                                    <td colspan="6" class="text-center text-danger"> No record available</td>
+                                </tr>
                             @endforelse
                         </tbody>
                     </table>
                     <div class="loader text-center">
                         <div class="my-2">
-                            {{ $priceSetups->links()}}
+                            {{ $priceSetups->links() }}
                         </div>
                     </div>
                 </div>

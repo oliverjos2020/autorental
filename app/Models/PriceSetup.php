@@ -32,4 +32,9 @@ class PriceSetup extends Model
     {
         return $this->hasMany(PriceSetup::class, 'category_id', 'category_id');
     }
+    public function duration()
+    {
+        return $this->hasOne(Duration::class, 'slug', 'slug');
+    }
+
 }
