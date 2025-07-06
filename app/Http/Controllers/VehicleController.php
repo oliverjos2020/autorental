@@ -14,11 +14,19 @@ class VehicleController extends Controller
         try {
             // Default limit
             $limit = $request->input('limit', 50);
+            // $query = Vehicle::with([
+            //     'photos',
+            //     'user:id,bank_code,account_number,percentage_charge,account_code',
+            //     'priceSetup.related',
+            //     'priceSetup.duration:slug,duration', // 👈 include duration here
+            //     'station:id,stationName,location_id',
+            //     'station.location:id,location,longitude,latitude'
+            // ]);
             $query = Vehicle::with([
                 'photos',
                 'user:id,bank_code,account_number,percentage_charge,account_code',
-                'priceSetup.related',
-                'priceSetup.duration:slug,duration', // 👈 include duration here
+                'priceSetup.related.durationRelation:slug,duration',
+                'priceSetup.duration:slug,duration',
                 'station:id,stationName,location_id',
                 'station.location:id,location,longitude,latitude'
             ]);
@@ -42,6 +50,14 @@ class VehicleController extends Controller
 
             // Get the results with the limit
             $data = $query->limit($limit)->get();
+            foreach ($data as $vehicle) {
+                if ($vehicle->priceSetup && $vehicle->priceSetup->related) {
+                    foreach ($vehicle->priceSetup->related as $related) {
+                        $related->duration = $related->durationRelation->duration ?? null;
+                        unset($related->durationRelation); // Optional: clean up the nested object
+                    }
+                }
+            }
 
             return response()->json([
                 'responseCode' => 200,

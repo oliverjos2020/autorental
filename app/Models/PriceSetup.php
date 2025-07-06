@@ -36,5 +36,10 @@ class PriceSetup extends Model
     {
         return $this->hasOne(Duration::class, 'slug', 'slug');
     }
+    public function durationRelation()
+    {
+        return $this->hasOne(Duration::class, 'slug', 'slug');
+    }
+
 
 }
