@@ -128,8 +128,8 @@
                                             <select wire:model="editingduration" class="form-select">
                                                 <option value="">Select an option</option>
                                                 @forelse($durations as $duration)
-                                                    <option value="{{ $duration->duration }}">
-                                                        {{ $duration->duration }}</option>
+                                                    <option value="{{ $duration->item }}">
+                                                        {{ $duration->item }}</option>
                                                 @empty
                                                 @endforelse
                                             </select>
