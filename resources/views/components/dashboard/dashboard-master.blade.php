@@ -8,7 +8,7 @@
     <meta content="Auto-Rentals" name="description" />
     <meta content="Auto-Rentals" name="author" />
     <!-- App favicon -->
-    <link rel="shortcut icon" href="{{ asset('logo/icon-dark.png') }}">
+    <link rel="shortcut icon" href="{{ asset('logo/auto-logo.png') }}">
     {{-- <link rel="icon" type="image/x-icon" href="{{ asset('logo/icon-dark.png') }}"> --}}
     <!-- jquery.vectormap css -->
     <link href="{{ asset('assets/libs/admin-resources/jquery.vectormap/jquery-jvectormap-1.2.2.css') }}"
