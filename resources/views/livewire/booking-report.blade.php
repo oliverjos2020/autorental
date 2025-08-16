@@ -57,6 +57,8 @@
                                 <th>Pick Up</th>
                                 <th>Payment</th>
                                 <th>Type</th>
+                                <!--<th>Driver License</th>-->
+                                <th>Identity Document</th>
                                 <th>Created</th>
                                 {{-- <th>Booking Price</th>
                                 <th>Edit</th> --}}
@@ -77,6 +79,8 @@
                                 <td>{{ $booking->pickup_location ?? ''}}</td>
                                 <td><span class="badge bg-{{ $booking->payment_status == '0' ? 'danger' : 'success'}}">{{ $booking->payment_status == '0' ? 'Unpaid' : 'Paid' }}</span></td>
                                 <td>{{ $booking->type }}</td>
+                                <!--<td><a class="btn btn-dark btn-sm" href="{{$booking->user->driverLicense}}" target="_blank">View Drivers License</a></td>-->
+                                <td><a class="btn btn-dark btn-sm" href="{{$booking->user->identity_card}}" target="_blank">View ID Card</a></td>
                                 <td>{{ $booking->created_at }}</td>
                                 <td>
                                     @if($booking->status == 0)
