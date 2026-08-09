@@ -54,7 +54,8 @@
                         <div class="col-md-12">
                             <div class="form-group mt-2">
                                 <label for="vehicleID">Vehicle ID</label>
-                                <input type="text" id="vehicleID" placeholder="vehicle ID" class="form-control" wire:model="uniqueID">
+                                <input type="text" id="vehicleID" placeholder="vehicle ID" class="form-control"
+                                    wire:model="uniqueID">
                                 @error('uniqueID')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
@@ -74,8 +75,8 @@
                                         <span class="text-danger">{{ $message }}</span>
                                     @enderror
                                 </div>
-                                <span class="badge bg-danger">Didn't find your vehicle Make</span> | <a
-                                    class="text-dark" style="cursor:pointer;" wire:click="addMake">Click
+                                <span class="badge bg-danger">Didn't find your vehicle Make</span> | <a class="text-dark"
+                                    style="cursor:pointer;" wire:click="addMake">Click
                                     Here</a>
                             @else
                                 <div class="form-group">
@@ -165,7 +166,8 @@
                         <div class="col-md-6">
                             <div class="form-group mt-2">
                                 <label for="motor">Motor</label>
-                                <input type="text" wire:model="motor" placeholder="Motor e.g 5000cc" class="form-control">
+                                <input type="text" wire:model="motor" placeholder="Motor e.g 5000cc"
+                                    class="form-control">
                                 @error('motor')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
@@ -205,12 +207,14 @@
                         <div class="col-md-12 mt-3">
                             <input type="checkbox" value="yes" wire:model="airCondition" class="mx-2"> Air Condition
                             <input type="checkbox" value="yes" wire:model="keylessEntry" class="mx-2"> Keyless Entry
-                            <input type="checkbox" value="yes" wire:model="musicPlayer" class="mx-2"> Standard Music Player
+                            <input type="checkbox" value="yes" wire:model="musicPlayer" class="mx-2"> Standard Music
+                            Player
                             <input type="checkbox" value="yes" wire:model="airBags" class="mx-2"> Air Bags
                         </div>
                         <div class="form-group mt-2" wire:ignore>
                             <label for="moreInfo">More Information</label>
-                            <textarea wire:model="moreInfo" class="form-control" placeholder="Start typing..." style="height:80px"></textarea>
+                            <textarea wire:model="moreInfo" class="form-control" placeholder="Start typing..."
+                                style="height:80px"></textarea>
                             @error('moreInfo')
                                 <span class="text-danger">{{ $message }}</span>
                             @enderror
@@ -236,7 +240,8 @@
                                     <li>All Sides: Provide images of both sides of your car to give a complete view.
                                     </li>
                                 </ul>
-                                {{-- <p class="mb-0">Whenever you need to, be sure to use margin utilities to keep things nice and tidy.</p> --}}
+                                {{-- <p class="mb-0">Whenever you need to, be sure to use margin utilities to keep
+                                    things nice and tidy.</p> --}}
                             </div>
                             <label>Images of vehicle <span class="text-danger">*</span></label>
                             <div class="col-xxl-12">
@@ -257,44 +262,47 @@
                                 <div class="row mt-1 mb-1">
                                     {{-- @if ($vehImage)
                                     @foreach ($vehImage as $image)
-                                        @if ($image instanceof \Livewire\TemporaryUploadedFile)
-                                            <div class="col-md-3">
-                                                <img src="{{ $image->temporaryUrl() }}" class="img-fluid mb-2" style="max-width: 100%">
-                                            </div>
-                                        @endif
+                                    @if ($image instanceof \Livewire\TemporaryUploadedFile)
+                                    <div class="col-md-3">
+                                        <img src="{{ $image->temporaryUrl() }}" class="img-fluid mb-2"
+                                            style="max-width: 100%">
+                                    </div>
+                                    @endif
                                     @endforeach
-                                @elseif ($existingvehImage)
+                                    @elseif ($existingvehImage)
                                     @foreach ($existingvehImage as $existingImage)
-                                        <div class="col-md-3">
-                                            <img src="{{ $existingImage->image_path }}" class="img-fluid mb-2" style="max-width: 100%">
-                                        </div>
+                                    <div class="col-md-3">
+                                        <img src="{{ $existingImage->image_path }}" class="img-fluid mb-2"
+                                            style="max-width: 100%">
+                                    </div>
                                     @endforeach
-                                @endif --}}
+                                    @endif --}}
                                     {{-- @if ($vehImage)
                                     @foreach ($vehImage as $image)
-                                        @if ($image instanceof \Livewire\TemporaryUploadedFile)
-                                            <div class="col-md-3">
-                                                <img src="{{ $image->temporaryUrl() }}" class="img-fluid mb-2" style="max-width: 100%">
-                                            </div>
-                                        @endif
+                                    @if ($image instanceof \Livewire\TemporaryUploadedFile)
+                                    <div class="col-md-3">
+                                        <img src="{{ $image->temporaryUrl() }}" class="img-fluid mb-2"
+                                            style="max-width: 100%">
+                                    </div>
+                                    @endif
                                     @endforeach
-                                @endif --}}
+                                    @endif --}}
 
 
                                     @if ($vehImage)
                                         @foreach ($vehImage as $image)
                                             @if ($image instanceof \Livewire\TemporaryUploadedFile)
                                                 <div class="col-md-3">
-                                                    <img src="{{ asset($image->temporaryUrl()) }}"
-                                                        class="img-fluid mb-2" style="max-width: 100%">
+                                                    <img src="{{ asset($image->temporaryUrl()) }}" class="img-fluid mb-2"
+                                                        style="max-width: 100%">
                                                 </div>
                                             @endif
                                         @endforeach
                                     @elseif ($existingvehImage)
                                         @foreach ($existingvehImage as $existingImage)
                                             <div class="col-md-3">
-                                                <img src="{{ asset($existingImage->image_path) }}"
-                                                    class="img-fluid mb-2" style="max-width: 100%">
+                                                <img src="{{ asset($existingImage->image_path) }}" class="img-fluid mb-2"
+                                                    style="max-width: 100%">
                                             </div>
                                         @endforeach
                                     @endif
@@ -315,6 +323,16 @@
                                 @endforeach
                             </select>
                             @error('category')
+                                <span class="text-danger">{{ $message }}</span>
+                            @enderror
+                        </div>
+                        <div class="form-group mt-3">
+                            <label for="publicationStatus">Vehicle Status</label>
+                            <select wire:model="publicationStatus" class="form-control">
+                                <option value="pending">Pending</option>
+                                <option value="published">Published</option>
+                            </select>
+                            @error('publicationStatus')
                                 <span class="text-danger">{{ $message }}</span>
                             @enderror
                         </div>
@@ -345,8 +363,8 @@
                 </div>
                 <div class="col-5">
                     <div class="mt-4">
-                        <img style="margin-top:-120px" src="{{ asset('assets/images/widget-img.png') }}"
-                            alt="" class="img-fluid mx-auto d-block">
+                        <img style="margin-top:-120px" src="{{ asset('assets/images/widget-img.png') }}" alt=""
+                            class="img-fluid mx-auto d-block">
                     </div>
                 </div>
             </div>
@@ -362,32 +380,33 @@
     </div>
 </div>
 <script src="{{ asset('assets/libs/tinymce/tinymce.min.js') }}"></script>
-{{-- <script>
-        tinymce.init({
-            selector: '#elm1',
-            setup: function (editor) {
-                editor.on('change', function () {
-                    var content = tinymce.get('elm1').getContent();
-                    console.log("Content on change:", content); // Log to ensure content is retrieved
-                    @this.set('moreInfo', content);
-                });
-            }
-        });
+{{--
+<script>
+    tinymce.init({
+        selector: '#elm1',
+        setup: function (editor) {
+            editor.on('change', function () {
+                var content = tinymce.get('elm1').getContent();
+                console.log("Content on change:", content); // Log to ensure content is retrieved
+                @this.set('moreInfo', content);
+            });
+        }
+    });
 
-        document.getElementById('submitButton').addEventListener('click', function(event) {
-            event.preventDefault();
+    document.getElementById('submitButton').addEventListener('click', function (event) {
+        event.preventDefault();
 
-            // Retrieve content from TinyMCE
-            var content = tinymce.get('elm1').getContent();
+        // Retrieve content from TinyMCE
+        var content = tinymce.get('elm1').getContent();
 
-            // Log the content to ensure it's being retrieved
-            console.log("Retrieved content from TinyMCE:", content);
+        // Log the content to ensure it's being retrieved
+        console.log("Retrieved content from TinyMCE:", content);
 
-            // Set the content to the Livewire property
-            @this.set('moreInfo', content);
+        // Set the content to the Livewire property
+        @this.set('moreInfo', content);
 
-            // Trigger the Livewire submit method
-            @this.call('submit'); // Directly call the submit method
+        // Trigger the Livewire submit method
+        @this.call('submit'); // Directly call the submit method
 
-        });
-    </script> --}}
+    });
+</script> --}}

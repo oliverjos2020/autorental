@@ -49,6 +49,7 @@ class RegistrationType extends Component
     public $airBags;
     public $owner;
     public $uniqueID;
+    public $publicationStatus = 'pending';
 
     public function submit()
     {
@@ -70,7 +71,8 @@ class RegistrationType extends Component
             'maxPower' => 'required',
             'maxSpeed' => 'required',
             'fuelCapacity' => 'required',
-            'owner' => 'required'
+            'owner' => 'required',
+            'publicationStatus' => 'required|in:pending,published'
         ]);
 
         $vehicle = Vehicle::create([
@@ -81,20 +83,20 @@ class RegistrationType extends Component
             'vehicleModel' => $this->vehicleModel,
             'seats' => $this->seats,
             'transmission' => $this->transmission,
-            'airCondition' => ($this->airCondition)?$this->airCondition: 'no',
+            'airCondition' => ($this->airCondition) ? $this->airCondition : 'no',
             'doors' => $this->doors,
             'vehicleYear' => $this->vehicleYear,
             'status' => 1,
+            'publication_status' => $this->publicationStatus,
             'price_setup_id' => $this->category,
             'moreInfo' => $this->moreInfo,
-            'keylessEntry' => ($this->keylessEntry)?$this->keylessEntry: 'no',
-            'musicPlayer' => ($this->musicPlayer)?$this->musicPlayer: 'no',
-            'airBags' => ($this->airBags)?$this->airBags: 'no',
+            'keylessEntry' => ($this->keylessEntry) ? $this->keylessEntry : 'no',
+            'musicPlayer' => ($this->musicPlayer) ? $this->musicPlayer : 'no',
+            'airBags' => ($this->airBags) ? $this->airBags : 'no',
             'fuelCapacity' => $this->fuelCapacity,
             'maxSpeed' => $this->maxSpeed,
             'maxPower' => $this->maxPower,
             'motor' => $this->motor
-            // 'owner' => $this->owner
         ]);
 
 
@@ -112,11 +114,12 @@ class RegistrationType extends Component
                 'image_path' => $storedImages
             ]);
         endforeach;
-            $this->dispatchBrowserEvent('notify', [
-                'type' => 'success',
-                'message' => 'Registration completed Successfully',
-            ]);
-            $this->reset(['vehicleMake', 'vehicleModel', 'seats', 'transmission', 'airCondition', 'doors', 'vehicleYear', 'category', 'moreInfo']);
+        $this->dispatchBrowserEvent('notify', [
+            'type' => 'success',
+            'message' => 'Registration completed Successfully',
+        ]);
+        $this->reset(['vehicleMake', 'vehicleModel', 'seats', 'transmission', 'airCondition', 'doors', 'vehicleYear', 'category', 'moreInfo', 'publicationStatus']);
+        $this->publicationStatus = 'pending';
 
 
     }

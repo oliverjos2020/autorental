@@ -12,16 +12,10 @@ class VehicleController extends Controller
     public function vehicles(Request $request)
     {
         try {
-            // Default limit
+            // Default limit and page
             $limit = $request->input('limit', 50);
-            // $query = Vehicle::with([
-            //     'photos',
-            //     'user:id,bank_code,account_number,percentage_charge,account_code',
-            //     'priceSetup.related',
-            //     'priceSetup.duration:slug,duration', // 👈 include duration here
-            //     'station:id,stationName,location_id',
-            //     'station.location:id,location,longitude,latitude'
-            // ]);
+            $page = $request->input('page', 1);
+
             $query = Vehicle::with([
                 'photos',
                 'user:id,bank_code,account_number,percentage_charge,account_code',
@@ -31,6 +25,8 @@ class VehicleController extends Controller
                 'station.location:id,location,longitude,latitude'
             ]);
 
+            // Filter by published status only
+            $query->where('publication_status', 'published');
 
             // Apply filters
             if ($request->has('vehicleMake')) {
@@ -48,13 +44,15 @@ class VehicleController extends Controller
 
             $query->where('on_trip', 0)->inRandomOrder();
 
-            // Get the results with the limit
-            $data = $query->limit($limit)->get();
-            foreach ($data as $vehicle) {
+            // Get paginated results
+            $paginated = $query->paginate($limit, ['*'], 'page', $page);
+
+            // Process the data
+            foreach ($paginated->items() as $vehicle) {
                 if ($vehicle->priceSetup && $vehicle->priceSetup->related) {
                     foreach ($vehicle->priceSetup->related as $related) {
                         $related->duration = $related->durationRelation->duration ?? null;
-                        unset($related->durationRelation); // Optional: clean up the nested object
+                        unset($related->durationRelation);
                     }
                 }
             }
@@ -62,7 +60,15 @@ class VehicleController extends Controller
             return response()->json([
                 'responseCode' => 200,
                 'responseMessage' => 'success',
-                'data' => $data
+                'data' => $paginated->items(),
+                'pagination' => [
+                    'total' => $paginated->total(),
+                    'per_page' => $paginated->perPage(),
+                    'current_page' => $paginated->currentPage(),
+                    'last_page' => $paginated->lastPage(),
+                    'from' => $paginated->firstItem(),
+                    'to' => $paginated->lastItem(),
+                ]
             ], 200);
 
         } catch (Exception $e) {
@@ -132,7 +138,7 @@ class VehicleController extends Controller
             }
             $data = Vehicle::with('photos')->find($vehID);
             if (!$data) {
-                return response()->json(['responseCode' =>404, 'responseMessage' => 'Vehicle not found'], 404);
+                return response()->json(['responseCode' => 404, 'responseMessage' => 'Vehicle not found'], 404);
             }
 
             return response()->json(['data' => $data], 200);

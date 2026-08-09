@@ -45,7 +45,7 @@
                     <select wire:model="duration" class="form-control">
                         <option value="">Select an option</option>
                         @forelse($durations as $duration)
-                            <option value="{{ $duration->item }}">{{ $duration->item }}</option>
+                            <option value="{{ $duration->id }}">{{ $duration->item }}</option>
                         @empty
                         @endforelse
                     </select>

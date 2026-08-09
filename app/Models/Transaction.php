@@ -19,4 +19,14 @@ class Transaction extends Model
         'status',
         'booking_order_id'
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function bookingOrder()
+    {
+        return $this->belongsTo(BookingOrder::class);
+    }
 }

@@ -51,7 +51,7 @@ class PriceSetupManagement extends Component
         // PriceSetup::create($validateData);
         PriceSetup::create([
             'category_id' => $this->category_id,
-            'slug' => Str::of(Str::lower($this->duration))->slug('-'),
+            // 'slug' => Str::of(Str::lower($this->duration))->slug('-'),
             'duration' => $this->duration,
             'amount' => $this->amount
         ]);

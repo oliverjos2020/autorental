@@ -19,6 +19,7 @@ class CreateVehiclesTable extends Migration
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('station_id')->constrained()->cascadeOnDelete();
             $table->string('vehicleMake')->nullable();
+            $table->string('vehicleID')->nullable();
             $table->string('vehicleYear')->nullable();
             $table->string('vehicleModel')->nullable();
             $table->string('transmission')->nullable();

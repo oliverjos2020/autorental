@@ -29,7 +29,9 @@ class UserFactory extends Factory
             'remember_token' => Str::random(10),
             'phone_no' => $this->faker->phoneNumber(),
             'passport' => 'img/team/3.jpg',
-            'nin' => $this->faker->numerify('###-###-####')
+            'nin' => $this->faker->numerify('###-###-####'),
+            'created_at' => now(),
+            'updated_at' => now()
         ];
     }
 

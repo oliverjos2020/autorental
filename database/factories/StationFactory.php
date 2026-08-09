@@ -14,7 +14,7 @@ class StationFactory extends Factory
      */
     public function definition()
     {
-        $brand = $this->faker->unique()->randomElement([
+        $brand = $this->faker->randomElement([
             "Garki Station",
             "Lugbe Station",
             "Airport Road Station",
@@ -23,12 +23,14 @@ class StationFactory extends Factory
             "Dei Dei Station"
 
         ]);
-        $location_id = $this->faker->unique()->numberBetween(1, 6);
+        $location_id = $this->faker->numberBetween(1, 6);
         $slug = Str::slug($brand);
         return [
             'stationName' => $brand,
             'slug' => $slug,
-            'location_id' => $location_id
+            'location_id' => $location_id,
+            'created_at' => now(),
+            'updated_at' => now()
         ];
     }
 }

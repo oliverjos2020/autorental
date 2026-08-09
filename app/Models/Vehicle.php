@@ -10,11 +10,38 @@ class Vehicle extends Model
     use HasFactory;
 
     protected $guarded = [];
+    protected $fillable = [
+        'user_id',
+        'station_id',
+        'vehicleMake',
+        'vehicleID',
+        'vehicleYear',
+        'vehicleModel',
+        'transmission',
+        'doors',
+        'airCondition',
+        'seats',
+        'price_setup_id',
+        'status',
+        'publication_status',
+        'on_trip',
+        'moreInfo',
+        'keylessEntry',
+        'musicPlayer',
+        'airBags',
+        'fuelCapacity',
+        'maxSpeed',
+        'maxPower',
+        'motor',
+        'category_id'
+    ];
 
-      public function user(){
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
-    public function photos(){
+    public function photos()
+    {
         return $this->hasMany(Photo::class);
     }
     // public function prices(){
@@ -38,16 +65,18 @@ class Vehicle extends Model
     public function relatedPriceSetups()
     {
         return $this->belongsTo(PriceSetup::class, 'price_setup_id')
-            ->whereHas('related', function($query) {
+            ->whereHas('related', function ($query) {
                 $query->whereColumn('price_setups.id', '!=', 'price_setups.price_setup_id');
             });
     }
 
-    public function category(){
+    public function category()
+    {
         return $this->belongsTo(Category::class);
     }
 
-    public function station() {
+    public function station()
+    {
         return $this->belongsTo(Station::class);
     }
 

@@ -28,7 +28,9 @@ class LocationFactory extends Factory
         $slug = Str::slug($location);
         return [
             'location' => $location,
-            'slug' => $slug
+            'slug' => $slug,
+            'created_at' => now(),
+            'updated_at' => now()
         ];
     }
 }

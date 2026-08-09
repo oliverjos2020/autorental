@@ -74,8 +74,9 @@ class VehicleFactory extends Factory
             'fuelCapacity' => $this->faker->numberBetween(0, 5),
             'maxSpeed' => $this->faker->numberBetween(0, 5),
             'maxPower' => $this->faker->numberBetween(0, 5),
-            'motor' => $this->faker->numberBetween(0, 5)
-
+            'motor' => $this->faker->numberBetween(0, 5),
+            'created_at' => now(),
+            'updated_at' => now()
             // 'dateApproved' => now()
         ];
     }

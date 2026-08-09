@@ -78,9 +78,9 @@ class UserManagement extends Component
         // dd($validateData['name']);
         try{
             if($this->role == 6)
-            {
+            { 
                 $response = Http::withHeaders([
-                    'Authorization' => 'Bearer '.env('PAYSTACK_LIVE_KEY'), // Replace with your actual Paystack API key
+                    'Authorization' => 'Bearer '.env('PAYSTACK_TEST_KEY'), // Replace with your actual Paystack API key
                     'Content-Type' => 'application/json',
                     'Cache-Control' => 'no-cache',
                 ])->post('https://api.paystack.co/subaccount', [

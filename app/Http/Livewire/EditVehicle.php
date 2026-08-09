@@ -44,6 +44,7 @@ class EditVehicle extends Component
     public $airBags;
     public $owner;
     public $uniqueID;
+    public $publicationStatus;
     public function mount()
     {
         $vehicle = Vehicle::where('id', $this->vehID)->first();
@@ -66,6 +67,7 @@ class EditVehicle extends Component
         $this->existingvehImage = Photo::where('vehicle_id', $this->vehID)->get();
         $this->owner = $vehicle->user_id ?? '';
         $this->uniqueID = $vehicle->vehicleID ?? '';
+        $this->publicationStatus = $vehicle->publication_status ?? 'pending';
     }
 
     public function submit()
@@ -110,7 +112,8 @@ class EditVehicle extends Component
             'fuelCapacity' => $this->fuelCapacity,
             'maxSpeed' => $this->maxSpeed,
             'maxPower' => $this->maxPower,
-            'motor' => $this->motor
+            'motor' => $this->motor,
+            'publication_status' => $this->publicationStatus
         ]);
 
         // Check if there are new images

@@ -40,7 +40,7 @@ class CreateTransactionsTable extends Migration
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         Schema::table('transactions', function (Blueprint $table) {
             // $table->dropColumn('user_id');
-            $table->dropColumn('product_id');
+            // $table->dropColumn('product_id');
         });
     }
 }

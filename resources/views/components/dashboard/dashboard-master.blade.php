@@ -241,6 +241,17 @@
                                     </a>
                                 </li>
                                 <li>
+                                    <a href="javascript: void(0);" class="has-arrow waves-effect">
+                                        <i class="mdi mdi-chart-bar"></i>
+                                        <span>Reports</span>
+                                    </a>
+                                    <ul class="sub-menu" aria-expanded="false">
+                                        <li><a href="/revenue-report">Revenue Report</a></li>
+                                        <li><a href="/vehicle-report">Vehicle Report</a></li>
+                                        <li><a href="/transaction-report">Transaction Report</a></li>
+                                    </ul>
+                                </li>
+                                <li>
                                     <a href="/register-vehicle" class="waves-effect">
                                         <i class="mdi mdi-car"></i>
                                         <span>Add Vehicle</span>
@@ -294,6 +305,17 @@
                                         <i class="mdi mdi-car-info"></i>
                                         <span>Bookings</span>
                                     </a>
+                                </li>
+                                <li>
+                                    <a href="javascript: void(0);" class="has-arrow waves-effect">
+                                        <i class="mdi mdi-chart-bar"></i>
+                                        <span>Reports</span>
+                                    </a>
+                                    <ul class="sub-menu" aria-expanded="false">
+                                        <li><a href="/revenue-report">Revenue Report</a></li>
+                                        <li><a href="/vehicle-report">Vehicle Report</a></li>
+                                        <li><a href="/transaction-report">Transaction Report</a></li>
+                                    </ul>
                                 </li>
                                 {{-- <li>
                                 <a href="/assignd-driver-vehicle" class="waves-effect">

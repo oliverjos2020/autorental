@@ -40,6 +40,9 @@ use App\Http\Controllers\BookingAPIController;
 use App\Http\Livewire\DriverVehicleAssignment;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Livewire\RevenueReport;
+use App\Http\Livewire\VehicleReport;
+use App\Http\Livewire\TransactionReport;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -69,10 +72,10 @@ Route::get('/delete-account', function () {
 Route::get('/privacy-policy', function () {
     return view('livewire.privacy-policy');
 });
-Route::get('/link', function(){
-    try{
+Route::get('/link', function () {
+    try {
         Artisan::call('storage:link');
-         echo "linked successfully!";
+        echo "linked successfully!";
     } catch (Exception $e) {
         echo "An error occurred: " . $e->getMessage();
     }
@@ -114,6 +117,8 @@ Route::get('/ride-results', RideResults::class)->name('ride.results');
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/check-message', [NotificationController::class, 'checkMessage']);
+    Route::post('/api/v1/notify-station-admin', [NotificationController::class, 'notifyStationAdmin']);
+    Route::get('/api/v1/notifications/unread-count', [NotificationController::class, 'getUnreadCount']);
     Route::get('/mybooking-orders', MyBookingOrders::class)->name('MyBookingOrders');
     Route::get('/assign-driver-vehicle', DriverVehicleAssignment::class)->name('assignDriverVehicle');
     Route::get('/checkout', Checkout::class)->name('checkout');
@@ -132,6 +137,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/start-ride', StartRide::class)->name('startRide');
     Route::get('/users', UserManagement::class)->name('userSetup');
     Route::get('/booking-report', BookingReport::class)->name('bookingReport');
+    Route::get('/revenue-report', RevenueReport::class)->name('revenueReport');
+    Route::get('/vehicle-report', VehicleReport::class)->name('vehicleReport');
+    Route::get('/transaction-report', TransactionReport::class)->name('transactionReport');
     Route::middleware('can:admin-only')->group(function () {
 
         // Route::get('/vendorManagement/{type}', VendorManagement::class)->name('vendorSetup');
@@ -156,7 +164,7 @@ Route::middleware('api')->group(function () {
     Route::post('/api/v1/sendOTP', [UserAPIController::class, 'sendOTP']);
     Route::post('/api/v1/changePassword', [UserAPIController::class, 'changePassword']);
     Route::post('/api/v1/ConfirmJustOTP', [UserAPIController::class, 'confirmJustOTP']);
-    Route::group(['middleware' => ['auth.jwt']], function() {
+    Route::group(['middleware' => ['auth.jwt']], function () {
         Route::post('/api/v1/user/update', [UserAPIController::class, 'update']);
         Route::post('/api/v1/booking', [BookingAPIController::class, 'booking']);
         Route::post('/api/v1/mybookings', [BookingAPIController::class, 'getMyBookings']);
@@ -169,12 +177,14 @@ Route::middleware('api')->group(function () {
         Route::post('/api/v1/logout', [UserAPIController::class, 'logout']);
         Route::get('/api/v1/getStations', [StationController::class, 'getAllStations']);
         Route::get('/api/v1/stations', [VehicleController::class, 'station']);
+        Route::post('/api/v1/notify-station-admin', [NotificationController::class, 'notifyStationAdmin']);
+        Route::get('/api/v1/notifications/unread-count', [NotificationController::class, 'getUnreadCount']);
     });
-
+ 
     Route::middleware('auth:api')->group(function () {
         Route::get('/user-profile', [UserAPIController::class, 'userProfile']);
     });
 
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

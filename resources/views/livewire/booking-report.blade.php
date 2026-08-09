@@ -36,11 +36,13 @@
                     </div>
                     <div class="col-md-3">
                         <label for="startDate"><small>Start Date</small></label>
-                        <input type="date" wire:model.live.debounce.500ms="startDate" class="form-control form-control-sm mt-0">
+                        <input type="date" wire:model.live.debounce.500ms="startDate"
+                            class="form-control form-control-sm mt-0">
                     </div>
                     <div class="col-md-3">
                         <label for="endDate"><small>End Date</small></label>
-                        <input type="date" wire:model.live.debounce.500ms="endDate" class="form-control form-control-sm mt-0">
+                        <input type="date" wire:model.live.debounce.500ms="endDate"
+                            class="form-control form-control-sm mt-0">
                     </div>
                 </div>
                 <div class="table-responsive mt-3">
@@ -49,55 +51,56 @@
                         <thead>
                             <tr>
                                 <th>Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
                                 <th>Vehicle</th>
                                 <th>Driver</th>
                                 <th>Pick Up</th>
                                 <th>Drop Off</th>
                                 <th>Amount</th>
-                                <th>Pick Up</th>
+                                <th>Pick Up Location</th>
                                 <th>Payment</th>
                                 <th>Type</th>
-                                <!--<th>Driver License</th>-->
                                 <th>Identity Document</th>
                                 <th>Created</th>
-                                {{-- <th>Booking Price</th>
-                                <th>Edit</th> --}}
                                 <th>Action</th>
-
-                                {{-- <th>Vehicle Status</th> --}}
                             </tr>
                         </thead>
                         <tbody>
                             @forelse($bookings as $booking)
-                            <tr>
-                                <td>{{ $booking->user->name ?? '' }}</td>
-                                <td>{{ $booking->vehicle->vehicleMake ?? '' }} {{ $booking->vehicle->vehicleModel ?? ''}} {{ $booking->vehicle->vehicleYear ?? ''}}</td>
-                                <td>{{ $booking->vehicle->user->name ?? '' }}</td>
-                                <td>{{ $booking->pickupDate ?? '' }}</td>
-                                <td>{{ $booking->dropoffDate ?? ''}}</td>
-                                <td>&#8358;{{ $booking->amount ?? ''}}</td>
-                                <td>{{ $booking->pickup_location ?? ''}}</td>
-                                <td><span class="badge bg-{{ $booking->payment_status == '0' ? 'danger' : 'success'}}">{{ $booking->payment_status == '0' ? 'Unpaid' : 'Paid' }}</span></td>
-                                <td>{{ $booking->type }}</td>
-                                <!--<td><a class="btn btn-dark btn-sm" href="{{$booking->user->driverLicense}}" target="_blank">View Drivers License</a></td>-->
-                                <td><a class="btn btn-dark btn-sm" href="{{$booking->user->identity_card}}" target="_blank">View ID Card</a></td>
-                                <td>{{ $booking->created_at }}</td>
-                                <td>
-                                    @if($booking->status == 0)
-                                        <button class="btn btn-danger btn-sm" wire:click="approve({{$booking->id}})">Approve</button>
-                                    @elseif($booking->status == 1)
-                                        <button class="btn btn-success btn-sm"><i class="fa fa-check"></i> Approved</button>
-                                    @endif
-                                </td>
-                                {{-- <td>{{ $vehicle->priceSetup->amount }}</td>
-                                <td><a class="btn btn-success btn-sm" href="/editVehicles/{{$vehicle->id}}">Edit</a></td>
-                                <td><a class="btn btn-danger btn-sm" wire:click="delete({{$vehicle->id}})">Delete</a></td> --}}
-                            </tr>
+                                <tr>
+                                    <td>{{ $booking->user->name ?? '' }}</td>
+                                    <td>{{ $booking->user->email ?? '' }}</td>
+                                    <td>{{ $booking->user->phone ?? 'N/A' }}</td>
+                                    <td>{{ $booking->vehicle->vehicleMake ?? '' }}
+                                        {{ $booking->vehicle->vehicleModel ?? ''}} {{ $booking->vehicle->vehicleYear ?? ''}}
+                                    </td>
+                                    <td>{{ $booking->vehicle->user->name ?? '' }}</td>
+                                    <td>{{ $booking->pickupDate ?? '' }}</td>
+                                    <td>{{ $booking->dropoffDate ?? ''}}</td>
+                                    <td>&#8358;{{ $booking->amount ?? ''}}</td>
+                                    <td>{{ $booking->pickup_location ?? ''}}</td>
+                                    <td><span
+                                            class="badge bg-{{ $booking->payment_status == '0' ? 'danger' : 'success'}}">{{ $booking->payment_status == '0' ? 'Unpaid' : 'Paid' }}</span>
+                                    </td>
+                                    <td>{{ $booking->type }}</td>
+                                    <td><a class="btn btn-dark btn-sm" href="{{$booking->user->identity_card}}"
+                                            target="_blank">View ID Card</a></td>
+                                    <td>{{ $booking->created_at }}</td>
+                                    <td>
+                                        @if($booking->status == 0)
+                                            <button class="btn btn-danger btn-sm"
+                                                wire:click="approve({{$booking->id}})">Approve</button>
+                                        @elseif($booking->status == 1)
+                                            <button class="btn btn-success btn-sm"><i class="fa fa-check"></i> Approved</button>
+                                        @endif
+                                    </td>
+                                </tr>
 
                             @empty
-                            <tr>
-                                <td colspan="10" class="text-center text-danger"> No record available</td>
-                            </tr>
+                                <tr>
+                                    <td colspan="14" class="text-center text-danger"> No record available</td>
+                                </tr>
                             @endforelse
                         </tbody>
                     </table>

@@ -1,0 +1,77 @@
+services:
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    container_name: laravel_app
+
+    restart: unless-stopped
+
+    ports:
+      - "8080:80"
+
+    volumes:
+      - ./:/var/www/html
+
+    depends_on:
+      - mysql
+
+    networks:
+      - laravel
+
+
+  mysql:
+    image: mysql:8.0
+
+    container_name: laravel_mysql
+
+    restart: unless-stopped
+
+    ports:
+      - "33060:3306"
+
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: autorentalsng
+      MYSQL_USER: autorentalsng_user
+      MYSQL_PASSWORD: autorentalsng_pass
+
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+    networks:
+      - laravel
+
+
+  phpmyadmin:
+
+    image: phpmyadmin/phpmyadmin
+
+    container_name: laravel_phpmyadmin
+
+    restart: unless-stopped
+
+    depends_on:
+      - mysql
+
+    ports:
+      - "8081:80"
+
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+
+    networks:
+      - laravel
+
+
+volumes:
+
+  mysql_data:
+
+
+networks:
+
+  laravel:

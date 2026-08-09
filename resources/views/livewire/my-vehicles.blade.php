@@ -53,33 +53,39 @@
                         </thead>
                         <tbody>
                             @forelse($vehicles as $vehicle)
-                            <tr>
-                                <td><img src="{{ url($vehicle->photos->first()->image_path?? 'logo/auto-logo.png') }}" style="height:50px; width:70px;" alt="{{ $vehicle->vehicleMake }}"></td>
-                                <td>{{ $vehicle->vehicleMake }}</td>
-                                <td>{{ $vehicle->vehicleModel }}</td>
-                                <td>{{ $vehicle->vehicleYear }}</td>
-                                <td>{{ $vehicle->priceSetup->item ?? ''}}</td>
-                                <td>{{ $vehicle->airCondition }}</td>
-                                <td><span class="badge bg-{{ $vehicle->transmission == 'automatic' ? 'warning' : 'danger'}}">{{ $vehicle->transmission }}</span></td>
-                                <td>{{ $vehicle->seats }}</td>
-                                <td>{{ $vehicle->priceSetup->amount ?? '' }}</td>
-                                {{-- <td>
-                                    @if($vehicle->status == 1)
+                                <tr>
+                                    <td><img src="{{ url($vehicle->photos->first()->image_path ?? 'logo/auto-logo.png') }}"
+                                            style="height:50px; width:70px;" alt="{{ $vehicle->vehicleMake }}"></td>
+                                    <td>{{ $vehicle->vehicleMake }}</td>
+                                    <td>{{ $vehicle->vehicleModel }}</td>
+                                    <td>{{ $vehicle->vehicleYear }}</td>
+                                    <td>{{ $vehicle->category->category ?? ($vehicle->priceSetup->category->category ?? '') }}
+                                    </td>
+                                    <td>{{ $vehicle->airCondition }}</td>
+                                    <td><span
+                                            class="badge bg-{{ $vehicle->transmission == 'automatic' ? 'warning' : 'danger'}}">{{ $vehicle->transmission }}</span>
+                                    </td>
+                                    <td>{{ $vehicle->seats }}</td>
+                                    <td>{{ $vehicle->priceSetup->amount ?? '' }}</td>
+                                    {{-- <td>
+                                        @if($vehicle->status == 1)
                                         <a class="btn btn-primary btn-sm"><i class="fas fa-sync-alt"> Pending</a>
-                                    @elseif($vehicle->status == 2)
+                                        @elseif($vehicle->status == 2)
                                         <a class="btn btn-success btn-sm"><i class="fa fa-check"></i> Approved</a>
-                                    @elseif($vehicle->status == 3)
+                                        @elseif($vehicle->status == 3)
                                         <a class="btn btn-danger btn-sm"><i class="fas fa-info-circle"></i> Declined</a>
-                                    @endif
-                                </td> --}}
-                                <td><a class="btn btn-success btn-sm" href="/editVehicles/{{$vehicle->id}}">Edit</a></td>
-                                <td><a class="btn btn-danger btn-sm" wire:click="delete({{$vehicle->id}})">Delete</a></td>
-                            </tr>
+                                        @endif
+                                    </td> --}}
+                                    <td><a class="btn btn-success btn-sm" href="/editVehicles/{{$vehicle->id}}">Edit</a>
+                                    </td>
+                                    <td><a class="btn btn-danger btn-sm" wire:click="delete({{$vehicle->id}})">Delete</a>
+                                    </td>
+                                </tr>
 
                             @empty
-                            <tr>
-                                <td colspan="10" class="text-center text-danger"> No record available</td>
-                            </tr>
+                                <tr>
+                                    <td colspan="10" class="text-center text-danger"> No record available</td>
+                                </tr>
                             @endforelse
                         </tbody>
                     </table>

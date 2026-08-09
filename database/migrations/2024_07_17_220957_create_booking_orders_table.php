@@ -18,16 +18,17 @@ class CreateBookingOrdersTable extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('vehicle_id')->constrained()->cascadeOnDelete();
-            $table->date('pickupDate');
+            $table->datetime('pickupDate');
             $table->string('pickupTime')->nullable();
-            $table->date('dropoffDate');
+            $table->datetime('dropoffDate');
             $table->string('dropoffTime')->nullable();
             $table->integer('duration');
             $table->decimal('amount');
             $table->char('payment_status', 1)->default('0');
-            // $table->char('status', 1)->default('0');
+            $table->char('status', 1)->default('0');
             $table->char('wth_driver', 1)->default('0');
-            $table->timestamps();
+            $table->enum('type', ['booking', 'ehailing'])->nullable();
+            $table->timestamps(); 
         });
     }
 

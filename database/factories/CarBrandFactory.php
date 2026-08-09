@@ -40,6 +40,8 @@ class CarBrandFactory extends Factory
     return [
         'brand' => $brand,
         'slug' => $slug,
+        'created_at' => now(),
+        'updated_at' => now()
     ];
 
     }
