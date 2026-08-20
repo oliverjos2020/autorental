@@ -18,6 +18,71 @@ class FirebaseNotificationService
     }
 
     /**
+     * Static helper method to send push notification from anywhere in the application
+     * 
+     * Usage: FirebaseNotificationService::push($fcmToken, $title, $body, $data);
+     *
+     * @param string $fcmToken - The device FCM token
+     * @param string $title - Notification title
+     * @param string $body - Notification body/message
+     * @param array $data - Optional additional data payload
+     * @return array - ['success' => bool, 'message' => string]
+     */
+    public static function push($fcmToken, $title, $body, $data = [])
+    {
+        try {
+            $service = new self();
+            $result = $service->sendNotification($fcmToken, $title, $body, $data);
+
+            return [
+                'success' => $result,
+                'message' => $result ? 'Notification sent successfully' : 'Failed to send notification'
+            ];
+        } catch (Exception $e) {
+            Log::error('Push notification error: ' . $e->getMessage());
+            return [
+                'success' => false,
+                'message' => 'Error: ' . $e->getMessage()
+            ];
+        }
+    }
+
+    /**
+     * Static helper to send notification to multiple devices
+     * 
+     * Usage: FirebaseNotificationService::pushToMany($tokens, $title, $body, $data);
+     *
+     * @param array $fcmTokens - Array of device FCM tokens
+     * @param string $title - Notification title
+     * @param string $body - Notification body/message
+     * @param array $data - Optional additional data payload
+     * @return array - ['success' => bool, 'sent' => int, 'failed' => int]
+     */
+    public static function pushToMany($fcmTokens, $title, $body, $data = [])
+    {
+        try {
+            $service = new self();
+            $successCount = $service->sendNotificationToMultiple($fcmTokens, $title, $body, $data);
+            $totalCount = count($fcmTokens);
+
+            return [
+                'success' => $successCount > 0,
+                'sent' => $successCount,
+                'failed' => $totalCount - $successCount,
+                'message' => "Sent to {$successCount} of {$totalCount} devices"
+            ];
+        } catch (Exception $e) {
+            Log::error('Push notification to many error: ' . $e->getMessage());
+            return [
+                'success' => false,
+                'sent' => 0,
+                'failed' => count($fcmTokens),
+                'message' => 'Error: ' . $e->getMessage()
+            ];
+        }
+    }
+
+    /**
      * Send notification via Firebase Cloud Messaging
      *
      * @param string $fcmToken
@@ -35,7 +100,7 @@ class FirebaseNotificationService
             }
 
             $accessToken = $this->getAccessToken();
-            
+
             if (!$accessToken) {
                 Log::error('Failed to get Firebase access token');
                 return false;
@@ -74,9 +139,9 @@ class FirebaseNotificationService
                 'Authorization' => 'Bearer ' . $accessToken,
                 'Content-Type' => 'application/json',
             ])->post(
-                "https://fcm.googleapis.com/v1/projects/{$this->projectId}/messages:send",
-                $message
-            );
+                    "https://fcm.googleapis.com/v1/projects/{$this->projectId}/messages:send",
+                    $message
+                );
 
             if ($response->successful()) {
                 Log::info('FCM notification sent successfully', ['token' => substr($fcmToken, 0, 20) . '...']);
@@ -103,7 +168,7 @@ class FirebaseNotificationService
     public function sendNotificationToMultiple($fcmTokens, $title, $body, $data = [])
     {
         $successCount = 0;
-        
+
         foreach ($fcmTokens as $token) {
             if ($this->sendNotification($token, $title, $body, $data)) {
                 $successCount++;
@@ -122,7 +187,7 @@ class FirebaseNotificationService
     {
         try {
             $credentialsPath = storage_path('app/' . $this->credentialsPath);
-            
+
             if (!file_exists($credentialsPath)) {
                 Log::error('Firebase credentials file not found at: ' . $credentialsPath);
                 return null;

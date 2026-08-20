@@ -81,13 +81,10 @@ class TransactionController extends Controller
                 // Payment successful
                 $bookingOrder->update([
                     'payment_status' => 1, // 1 = paid
-                    'status' => 1 // 1 = approved
+                    // 'status' => 1 // 1 = approved
                 ]);
 
-                // Mark vehicle as on trip
-                Vehicle::where('id', $bookingOrder->vehicle_id)->update([
-                    'on_trip' => 1
-                ]);
+              
                 // Send Firebase notification to user about successful payment
                 $user = User::find($bookingOrder->user_id);
                 if ($user && $user->fcm_token) {

@@ -33,9 +33,9 @@ class NotificationController extends Controller
             ], 200);
         } else {
             return response()->json([
-                'responseCode' => 404,
+                'responseCode' => 204,
                 'message' => 'No new requests'
-            ], 404);
+            ], 204);
         }
     }
 

@@ -40,6 +40,7 @@ use App\Http\Controllers\BookingAPIController;
 use App\Http\Livewire\DriverVehicleAssignment;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\PushNotificationController;
 use App\Http\Livewire\RevenueReport;
 use App\Http\Livewire\VehicleReport;
 use App\Http\Livewire\TransactionReport;
@@ -179,8 +180,16 @@ Route::middleware('api')->group(function () {
         Route::get('/api/v1/stations', [VehicleController::class, 'station']);
         Route::post('/api/v1/notify-station-admin', [NotificationController::class, 'notifyStationAdmin']);
         Route::get('/api/v1/notifications/unread-count', [NotificationController::class, 'getUnreadCount']);
+
+        // Push Notification Routes
+        Route::post('/api/v1/push-notification/send', [PushNotificationController::class, 'send']);
+        Route::post('/api/v1/push-notification/send-to-user', [PushNotificationController::class, 'sendToUser']);
+        Route::post('/api/v1/push-notification/send-to-many', [PushNotificationController::class, 'sendToMany']);
+        Route::post('/api/v1/push-notification/send-to-role', [PushNotificationController::class, 'sendToRole']);
+        Route::post('/api/v1/push-notification/register-device', [PushNotificationController::class, 'registerDevice']);
+        Route::post('/api/v1/push-notification/unregister-device', [PushNotificationController::class, 'unregisterDevice']);
     });
- 
+
     Route::middleware('auth:api')->group(function () {
         Route::get('/user-profile', [UserAPIController::class, 'userProfile']);
     });

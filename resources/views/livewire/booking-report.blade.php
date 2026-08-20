@@ -84,8 +84,14 @@
                                             class="badge bg-{{ $booking->payment_status == '0' ? 'danger' : 'success'}}">{{ $booking->payment_status == '0' ? 'Unpaid' : 'Paid' }}</span>
                                     </td>
                                     <td>{{ $booking->type }}</td>
-                                    <td><a class="btn btn-dark btn-sm" href="{{$booking->user->identity_card}}"
-                                            target="_blank">View ID Card</a></td>
+                                    <td>
+                                        @if($booking->user->identity_card == '/storage')
+                                            <a class="btn btn-dark btn-sm" href="{{$booking->user->identity_card}}"
+                                                target="_blank">View ID Card</a>
+                                        @else
+                                            <span class="text-muted">N/A</span>
+                                        @endif
+                                    </td>
                                     <td>{{ $booking->created_at }}</td>
                                     <td>
                                         @if($booking->status == 0)
