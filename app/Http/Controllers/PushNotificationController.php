@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Services\FirebaseNotificationService;
 use App\Models\User;
 use Illuminate\Validation\ValidationException;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class PushNotificationController extends Controller
 {
@@ -258,12 +259,13 @@ class PushNotificationController extends Controller
                 'device_token' => 'required|string'
             ]);
 
-            $user = auth()->user();
-            
+            // Get user from JWT token
+            $user = JWTAuth::parseToken()->authenticate();
+
             if (!$user) {
                 return response()->json([
                     'responseCode' => 401,
-                    'responseMessage' => 'Unauthorized'
+                    'responseMessage' => 'Unauthorized - Invalid token'
                 ], 401);
             }
 
@@ -284,6 +286,21 @@ class PushNotificationController extends Controller
                 'responseMessage' => 'Validation error',
                 'errors' => $e->errors()
             ], 422);
+        } catch (\Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
+            return response()->json([
+                'responseCode' => 401,
+                'responseMessage' => 'Token has expired'
+            ], 401);
+        } catch (\Tymon\JWTAuth\Exceptions\TokenInvalidException $e) {
+            return response()->json([
+                'responseCode' => 401,
+                'responseMessage' => 'Token is invalid'
+            ], 401);
+        } catch (\Tymon\JWTAuth\Exceptions\JWTException $e) {
+            return response()->json([
+                'responseCode' => 401,
+                'responseMessage' => 'Token not provided'
+            ], 401);
         } catch (\Exception $e) {
             return response()->json([
                 'responseCode' => 500,
@@ -304,12 +321,13 @@ class PushNotificationController extends Controller
     public function unregisterDevice(Request $request)
     {
         try {
-            $user = auth()->user();
-            
+            // Get user from JWT token
+            $user = JWTAuth::parseToken()->authenticate();
+
             if (!$user) {
                 return response()->json([
                     'responseCode' => 401,
-                    'responseMessage' => 'Unauthorized'
+                    'responseMessage' => 'Unauthorized - Invalid token'
                 ], 401);
             }
 
@@ -324,6 +342,21 @@ class PushNotificationController extends Controller
                 ]
             ], 200);
 
+        } catch (\Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
+            return response()->json([
+                'responseCode' => 401,
+                'responseMessage' => 'Token has expired'
+            ], 401);
+        } catch (\Tymon\JWTAuth\Exceptions\TokenInvalidException $e) {
+            return response()->json([
+                'responseCode' => 401,
+                'responseMessage' => 'Token is invalid'
+            ], 401);
+        } catch (\Tymon\JWTAuth\Exceptions\JWTException $e) {
+            return response()->json([
+                'responseCode' => 401,
+                'responseMessage' => 'Token not provided'
+            ], 401);
         } catch (\Exception $e) {
             return response()->json([
                 'responseCode' => 500,
