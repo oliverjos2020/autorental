@@ -12,7 +12,7 @@ class StationController extends Controller
         try{
             $stations = Station::with([
                 'location:id,longitude,latitude',
-                'vehicles.priceSetup:id,duration,slug', // Include the price from the price_setup table
+                'vehicles.priceSetup:id,duration', // Include the price from the price_setup table
             ])->get();
             
 
