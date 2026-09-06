@@ -36,7 +36,7 @@ class DurationManagement extends Component
     {
         $this->validate([
             'item' => ['required'],
-            'duration' => ['required', 'unique:durations,duration', 'min:2', 'max:50']
+            'duration' => ['required', 'unique:durations,duration', 'min:1', 'max:50']
         ]);
         try{
         Duration::create([
