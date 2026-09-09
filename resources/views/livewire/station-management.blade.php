@@ -91,8 +91,8 @@
                             @forelse($stations as $station)
                                 <tr>
                                     <td>{{ ($stations->currentPage() - 1) * $stations->perPage() + $loop->iteration }}</td>
-                                    <td>{{ $station->stationName }}</td>
-                                    <td>{{ $station->location->location }}</td>
+                                    <td>{{ $station->stationName ?? 'N/A' }}</td>
+                                    <td>{{ $station->location->location ?? 'N/A' }}</td>
                                     <td><a class="btn btn-primary btn-sm text-light" style="cursor:pointer;" wire:click="edit({{$station->id}})"><i class="fa fa-edit"></i> Edit</a> </td>
                                     <td><a  @if(in_array($station->slug, ['admin', 'users', 'partners'])) class="text-light btn btn-secondary btn-sm" @else class="text-light btn btn-danger btn-sm" wire:click="delete({{$station->id}})" @endif ><i class="fa fa-trash"></i> Delete</a></a></td>
                                 </tr>
