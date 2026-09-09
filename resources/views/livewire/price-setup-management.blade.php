@@ -105,9 +105,9 @@
                                 <tr>
                                     <td>{{ ($priceSetups->currentPage() - 1) * $priceSetups->perPage() + $loop->iteration }}
                                     </td>
-                                    <td>{{ $priceSetup->category->category }}</td>
-                                    <td>{{ $priceSetup->duration }}</td>
-                                    <td>{{ $priceSetup->amount }}</td>
+                                    <td>{{ $priceSetup->category->category ?? 'N/A'  }}</td>
+                                    <td>{{ $priceSetup->duration ?? 'N/A' }}</td>
+                                    <td>{{ $priceSetup->amount ?? 'N/A' }}</td>
                                     <td><a class="btn btn-primary btn-sm text-light" style="cursor:pointer;"
                                             wire:click="edit({{ $priceSetup->id }})"><i class="fa fa-edit"></i>
                                             Edit</a> </td>
