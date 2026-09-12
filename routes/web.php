@@ -65,6 +65,9 @@ Route::post('/delete/account', [UserAPIController::class, 'deleteAccount'])->nam
 Route::get('/', function () {
     return view('auth.login');
 });
+Route::get('/privacy-policy', function () {
+    return view('livewire.privacy-policy');
+});
 
 Route::get('/delete-account', function () {
     return view('auth.delete');

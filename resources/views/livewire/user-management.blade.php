@@ -298,7 +298,7 @@
                                 <td><a href="/profile/{{ $user->id }}">{{ $user->name }}</a></td>
                                 <td>{{ $user->email }}</td>
                                 <td>{{ $user->role->role }}</td>
-                                <td>{{ $user->station_id ? $user->station->stationName : 'No station assigned' }}</td>
+                                <td>{{ $user->station->stationName ?? 'No station assigned' }}</td>
                                 <td>{{ $user->created_at->diffForHumans() }}</td>
                                 <td><a class="btn btn-primary btn-sm text-light" style="cursor:pointer;"
                                         wire:click="edit({{$user->id}})"><i class="fa fa-edit"></i> Edit</a> </td>
