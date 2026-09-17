@@ -31,6 +31,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\StationController;
 use App\Http\Controllers\UserAPIController;
 use App\Http\Controllers\VehicleController;
+use App\Http\Controllers\RatingController;
 
 
 //FOR API
@@ -170,6 +171,8 @@ Route::middleware('api')->group(function () {
     Route::post('/api/v1/ConfirmJustOTP', [UserAPIController::class, 'confirmJustOTP']);
     Route::group(['middleware' => ['auth.jwt']], function () {
         Route::post('/api/v1/user/update', [UserAPIController::class, 'update']);
+        Route::post('/api/v1/rating', [RatingController::class, 'create']);
+        Route::get('/api/v1/rating/{user_id}', [RatingController::class, 'fetch']);
         Route::post('/api/v1/booking', [BookingAPIController::class, 'booking']);
         Route::post('/api/v1/mybookings', [BookingAPIController::class, 'getMyBookings']);
         Route::get('/api/v1/vehicles', [VehicleController::class, 'vehicles']);
