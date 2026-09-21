@@ -101,7 +101,7 @@ class BookingAPIController extends Controller
                     'raw_json' => json_encode(['status' => 'pending']),
                     'status' => 'pending'
                 ]);
-
+ 
                 // Initialize Paystack payment
                 try {
                     $paystackResponse = Http::withHeaders([

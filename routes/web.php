@@ -45,6 +45,7 @@ use App\Http\Controllers\PushNotificationController;
 use App\Http\Livewire\RevenueReport;
 use App\Http\Livewire\VehicleReport;
 use App\Http\Livewire\TransactionReport;
+use App\Http\Livewire\DeleteAccountPublic;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -73,6 +74,8 @@ Route::get('/privacy-policy', function () {
 Route::get('/delete-account', function () {
     return view('auth.delete');
 });
+
+Route::get('/account/delete', DeleteAccountPublic::class)->name('account.delete.public');
 
 Route::get('/privacy-policy', function () {
     return view('livewire.privacy-policy');
