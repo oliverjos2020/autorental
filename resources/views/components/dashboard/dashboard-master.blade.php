@@ -232,6 +232,11 @@
                                         <li><a href="/station">Stations</a></li>
                                         <li><a href="/brand">Car Brand</a></li>
                                         <li><a href="/priceSetup">Hire Price Setup</a></li>
+                                        <li>
+                                            <a href="/parameters" style="color:#f1b44c;font-weight:600;">
+                                                <i class="mdi mdi-cog-outline me-1"></i>System Parameters
+                                            </a>
+                                        </li>
                                     </ul>
                                 </li>
                                 <li>

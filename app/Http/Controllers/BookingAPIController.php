@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Validation\ValidationException;
 use App\Models\Location;
+use App\Models\SystemParameter;
 use Exception;
 
 class BookingAPIController extends Controller
@@ -48,7 +49,14 @@ class BookingAPIController extends Controller
                     'identity_card' => 'sometimes|file|mimes:jpg,png,jpeg|max:300'
                 ]);
 
-
+                $user = User::find($request->user_id);
+                if(!$user){
+                    return response()->json([
+                        'responseCode' => 400,
+                        'responseMessage' => 'User not found',
+                        'error' => 'User not found'
+                    ], 400);
+                }
                 // Handle identity card upload
                 if ($request->hasFile('identity_card')) {
                     $file = $request->file('identity_card');
@@ -73,6 +81,24 @@ class BookingAPIController extends Controller
                     'driverLicense' => '/storage/' . $filePath2,
                 ]);
 
+                $vehicle = Vehicle::find($request->vehicle_id);
+                if(!$vehicle){
+                    return response()->json([
+                        'responseCode' => 400,
+                        'responseMessage' => 'Vehicle not found',
+                        'error' => 'Vehicle not found'
+                    ], 400);
+                }
+
+                $getCarOwner = User::find($vehicle->user_id);
+
+                if(!$getCarOwner){
+                    return response()->json([
+                        'responseCode' => 400,
+                        'responseMessage' => 'Car Owner not found',
+                        'error' => 'User not found'
+                    ], 400);
+                }
                 // Create booking order with PENDING status
                 $bookingOrder = BookingOrder::create([
                     'user_id' => $request->user_id,
@@ -104,21 +130,53 @@ class BookingAPIController extends Controller
  
                 // Initialize Paystack payment
                 try {
-                    $paystackResponse = Http::withHeaders([
-                        'Authorization' => 'Bearer ' . env('PAYSTACK_TEST_KEY'),
-                    ])->post('https://api.paystack.co/transaction/initialize', [
-                                'email' => $request->user()->email ?? User::find($request->user_id)->email,
-                                'amount' => (int) ($request->amount * 100), // Paystack expects amount in kobo
-                                'reference' => $transaction->transaction_id,
-                                'metadata' => [
-                                    'booking_order_id' => $bookingOrder->id,
-                                    'transaction_id' => $transaction->id,
-                                    'user_id' => $request->user_id,
-                                    'vehicle_id' => $request->vehicle_id
-                                ]
-                            ]);
+                    $AssociationPercentage = SystemParameter::getValue('ASSOCIATION_PERCENTAGE');
+                    $CarOwnerPercentage = SystemParameter::getValue('CAR_OWNER_PERCENTAGE');
+                    $AppPercentage = SystemParameter::getValue('APP_PERCENTAGE');
 
-                    $paystackData = $paystackResponse->json();
+                    // $paystackResponse = Http::withHeaders([
+                    //     'Authorization' => 'Bearer ' . env('PAYSTACK_TEST_KEY'),
+                    // ])->post('https://api.paystack.co/transaction/initialize', [
+                    //             'email' => $request->user()->email ?? User::find($request->user_id)->email,
+                    //             'amount' => (int) ($request->amount * 100), // Paystack expects amount in kobo
+                    //             'reference' => $transaction->transaction_id,
+                    //             'metadata' => [
+                    //                 'booking_order_id' => $bookingOrder->id,
+                    //                 'transaction_id' => $transaction->id,
+                    //                 'user_id' => $request->user_id,
+                    //                 'vehicle_id' => $request->vehicle_id
+                    //             ]
+                    //         ]);
+
+                    // $paystackData = $paystackResponse->json();
+
+                    $response = Http::withHeaders([
+                        'Authorization' => 'Bearer ' . env('PAYSTACK_TEST_KEY')
+                        ])->post('https://api.paystack.co/transaction/initialize', [
+                        'email' => $request->user()->email ?? User::find($request->user_id)->email,
+                        'amount' => (int) ($request->amount * 100),
+                        'currency' => 'NGN',
+                        'split' => [
+                            'type' => 'percentage',
+                            'bearer_type' => 'account',
+                            'subaccounts' => [
+                                [
+                                    'subaccount' => $getCarOwner->account_code,
+                                    'share' => $CarOwnerPercentage,
+                                ],
+                                [
+                                    'subaccount' => 'ACCT_222222222',
+                                    'share' => 30,
+                                ],
+                                [
+                                    'subaccount' => 'ACCT_333333333',
+                                    'share' => 20,
+                                ],
+                            ],
+                        ],
+                    ]);
+
+                $paystackData = $response->json();
 
                     if ($paystackData['status'] === true) {
                         return response()->json([

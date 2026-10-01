@@ -45,6 +45,7 @@ use App\Http\Controllers\PushNotificationController;
 use App\Http\Livewire\RevenueReport;
 use App\Http\Livewire\VehicleReport;
 use App\Http\Livewire\TransactionReport;
+use App\Http\Livewire\ParameterManagement;
 use App\Http\Livewire\DeleteAccountPublic;
 /*
 |--------------------------------------------------------------------------
@@ -153,6 +154,7 @@ Route::middleware(['auth'])->group(function () {
         // Route::get('/vendorManagement/{type}', VendorManagement::class)->name('vendorSetup');
         // Route::get('/vendor/{vehID}', VendorViewDetails::class)->name('viewVendor');
         Route::get('/profile/{userID}', Profile::class)->name('profile');
+        Route::get('/parameters', ParameterManagement::class)->name('parameters');
 
     });
 });
