@@ -68,7 +68,7 @@ class Vehicle extends Model
             ->whereHas('related', function ($query) {
                 $query->whereColumn('price_setups.id', '!=', 'price_setups.price_setup_id');
             });
-    }
+    } 
 
     public function category()
     {

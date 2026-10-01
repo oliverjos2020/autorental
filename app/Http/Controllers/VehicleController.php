@@ -19,8 +19,8 @@ class VehicleController extends Controller
             $query = Vehicle::with([
                 'photos',
                 'user:id,bank_code,account_number,percentage_charge,account_code',
-                'priceSetup.related.durationRelation:slug,duration',
-                'priceSetup.duration:slug,duration',
+                'priceSetup.durationRelation:id,item',
+                'priceSetup.related.durationRelation:id,item',
                 'station:id,stationName,location_id',
                 'station.location:id,location,longitude,latitude'
             ]);
@@ -49,11 +49,15 @@ class VehicleController extends Controller
 
             // Process the data
             foreach ($paginated->items() as $vehicle) {
-                if ($vehicle->priceSetup && $vehicle->priceSetup->related) {
-                    foreach ($vehicle->priceSetup->related as $related) {
-                        $related->duration = $related->durationRelation->duration ?? null;
-                        unset($related->durationRelation);
-                    }
+                $priceSetup = $vehicle->priceSetup;
+                if (!$priceSetup) continue;
+
+                $priceSetup->duration = $priceSetup->durationRelation->item ?? null;
+                unset($priceSetup->durationRelation);
+
+                foreach ($priceSetup->related as $related) {
+                    $related->duration = $related->durationRelation->item ?? null;
+                    $related->unsetRelation('durationRelation');
                 }
             }
 
