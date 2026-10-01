@@ -329,7 +329,7 @@ class BookingAPIController extends Controller
                     'responseCode' => 200,
                     'responseMessage' => 'Success',
                     'data' => $myBookings
-                ], 201);
+                ], 200);
             }
         } catch (ValidationException $e) {
             return response()->json([
