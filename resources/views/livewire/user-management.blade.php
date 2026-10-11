@@ -1,556 +1,328 @@
+@php
+    $forming = $showCreateForm || $editingID;
+    $currentRole = $editingID ? $editingRole : $role;
+    $needsPayout = in_array((int) $currentRole, $payoutRoles, true);
+    $isAdmin = Auth::user()->role_id == 1;
+    $roleColors = [1 => 'danger', 2 => 'warning', 3 => 'info', 4 => 'secondary', 5 => 'success', 6 => 'primary', 7 => 'primary', 8 => 'primary'];
+    $sortIcon = fn ($f) => $sortField === $f ? ($sortDirection === 'asc' ? 'mdi-arrow-up' : 'mdi-arrow-down') : 'mdi-unfold-more-horizontal text-muted';
+@endphp
 <div class="row">
     <div class="col-12">
         <div class="page-title-box d-flex align-items-center justify-content-between">
             <h4 class="page-title mb-0 font-size-18">User Management</h4>
-
-            <div class="page-title-right">
-                <ol class="breadcrumb m-0">
-                    <!-- <li class="breadcrumb-item"><a href="javascript: void(0);">Pages</a></li> -->
-                    <!-- <li class="breadcrumb-item active">Welcome to Tax Drive Dashboard</li> -->
-                </ol>
-            </div>
-
-        </div>
-    </div>
-
-
-    <div class="row mb-3">
-        <div class="col-md-2">
-            <button wire:click="toggleCreateForm" class="btn {{ $showCreateForm || $editingID ? 'btn-secondary' : 'btn-primary' }} btn-sm">
-                @if ($showCreateForm || $editingID)
-                    <i class="mdi mdi-close me-1"></i> Cancel
-                @else
-                    <i class="mdi mdi-plus-circle-outline me-1"></i> Create User
-                @endif
-            </button>
-        </div>
-
-
-    </div>
-    @if ($showCreateForm || $editingID)
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-body">
-
-                    <div class="form-group">
-                        <label>Name</label>
-                        <input type="text" wire:model="{{ $editingID ? 'editingName' : 'name' }}" class="form-control {{ $errors->has('name') ? 'is-invalid' : '' }}" placeholder="Name">
-                        @error('name')
-                            <div class="invalid-feedback"> {{ $message }} </div>
-                        @enderror
-
-                    </div>
-                    <div class="form-group mt-3">
-                        <label for="email">Email</label>
-                        <input type="email" wire:model="{{ $editingID ? 'editingEmail' : 'email' }}" class="form-control {{ $errors->has('email') ? 'is-invalid' : '' }}" placeholder="Email">
-                        @error('email')
-                            <span class="invalid-feedback"> {{ $message }} </span>
-                        @enderror
-                    </div>
-                    <div class="form-group mt-3">
-                        <label for="role">Role</label>
-                        <select wire:model="{{ $editingID ? 'editingRole' : 'role' }}" class="form-control {{ $errors->has('role') ? 'is-invalid' : '' }}">
-                            @if(Auth::user()->role_id == 1)
-                                <option value="">Select Role</option>
-                                @forelse($roles as $role)
-                                    <option value="{{ $role->id }}">{{ $role->role }}</option>
-                                @empty
-                                @endforelse
-                            @else
-                            <option value="">Select Role</option>
-                                <option value="3">Driver</option>
-                            @endif
-                        </select>
-                        @error('role')
-                        <span class="invalid-feedback"> {{ $message }} </span>
-                        @enderror
-                    </div>
-
-                    @if(Auth::user()->role_id == 1)
-                    <div class="form-group mt-3">
-                        <label for="station">Station</label>
-                        <select wire:model="{{ $editingID ? 'editingStation' : 'station' }}" class="form-control {{ $errors->has('station') ? 'is-invalid' : '' }}">
-                                <option value="">Select Station</option>
-                            @forelse($stations as $station)
-                                <option value="{{ $station->id }}">{{ $station->stationName }}</option>
-                            @empty
-                            @endforelse
-                        </select>
-                        @error('station')
-                        <span class="invalid-feedback"> {{ $message }} </span>
-                        @enderror
-                    </div>
+            <div>
+                <button wire:click="exportCsv" class="btn btn-secondary btn-sm me-1">
+                    <i class="mdi mdi-download me-1"></i> Export CSV
+                </button>
+                <button wire:click="toggleCreateForm" class="btn {{ $forming ? 'btn-secondary' : 'btn-light' }} btn-sm">
+                    @if ($forming)
+                        <i class="mdi mdi-close me-1"></i> Cancel
                     @else
-                        <div class="form-group mt-3">
-                            <label for="station">Station </label>
-                            <select wire:model="{{ $editingID ? 'editingStation' : 'station' }}" class="form-control {{ $errors->has('station') ? 'is-invalid' : '' }}">
-                                <option value="">Select Station</option>
-                                    <option value="{{Auth::user()->station_id ?? ''}}">{{Auth::user()->station->stationName ?? ''}}</option>
-                            </select>
-                            @error('station')
-                            <span class="invalid-feedback"> {{ $message }} </span>
-                            @enderror
-                        </div>
+                        <i class="mdi mdi-plus-circle-outline me-1"></i> Create User
                     @endif
-                    @if(in_array($editingID ? $editingRole : $owner, [6,7,8]))
-                        <div class="form-group mt-3">
-                            <label>Business Name</label>
-                            <input type="text" wire:model="{{ $editingID ? 'editingBusinessName' : 'business_name' }}" class="form-control {{ $errors->has('business_name') ? 'is-invalid' : '' }}" placeholder="Name">
-                            @error('business_name')
-                                <span class="invalid-feedback"> {{ $message }} </span>
-                            @enderror
+                </button>
+            </div>
+        </div>
+    </div>
+
+    {{-- Stats --}}
+    <div class="col-12">
+        <div class="row">
+            @foreach ([
+                ['Total users', $stats['total'], 'mdi-account-multiple', 'primary', ''],
+                ['New this month', $stats['new'], 'mdi-account-plus', 'success', ''],
+                ['Payout ready', $stats['ready'], 'mdi-bank', 'info', 'ready'],
+                ['Missing payout account', $stats['missing'], 'mdi-bank-remove', 'danger', 'missing'],
+            ] as [$label, $value, $icon, $color, $filter])
+                <div class="col-6 col-lg-3">
+                    <div class="card mb-3" @if($filter) wire:click="$set('payoutFilter', '{{ $payoutFilter === $filter ? '' : $filter }}')" style="cursor:pointer;" @endif>
+                        <div class="card-body d-flex align-items-center py-3">
+                            <div class="rounded-circle text-white bg-{{ $color }} bg-soft d-flex align-items-center justify-content-center me-3" style="width:44px;height:44px;">
+                                <i class="mdi {{ $icon }} font-size-22 text-white"></i>
+                            </div>
+                            <div>
+                                <p class="text-muted mb-0 font-size-13">{{ $label }}</p>
+                                <h4 class="mb-0">{{ number_format($value) }}</h4>
+                            </div>
                         </div>
-                        <div class="form-group mt-3">
-                            <label>Select Bank</label>
-                            <select wire:model="{{ $editingID ? 'editingBankCode' : 'bank_code' }}" class="form-control {{ $errors->has('bank_code') ? 'is-invalid' : '' }}">
-                                <option value="">Select bank</option>
-                                                    <option value="120001">9mobile 9Payment Service Bank</option>
-                                                    <option value="801">Abbey Mortgage Bank</option>
-                                                    <option value="51204">Above Only MFB</option>
-                                                    <option value="51312">Abulesoro MFB</option>
-                                                    <option value="044">Access Bank</option>
-                                                    <option value="063">Access Bank (Diamond)</option>
-                                                    <option value="602">Accion Microfinance Bank</option>
-                                                    <option value="50036">Ahmadu Bello University Microfinance Bank</option>
-                                                    <option value="120004">Airtel Smartcash PSB</option>
-                                                    <option value="51336">AKU Microfinance Bank</option>
-                                                    <option value="035A">ALAT by WEMA</option>
-                                                    <option value="50926">Amju Unique MFB</option>
-                                                    <option value="51341">AMPERSAND MICROFINANCE BANK</option>
-                                                    <option value="50083">Aramoko MFB</option>
-                                                    <option value="401">ASO Savings and Loans</option>
-                                                    <option value="MFB50094">Astrapolaris MFB LTD</option>
-                                                    <option value="51229">Bainescredit MFB</option>
-                                                    <option value="50117">Banc Corp Microfinance Bank</option>
-                                                    <option value="50931">Bowen Microfinance Bank</option>
-                                                    <option value="FC40163">Branch International Financial Services Limited
-                                                    </option>
-                                                    <option value="565">Carbon</option>
-                                                    <option value="865">CASHCONNECT MFB</option>
-                                                    <option value="50823">CEMCS Microfinance Bank</option>
-                                                    <option value="50171">Chanelle Microfinance Bank Limited</option>
-                                                    <option value="023">Citibank Nigeria</option>
-                                                    <option value="50910">Consumer Microfinance Bank</option>
-                                                    <option value="50204">Corestep MFB</option>
-                                                    <option value="559">Coronation Merchant Bank</option>
-                                                    <option value="FC40128">County Finance Limited</option>
-                                                    <option value="51297">Crescent MFB</option>
-                                                    <option value="50162">Dot Microfinance Bank</option>
-                                                    <option value="050">Ecobank Nigeria</option>
-                                                    <option value="50263">Ekimogun MFB</option>
-                                                    <option value="098">Ekondo Microfinance Bank</option>
-                                                    <option value="50126">Eyowo</option>
-                                                    <option value="51318">Fairmoney Microfinance Bank</option>
-                                                    <option value="070">Fidelity Bank</option>
-                                                    <option value="51314">Firmus MFB</option>
-                                                    <option value="011">First Bank of Nigeria</option>
-                                                    <option value="214">First City Monument Bank</option>
-                                                    <option value="107">FirstTrust Mortgage Bank Nigeria</option>
-                                                    <option value="50315">FLOURISH MFB</option>
-                                                    <option value="501">FSDH Merchant Bank Limited</option>
-                                                    <option value="812">Gateway Mortgage Bank LTD</option>
-                                                    <option value="00103">Globus Bank</option>
-                                                    <option value="100022">GoMoney</option>
-                                                    <option value="50739">Goodnews Microfinance Bank</option>
-                                                    <option value="562">Greenwich Merchant Bank</option>
-                                                    <option value="058">Guaranty Trust Bank</option>
-                                                    <option value="51251">Hackman Microfinance Bank</option>
-                                                    <option value="50383">Hasal Microfinance Bank</option>
-                                                    <option value="030">Heritage Bank</option>
-                                                    <option value="120002">HopePSB</option>
-                                                    <option value="51244">Ibile Microfinance Bank</option>
-                                                    <option value="50439">Ikoyi Osun MFB</option>
-                                                    <option value="50442">Ilaro Poly Microfinance Bank</option>
-                                                    <option value="50457">Infinity MFB</option>
-                                                    <option value="301">Jaiz Bank</option>
-                                                    <option value="50502">Kadpoly MFB</option>
-                                                    <option value="082">Keystone Bank</option>
-                                                    <option value="50200">Kredi Money MFB LTD</option>
-                                                    <option value="50211">Kuda Bank</option>
-                                                    <option value="90052">Lagos Building Investment Company Plc.</option>
-                                                    <option value="50549">Links MFB</option>
-                                                    <option value="031">Living Trust Mortgage Bank</option>
-                                                    <option value="303">Lotus Bank</option>
-                                                    <option value="50563">Mayfair MFB</option>
-                                                    <option value="50304">Mint MFB</option>
-                                                    <option value="50515">Moniepoint MFB</option>
-                                                    <option value="120003">MTN Momo PSB</option>
-                                                    <option value="00107">Optimus Bank Limited</option>
-                                                    <option value="100002">Paga</option>
-                                                    <option value="999991">PalmPay</option>
-                                                    <option value="104">Parallex Bank</option>
-                                                    <option value="311">Parkway - ReadyCash</option>
-                                                    <option value="999992">Paycom</option>
-                                                    <option value="50743">Peace Microfinance Bank</option>
-                                                    <option value="51146">Personal Trust MFB</option>
-                                                    <option value="50746">Petra Mircofinance Bank Plc</option>
-                                                    <option value="076">Polaris Bank</option>
-                                                    <option value="50864">Polyunwana MFB</option>
-                                                    <option value="105">PremiumTrust Bank</option>
-                                                    <option value="101">Providus Bank</option>
-                                                    <option value="51293">QuickFund MFB</option>
-                                                    <option value="502">Rand Merchant Bank</option>
-                                                    <option value="90067">Refuge Mortgage Bank</option>
-                                                    <option value="51286">Rigo Microfinance Bank Limited</option>
-                                                    <option value="50767">ROCKSHIELD MICROFINANCE BANK</option>
-                                                    <option value="125">Rubies MFB</option>
-                                                    <option value="51113">Safe Haven MFB</option>
-                                                    <option value="951113">Safe Haven Microfinance Bank Limited</option>
-                                                    <option value="50582">Shield MFB</option>
-                                                    <option value="51062">Solid Allianze MFB</option>
-                                                    <option value="50800">Solid Rock MFB</option>
-                                                    <option value="51310">Sparkle Microfinance Bank</option>
-                                                    <option value="221">Stanbic IBTC Bank</option>
-                                                    <option value="068">Standard Chartered Bank</option>
-                                                    <option value="51253">Stellas MFB</option>
-                                                    <option value="232">Sterling Bank</option>
-                                                    <option value="100">Suntrust Bank</option>
-                                                    <option value="50968">Supreme MFB</option>
-                                                    <option value="302">TAJ Bank</option>
-                                                    <option value="090560">Tanadi Microfinance Bank</option>
-                                                    <option value="51269">Tangerine Money</option>
-                                                    <option value="51211">TCF MFB</option>
-                                                    <option value="102">Titan Bank</option>
-                                                    <option value="100039">Titan Paystack</option>
-                                                    <option value="50840">U&amp;C Microfinance Bank Ltd (U AND C MFB)</option>
-                                                    <option value="MFB51322">Uhuru MFB</option>
-                                                    <option value="50870">Unaab Microfinance Bank Limited</option>
-                                                    <option value="50871">Unical MFB</option>
-                                                    <option value="51316">Unilag Microfinance Bank</option>
-                                                    <option value="032">Union Bank of Nigeria</option>
-                                                    <option value="033">United Bank For Africa</option>
-                                                    <option value="215">Unity Bank</option>
-                                                    <option value="566">VFD Microfinance Bank Limited</option>
-                                                    <option value="51355">Waya Microfinance Bank</option>
-                                                    <option value="035">Wema Bank</option>
-                                                    <option value="057">Zenith Bank</option>
-                                                    <option value="057">Zenith Bank</option>
-                            </select>
-                            @error('bank_code')
-                                <span class="invalid-feedback"> {{ $message }} </span>
-                            @enderror
-                        </div>
-                        <div class="form-group mt-3">
-                            <label for="accountNumber">Account Number</label>
-                            <input type="number" class="form-control  {{ $errors->has('account_number') ? 'is-invalid' : '' }}" placeholder="Account Number" wire:model="{{ $editingID ? 'editingAccountNumber' : 'account_number' }}">
-                            @error('account_number')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-                    @endif
-                    @if(!$editingID)
-                    <div class="form-group mt-3">
-                        <label for="password">Password</label>
-                        <input type="password" wire:model="{{ $editingID ? 'editingPassword' : 'password' }}" class="form-control {{ $errors->has('password') ? 'is-invalid' : '' }}" placeholder="Password">
-                        @error('password')
-                        <span class="invalid-feedback"> {{ $message }} </span>
-                        @enderror
                     </div>
+                </div>
+            @endforeach
+        </div>
+    </div>
+
+    {{-- Create / edit form --}}
+    @if ($forming)
+        <div class="col-12">
+            <div class="card border-primary">
+                <div class="card-header bg-transparent d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="mdi {{ $editingID ? 'mdi-account-edit' : 'mdi-account-plus' }} me-1"></i>
+                        {{ $editingID ? 'Edit User' : 'Create User' }}
+                    </h5>
+                    <button type="button" class="btn-close" wire:click="{{ $editingID ? 'cancelEdit' : 'toggleCreateForm' }}"></button>
+                </div>
+                <div class="card-body">
+                    <h6 class="text-uppercase text-muted font-size-12 mb-3">Account details</h6>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Full name</label>
+                            <input type="text" wire:model.defer="{{ $editingID ? 'editingName' : 'name' }}"
+                                class="form-control @error($editingID ? 'editingName' : 'name') is-invalid @enderror" placeholder="e.g. Ada Okafor">
+                            @error($editingID ? 'editingName' : 'name') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" wire:model.defer="{{ $editingID ? 'editingEmail' : 'email' }}"
+                                class="form-control @error($editingID ? 'editingEmail' : 'email') is-invalid @enderror" placeholder="name@example.com">
+                            @error($editingID ? 'editingEmail' : 'email') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Role</label>
+                            <select wire:model="{{ $editingID ? 'editingRole' : 'role' }}"
+                                class="form-select form-control @error($editingID ? 'editingRole' : 'role') is-invalid @enderror">
+                                <option value="">Select role</option>
+                                @if ($isAdmin)
+                                    @foreach ($roles as $r)
+                                        <option value="{{ $r->id }}">{{ $r->role }}</option>
+                                    @endforeach
+                                @else
+                                    <option value="3">Driver</option>
+                                @endif
+                            </select>
+                            @error($editingID ? 'editingRole' : 'role') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Station</label>
+                            <select wire:model.defer="{{ $editingID ? 'editingStation' : 'station' }}"
+                                class="form-select form-control @error($editingID ? 'editingStation' : 'station') is-invalid @enderror">
+                                <option value="">Select station</option>
+                                @if ($isAdmin)
+                                    @foreach ($stations as $st)
+                                        <option value="{{ $st->id }}">{{ $st->stationName }}</option>
+                                    @endforeach
+                                @else
+                                    <option value="{{ Auth::user()->station_id }}">{{ Auth::user()->station->stationName ?? '' }}</option>
+                                @endif
+                            </select>
+                            @error($editingID ? 'editingStation' : 'station') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        </div>
+                        @if (!$editingID)
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Password <small class="text-muted">(min 8 characters)</small></label>
+                                <div class="input-group">
+                                    <input type="password" id="newUserPassword" wire:model.defer="password"
+                                        class="form-control @error('password') is-invalid @enderror" placeholder="Password">
+                                    <button class="btn btn-outline-secondary" type="button"
+                                        onclick="var i=document.getElementById('newUserPassword');i.type=i.type==='password'?'text':'password';">
+                                        <i class="mdi mdi-eye"></i>
+                                    </button>
+                                    @error('password') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                                </div>
+                            </div>
+                        @endif
+                    </div>
+
+                    @if ($needsPayout)
+                        <hr>
+                        <h6 class="text-uppercase text-muted font-size-12 mb-2">Payout details</h6>
+                        <div class="alert alert-info py-2 font-size-13">
+                            <i class="mdi mdi-information-outline me-1"></i>
+                            A Paystack subaccount is created from these details. Bookings pay this account its share automatically.
+                            @if ($editingID && $editingHasSubaccount)
+                                <br><strong>This user already has a subaccount.</strong> Changing bank details here does not update it on Paystack.
+                            @endif
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Business / account name</label>
+                                <input type="text" wire:model.defer="{{ $editingID ? 'editingBusinessName' : 'business_name' }}"
+                                    class="form-control @error($editingID ? 'editingBusinessName' : 'business_name') is-invalid @enderror" placeholder="Business name">
+                                @error($editingID ? 'editingBusinessName' : 'business_name') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            </div>
+                            <div class="col-md-5 mb-3">
+                                <label class="form-label">Bank</label>
+                                <select wire:model.defer="{{ $editingID ? 'editingBankCode' : 'bank_code' }}"
+                                    class="form-select form-control @error($editingID ? 'editingBankCode' : 'bank_code') is-invalid @enderror">
+                                    <option value="">Select bank</option>
+                                    @include('livewire.partials.bank-options')
+                                </select>
+                                @error($editingID ? 'editingBankCode' : 'bank_code') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">Account number</label>
+                                <input type="text" inputmode="numeric" maxlength="10" wire:model.defer="{{ $editingID ? 'editingAccountNumber' : 'account_number' }}"
+                                    class="form-control @error($editingID ? 'editingAccountNumber' : 'account_number') is-invalid @enderror" placeholder="10 digits">
+                                @error($editingID ? 'editingAccountNumber' : 'account_number') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            </div>
+                        </div>
                     @endif
 
-
-                    <button class="btn btn-primary btn-sm mt-3" wire:click.prevent="{{ $editingID ? 'update' : 'createUser' }}">
-                        {{ $editingID ? 'Update User' : 'Create User' }}
-                    </button>
+                    <div class="d-flex justify-content-end mt-2">
+                        <button class="btn btn-light btn-sm me-2" wire:click.prevent="{{ $editingID ? 'cancelEdit' : 'toggleCreateForm' }}">Cancel</button>
+                        <button class="btn btn-primary btn-sm" wire:click.prevent="{{ $editingID ? 'update' : 'createUser' }}" wire:loading.attr="disabled">
+                            <span wire:loading wire:target="{{ $editingID ? 'update' : 'createUser' }}" class="spinner-border spinner-border-sm me-1"></span>
+                            {{ $editingID ? 'Save changes' : 'Create user' }}
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
     @endif
-    <div class="col-md-12">
+
+    {{-- Report --}}
+    <div class="col-12">
         <div class="card">
             <div class="card-body">
-
-                <div class="row">
-                    <div class="col-md-1">
-                        <select name="limit" wire:model="limit" class="form-control form-control-sm mt-2">
+                <div class="row g-2 align-items-end">
+                    <div class="col-md-4">
+                        <label class="form-label font-size-12 mb-1">Search</label>
+                        <input type="search" wire:model.debounce.500ms="search" placeholder="Name, email, phone or business"
+                            class="form-control form-control-sm">
+                    </div>
+                    <div class="col-6 col-md-2">
+                        <label class="form-label font-size-12 mb-1">Role</label>
+                        <select wire:model="roleFilter" class="form-select form-control form-control-sm">
+                            <option value="">All roles</option>
+                            @foreach ($roles as $r)
+                                <option value="{{ $r->id }}">{{ $r->role }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    @if ($isAdmin)
+                        <div class="col-6 col-md-2">
+                            <label class="form-label font-size-12 mb-1">Station</label>
+                            <select wire:model="stationFilter" class="form-select form-control form-control-sm">
+                                <option value="">All stations</option>
+                                <option value="none">No station</option>
+                                @foreach ($stations as $st)
+                                    <option value="{{ $st->id }}">{{ $st->stationName }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    @endif
+                    <div class="col-6 col-md-2">
+                        <label class="form-label font-size-12 mb-1">Payout account</label>
+                        <select wire:model="payoutFilter" class="form-select form-control form-control-sm">
+                            <option value="">Any</option>
+                            <option value="ready">Has subaccount</option>
+                            <option value="missing">Missing (payout roles)</option>
+                        </select>
+                    </div>
+                    <div class="col-6 col-md-2">
+                        <label class="form-label font-size-12 mb-1">Email verified</label>
+                        <select wire:model="verifiedFilter" class="form-select form-control form-control-sm">
+                            <option value="">Any</option>
+                            <option value="yes">Verified</option>
+                            <option value="no">Not verified</option>
+                        </select>
+                    </div>
+                    <div class="col-6 col-md-2">
+                        <label class="form-label font-size-12 mb-1">Registered from</label>
+                        <input type="date" wire:model="dateFrom" class="form-control form-control-sm">
+                    </div>
+                    <div class="col-6 col-md-2">
+                        <label class="form-label font-size-12 mb-1">Registered to</label>
+                        <input type="date" wire:model="dateTo" class="form-control form-control-sm">
+                    </div>
+                    <div class="col-6 col-md-2">
+                        <label class="form-label font-size-12 mb-1">Rows per page</label>
+                        <select wire:model="limit" class="form-select form-control form-control-sm">
                             <option value="10">10</option>
                             <option value="50">50</option>
                             <option value="100">100</option>
                             <option value="500">500</option>
                         </select>
                     </div>
-                    <div class="col-md-7"></div>
-                    <div class="col-md-4">
-                        <input type="search" wire:model.live.debounce.500ms="search" placeholder="Search by name..."
-                            class="form-control form-control-sm mt-2">
+                    <div class="col-6 col-md-2">
+                        @if ($filtersActive)
+                            <button wire:click="resetFilters" class="btn btn-outline-secondary btn-sm w-100">
+                                <i class="mdi mdi-filter-remove-outline me-1"></i> Clear filters
+                            </button>
+                        @endif
                     </div>
                 </div>
-                <div class="table-responsive mt-3">
-                    <table class="table table-striped table-bordered"
-                        style="border-collapse: collapse; border-spacing: 0; width: 100%;">
-                        <thead>
-                            <tr>
-                                <th>#ID</th>
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th>Role</th>
-                                <th>Station</th>
-                                <th>Registered</th>
-                                <th>Edit</th>
-                                <th>Delete</th>
 
+                <div class="d-flex justify-content-between align-items-center mt-3 text-muted font-size-13">
+                    <span>
+                        Showing {{ $users->firstItem() ?? 0 }}–{{ $users->lastItem() ?? 0 }} of {{ number_format($users->total()) }}
+                        {{ $filtersActive ? 'matching' : '' }} users
+                    </span>
+                    <span wire:loading class="spinner-border spinner-border-sm"></span>
+                </div>
+
+                <div class="table-responsive mt-2">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>#</th>
+                                <th role="button" wire:click="sortBy('name')">Name <i class="mdi {{ $sortIcon('name') }}"></i></th>
+                                <th role="button" wire:click="sortBy('email')">Contact <i class="mdi {{ $sortIcon('email') }}"></i></th>
+                                <th role="button" wire:click="sortBy('role_id')">Role <i class="mdi {{ $sortIcon('role_id') }}"></i></th>
+                                <th>Station</th>
+                                <th>Payout</th>
+                                <th role="button" wire:click="sortBy('created_at')">Registered <i class="mdi {{ $sortIcon('created_at') }}"></i></th>
+                                <th class="text-end">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse($users as $user)
-                            <tr>
-                                <td>{{ ($users->currentPage() - 1) * $users->perPage() + $loop->iteration }}
-                                </td>
-                                <td><a href="/profile/{{ $user->id }}">{{ $user->name }}</a></td>
-                                <td>{{ $user->email }}</td>
-                                <td>{{ $user->role->role }}</td>
-                                <td>{{ $user->station->stationName ?? 'No station assigned' }}</td>
-                                <td>{{ $user->created_at->diffForHumans() }}</td>
-                                <td><a class="btn btn-primary btn-sm text-light" style="cursor:pointer;"
-                                        wire:click="edit({{$user->id}})"><i class="fa fa-edit"></i> Edit</a> </td>
-                                <td><a class="text-light btn btn-danger btn-sm"
-                                        wire:click="delete({{$user->id}})"><i class="fa fa-trash"></i>
-                                        Delete</a></a></td>
-                            </tr>
-
-                            <!-- @if($editingID === $user->id)
-                                <tr>
-                                    <td colspan="8">
-                                        <input type="text" wire:model="editingName" placeholder="Name"
-                                            class="form-control mx-1">
-                                        @error('editingName')
-                                        <span class="text-danger">{{ $message }}</span>
-                                        @enderror
+                            @forelse ($users as $user)
+                                @php $isPayoutRole = in_array((int) $user->role_id, $payoutRoles, true); @endphp
+                                <tr wire:key="user-{{ $user->id }}">
+                                    <td>{{ $users->firstItem() + $loop->index }}</td>
+                                    <td>
+                                        <a href="/profile/{{ $user->id }}" class="fw-semibold">{{ $user->name }}</a>
+                                        @if ($user->business_name)
+                                            <div class="text-muted font-size-12">{{ $user->business_name }}</div>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        {{ $user->email }}
+                                        @if ($user->email_verified_at)
+                                            <i class="mdi mdi-check-decagram text-success" title="Email verified"></i>
+                                        @endif
+                                        @if ($user->phone_no)
+                                            <div class="text-muted font-size-12">{{ $user->phone_no }}</div>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-{{ $roleColors[$user->role_id] ?? 'secondary' }}">{{ $user->role->role ?? 'No role' }}</span>
+                                    </td>
+                                    <td>{{ $user->station->stationName ?? '—' }}</td>
+                                    <td>
+                                        @if ($user->account_code)
+                                            <span class="badge bg-success">Subaccount</span>
+                                            <code class="text-muted">{{ $user->account_code }}</code>
+                                        @elseif ($isPayoutRole)
+                                            <span class="badge bg-danger">Missing</span>
+                                        @else
+                                            <span class="text-muted">—</span>
+                                        @endif
+                                    </td>
+                                    <td title="{{ optional($user->created_at)->format('d M Y H:i') }}">
+                                        {{ optional($user->created_at)->format('d M Y') }}
+                                        <div class="text-muted font-size-12">{{ optional($user->created_at)->diffForHumans() }}</div>
+                                    </td>
+                                    <td class="text-end text-nowrap">
+                                        <button class="btn btn-outline-primary btn-sm" wire:click="edit({{ $user->id }})"><i class="fa fa-edit"></i> Edit</button>
+                                        <button class="btn btn-outline-danger btn-sm"
+                                            onclick="confirm('Delete {{ e(addslashes($user->name)) }}? This cannot be undone.') || event.stopImmediatePropagation()"
+                                            wire:click="delete({{ $user->id }})"><i class="fa fa-trash"></i></button>
                                     </td>
                                 </tr>
-                                <tr>
-                                    <td colspan="8">
-                                        <input type="text" wire:model="editingEmail" placeholder="Email"
-                                            class="form-control mx-1">
-                                        @error('editingEmail')
-                                        <span class="text-danger">{{ $message }}</span>
-                                        @enderror
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td colspan="8">
-                                        <select wire:model="editingRole" class="form-control">
-                                            <option value="">Select Role</option>
-                                            @if(Auth::user()->role_id == 1)
-                                                @forelse($roles as $role)
-                                                    <option value="{{ $role->id }}">{{ $role->role }}</option>
-                                                @empty
-                                                @endforelse
-                                            @else
-                                                <option value="3">Driver</option>
-                                            @endif
-                                                        </select>
-                                        @error('editingRole')
-                                        <span class="text-danger">{{ $message }}</span>
-                                        @enderror
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td colspan="8">
-
-                                            <select wire:model="editingStation" class="form-control">
-                                                <option value="">Select station</option>
-                                                @if(Auth::user()->role_id == 1)
-                                                    @forelse($stations as $station)
-                                                        <option value="{{ $station->id }}">{{ $station->stationName }}</option>
-                                                    @empty
-                                                    @endforelse
-                                                @else
-                                                    <option value="{{Auth::user()->station_id}}">{{Auth::user()->station->stationName}}</option>
-                                                @endif
-                                            </select>
-
-                                        @error('editingStation')
-                                        <span class="text-danger">{{ $message }}</span>
-                                        @enderror
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td colspan="8">
-                                        <input type="text" wire:model="editingBusinessName" placeholder="Business name"
-                                            class="form-control mx-1">
-                                        @error('editingBusinessName')
-                                        <span class="text-danger">{{ $message }}</span>
-                                        @enderror
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td colspan="8">
-                                        <div class="form-group mt-3">
-                                            <label>Select Bank</label>
-                                            <select wire:model="editingBankCode" class="form-control {{ $errors->has('editingBankCode') ? 'is-invalid' : '' }}">
-                                                <option value="">Select bank</option>
-                                                                    <option value="120001">9mobile 9Payment Service Bank</option>
-                                                                    <option value="801">Abbey Mortgage Bank</option>
-                                                                    <option value="51204">Above Only MFB</option>
-                                                                    <option value="51312">Abulesoro MFB</option>
-                                                                    <option value="044">Access Bank</option>
-                                                                    <option value="063">Access Bank (Diamond)</option>
-                                                                    <option value="602">Accion Microfinance Bank</option>
-                                                                    <option value="50036">Ahmadu Bello University Microfinance Bank</option>
-                                                                    <option value="120004">Airtel Smartcash PSB</option>
-                                                                    <option value="51336">AKU Microfinance Bank</option>
-                                                                    <option value="035A">ALAT by WEMA</option>
-                                                                    <option value="50926">Amju Unique MFB</option>
-                                                                    <option value="51341">AMPERSAND MICROFINANCE BANK</option>
-                                                                    <option value="50083">Aramoko MFB</option>
-                                                                    <option value="401">ASO Savings and Loans</option>
-                                                                    <option value="MFB50094">Astrapolaris MFB LTD</option>
-                                                                    <option value="51229">Bainescredit MFB</option>
-                                                                    <option value="50117">Banc Corp Microfinance Bank</option>
-                                                                    <option value="50931">Bowen Microfinance Bank</option>
-                                                                    <option value="FC40163">Branch International Financial Services Limited
-                                                                    </option>
-                                                                    <option value="565">Carbon</option>
-                                                                    <option value="865">CASHCONNECT MFB</option>
-                                                                    <option value="50823">CEMCS Microfinance Bank</option>
-                                                                    <option value="50171">Chanelle Microfinance Bank Limited</option>
-                                                                    <option value="023">Citibank Nigeria</option>
-                                                                    <option value="50910">Consumer Microfinance Bank</option>
-                                                                    <option value="50204">Corestep MFB</option>
-                                                                    <option value="559">Coronation Merchant Bank</option>
-                                                                    <option value="FC40128">County Finance Limited</option>
-                                                                    <option value="51297">Crescent MFB</option>
-                                                                    <option value="50162">Dot Microfinance Bank</option>
-                                                                    <option value="050">Ecobank Nigeria</option>
-                                                                    <option value="50263">Ekimogun MFB</option>
-                                                                    <option value="098">Ekondo Microfinance Bank</option>
-                                                                    <option value="50126">Eyowo</option>
-                                                                    <option value="51318">Fairmoney Microfinance Bank</option>
-                                                                    <option value="070">Fidelity Bank</option>
-                                                                    <option value="51314">Firmus MFB</option>
-                                                                    <option value="011">First Bank of Nigeria</option>
-                                                                    <option value="214">First City Monument Bank</option>
-                                                                    <option value="107">FirstTrust Mortgage Bank Nigeria</option>
-                                                                    <option value="50315">FLOURISH MFB</option>
-                                                                    <option value="501">FSDH Merchant Bank Limited</option>
-                                                                    <option value="812">Gateway Mortgage Bank LTD</option>
-                                                                    <option value="00103">Globus Bank</option>
-                                                                    <option value="100022">GoMoney</option>
-                                                                    <option value="50739">Goodnews Microfinance Bank</option>
-                                                                    <option value="562">Greenwich Merchant Bank</option>
-                                                                    <option value="058">Guaranty Trust Bank</option>
-                                                                    <option value="51251">Hackman Microfinance Bank</option>
-                                                                    <option value="50383">Hasal Microfinance Bank</option>
-                                                                    <option value="030">Heritage Bank</option>
-                                                                    <option value="120002">HopePSB</option>
-                                                                    <option value="51244">Ibile Microfinance Bank</option>
-                                                                    <option value="50439">Ikoyi Osun MFB</option>
-                                                                    <option value="50442">Ilaro Poly Microfinance Bank</option>
-                                                                    <option value="50457">Infinity MFB</option>
-                                                                    <option value="301">Jaiz Bank</option>
-                                                                    <option value="50502">Kadpoly MFB</option>
-                                                                    <option value="082">Keystone Bank</option>
-                                                                    <option value="50200">Kredi Money MFB LTD</option>
-                                                                    <option value="50211">Kuda Bank</option>
-                                                                    <option value="90052">Lagos Building Investment Company Plc.</option>
-                                                                    <option value="50549">Links MFB</option>
-                                                                    <option value="031">Living Trust Mortgage Bank</option>
-                                                                    <option value="303">Lotus Bank</option>
-                                                                    <option value="50563">Mayfair MFB</option>
-                                                                    <option value="50304">Mint MFB</option>
-                                                                    <option value="50515">Moniepoint MFB</option>
-                                                                    <option value="120003">MTN Momo PSB</option>
-                                                                    <option value="00107">Optimus Bank Limited</option>
-                                                                    <option value="100002">Paga</option>
-                                                                    <option value="999991">PalmPay</option>
-                                                                    <option value="104">Parallex Bank</option>
-                                                                    <option value="311">Parkway - ReadyCash</option>
-                                                                    <option value="999992">Paycom</option>
-                                                                    <option value="50743">Peace Microfinance Bank</option>
-                                                                    <option value="51146">Personal Trust MFB</option>
-                                                                    <option value="50746">Petra Mircofinance Bank Plc</option>
-                                                                    <option value="076">Polaris Bank</option>
-                                                                    <option value="50864">Polyunwana MFB</option>
-                                                                    <option value="105">PremiumTrust Bank</option>
-                                                                    <option value="101">Providus Bank</option>
-                                                                    <option value="51293">QuickFund MFB</option>
-                                                                    <option value="502">Rand Merchant Bank</option>
-                                                                    <option value="90067">Refuge Mortgage Bank</option>
-                                                                    <option value="51286">Rigo Microfinance Bank Limited</option>
-                                                                    <option value="50767">ROCKSHIELD MICROFINANCE BANK</option>
-                                                                    <option value="125">Rubies MFB</option>
-                                                                    <option value="51113">Safe Haven MFB</option>
-                                                                    <option value="951113">Safe Haven Microfinance Bank Limited</option>
-                                                                    <option value="50582">Shield MFB</option>
-                                                                    <option value="51062">Solid Allianze MFB</option>
-                                                                    <option value="50800">Solid Rock MFB</option>
-                                                                    <option value="51310">Sparkle Microfinance Bank</option>
-                                                                    <option value="221">Stanbic IBTC Bank</option>
-                                                                    <option value="068">Standard Chartered Bank</option>
-                                                                    <option value="51253">Stellas MFB</option>
-                                                                    <option value="232">Sterling Bank</option>
-                                                                    <option value="100">Suntrust Bank</option>
-                                                                    <option value="50968">Supreme MFB</option>
-                                                                    <option value="302">TAJ Bank</option>
-                                                                    <option value="090560">Tanadi Microfinance Bank</option>
-                                                                    <option value="51269">Tangerine Money</option>
-                                                                    <option value="51211">TCF MFB</option>
-                                                                    <option value="102">Titan Bank</option>
-                                                                    <option value="100039">Titan Paystack</option>
-                                                                    <option value="50840">U&amp;C Microfinance Bank Ltd (U AND C MFB)</option>
-                                                                    <option value="MFB51322">Uhuru MFB</option>
-                                                                    <option value="50870">Unaab Microfinance Bank Limited</option>
-                                                                    <option value="50871">Unical MFB</option>
-                                                                    <option value="51316">Unilag Microfinance Bank</option>
-                                                                    <option value="032">Union Bank of Nigeria</option>
-                                                                    <option value="033">United Bank For Africa</option>
-                                                                    <option value="215">Unity Bank</option>
-                                                                    <option value="566">VFD Microfinance Bank Limited</option>
-                                                                    <option value="51355">Waya Microfinance Bank</option>
-                                                                    <option value="035">Wema Bank</option>
-                                                                    <option value="057">Zenith Bank</option>
-                                                                    <option value="057">Zenith Bank</option>
-                                            </select>
-                                            @error('editingBankCode')
-                                                <span class="invalid-feedback"> {{ $message }} </span>
-                                            @enderror
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td colspan="8">
-                                        <input type="text" wire:model="editingAccountNumber" placeholder="Account number"
-                                            class="form-control mx-1">
-                                        @error('editingAccountNumber')
-                                        <span class="text-danger">{{ $message }}</span>
-                                        @enderror
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td colspan="8">
-                                        <input type="text" wire:model="editingPercentageCharge" placeholder="Percentage charge"
-                                            class="form-control mx-1">
-                                        @error('editingPercentageCharge')
-                                        <span class="text-danger">{{ $message }}</span>
-                                        @enderror
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td colspan="8">
-                                        <button type="submit" wire:click="update"
-                                            class="btn btn-success btn-sm">Update</button> <button type="submit"
-                                            wire:click="cancelEdit" class="btn btn-danger btn-sm">Cancel</button>
-                                    </td>
-                                </tr>
-                            @endif
-                            -->
-
                             @empty
-                            <tr>
-                                <td colspan="4" class="text-center text-danger"> No record available</td>
-                            </tr>
-                            @endforelse 
+                                <tr>
+                                    <td colspan="8" class="text-center text-muted py-5">
+                                        <i class="mdi mdi-account-search font-size-24 d-block mb-1"></i>
+                                        No users match your filters.
+                                    </td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
-                    <div class="loader text-center">
-                        <div class="my-2">
-                            {{ $users->links()}}
-                        </div>
-                    </div>
                 </div>
+                <div class="mt-3">{{ $users->links() }}</div>
             </div>
         </div>
     </div>
-
 </div>

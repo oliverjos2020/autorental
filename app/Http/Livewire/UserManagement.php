@@ -9,7 +9,9 @@ use App\Models\Station;
 use Livewire\WithPagination;
 use Exception;
 use App\Models\SystemParameter;
+use App\Services\PaystackService;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -38,34 +40,158 @@ class UserManagement extends Component
     public $editingBusinessName;
     public $editingBankCode;
     public $editingAccountNumber;
+    public $editingHasSubaccount = false;
     public $limit = '10';
     public $business_name;
     public $bank_code;
     public $account_number;
     public bool $showCreateForm = false;
 
+    // Report filters
+    public $roleFilter = '';
+    public $stationFilter = '';
+    public $payoutFilter = '';
+    public $verifiedFilter = '';
+    public $dateFrom = '';
+    public $dateTo = '';
+    public $sortField = 'created_at';
+    public $sortDirection = 'desc';
+
+    private const PAYOUT_ROLES = [6, 7, 8];
+    private const SORTABLE = ['name', 'email', 'role_id', 'created_at'];
+    private const FILTERS = ['search', 'roleFilter', 'stationFilter', 'payoutFilter', 'verifiedFilter', 'dateFrom', 'dateTo', 'limit'];
+
     public function toggleCreateForm(): void
     {
 
         $this->showCreateForm = !$this->showCreateForm;
         $this->editingID = null;
-        // dd($this->showCreateForm);
-        // $this->reset(['param_key','param_value','param_group','description','is_secret','is_active']);
-        // $this->param_group = 'General';
-        // $this->is_active   = true;
+        $this->resetValidation();
     }
 
 
-    protected $queryString = ['limit', 'search'];
+    protected $queryString = [
+        'limit',
+        'search' => ['except' => ''],
+        'roleFilter' => ['except' => ''],
+        'stationFilter' => ['except' => ''],
+        'payoutFilter' => ['except' => ''],
+        'verifiedFilter' => ['except' => ''],
+        'dateFrom' => ['except' => ''],
+        'dateTo' => ['except' => ''],
+        'sortField' => ['except' => 'created_at'],
+        'sortDirection' => ['except' => 'desc'],
+    ];
 
-    public function updatingSearch()
+    public function updated($name)
     {
+        if (in_array($name, self::FILTERS, true)) {
+            $this->resetPage();
+        }
+    }
+
+    public function sortBy($field)
+    {
+        if (!in_array($field, self::SORTABLE, true)) {
+            return;
+        }
+
+        if ($this->sortField === $field) {
+            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sortField = $field;
+            $this->sortDirection = 'asc';
+        }
         $this->resetPage();
     }
 
-    public function updatingLimit()
+    public function resetFilters()
     {
+        $this->reset(['search', 'roleFilter', 'stationFilter', 'payoutFilter', 'verifiedFilter', 'dateFrom', 'dateTo']);
         $this->resetPage();
+    }
+
+    /**
+     * Users this admin is allowed to see (admins see everyone, others only their station).
+     */
+    private function scopedQuery()
+    {
+        $query = User::query();
+
+        if (auth()->user()->role_id != 1) {
+            $query->where('station_id', auth()->user()->station_id);
+        }
+
+        return $query;
+    }
+
+    private function filteredQuery()
+    {
+        $query = $this->scopedQuery();
+
+        if (trim((string) $this->search) !== '') {
+            $term = '%' . trim($this->search) . '%';
+            $query->where(function ($q) use ($term) {
+                $q->where('name', 'like', $term)
+                    ->orWhere('email', 'like', $term)
+                    ->orWhere('phone_no', 'like', $term)
+                    ->orWhere('business_name', 'like', $term);
+            });
+        }
+
+        if ($this->roleFilter !== '') {
+            $query->where('role_id', $this->roleFilter);
+        }
+
+        if ($this->stationFilter !== '') {
+            $this->stationFilter === 'none'
+                ? $query->whereNull('station_id')
+                : $query->where('station_id', $this->stationFilter);
+        }
+
+        if ($this->payoutFilter === 'ready') {
+            $query->whereNotNull('account_code')->where('account_code', '!=', '');
+        } elseif ($this->payoutFilter === 'missing') {
+            $query->whereIn('role_id', self::PAYOUT_ROLES)
+                ->where(fn ($q) => $q->whereNull('account_code')->orWhere('account_code', ''));
+        }
+
+        if ($this->verifiedFilter === 'yes') {
+            $query->whereNotNull('email_verified_at');
+        } elseif ($this->verifiedFilter === 'no') {
+            $query->whereNull('email_verified_at');
+        }
+
+        if ($this->dateFrom) {
+            $query->whereDate('created_at', '>=', $this->dateFrom);
+        }
+        if ($this->dateTo) {
+            $query->whereDate('created_at', '<=', $this->dateTo);
+        }
+
+        $field = in_array($this->sortField, self::SORTABLE, true) ? $this->sortField : 'created_at';
+
+        return $query->orderBy($field, $this->sortDirection === 'asc' ? 'asc' : 'desc');
+    }
+
+    public function exportCsv()
+    {
+        $query = $this->filteredQuery()->with(['role', 'station']);
+
+        return response()->streamDownload(function () use ($query) {
+            $out = fopen('php://output', 'w');
+            fputcsv($out, ['ID', 'Name', 'Email', 'Phone', 'Role', 'Station', 'Business Name', 'Bank Code', 'Account Number', 'Payout Account', 'Registered']);
+            foreach ($query->cursor() as $u) {
+                fputcsv($out, [
+                    $u->id, $u->name, $u->email, $u->phone_no,
+                    $u->role->role ?? '', $u->station->stationName ?? '',
+                    $u->business_name, $u->bank_code, $u->account_number,
+                    $u->account_code ? 'Yes' : 'No',
+                    optional($u->created_at)->format('Y-m-d H:i'),
+                ]);
+            }
+            fclose($out);
+        }, 'users-' . now()->format('Ymd-His') . '.csv');
     }
     public function updatedRole()
     {
@@ -187,14 +313,10 @@ class UserManagement extends Component
         try {
 
             /*
-             * Get the default percentage once.
+             * Get the car owner percentage once.
              *
-             * IMPORTANT:
-             * This is the default percentage_charge for the Paystack
-             * subaccount. It is NOT the percentage we use for each trip.
-             *
-             * The actual trip percentage will be supplied later during
-             * transaction initialization using the dynamic split.
+             * Stored on the user for reference only. The real split is
+             * computed per booking in PaystackService::buildSplit().
              */
             $percentageCharge = (float) SystemParameter::getValue(
                 'CAR_OWNER_PERCENTAGE'
@@ -222,50 +344,19 @@ class UserManagement extends Component
              */
             if ($requiresPaystack) {
 
-                $response = Http::withToken(
-                    config('services.paystack.secret_key')
-                )
-                    ->acceptJson()
-                    ->post('https://api.paystack.co/subaccount', [
-                        'business_name' => $validateData['business_name'],
-                        'settlement_bank' => $validateData['bank_code'],
-                        'account_number' => $validateData['account_number'],
-
-                        /*
-                         * This is the default Paystack subaccount setting.
-                         * It does NOT determine the split percentage for each
-                         * individual booking.
-                         */
-                        'percentage_charge' => $percentageCharge,
-                    ]);
-
-                $responseData = $response->json();
-
-                /*
-                 * Paystack request failed
-                 */
-                if (!$response->successful() || !($responseData['status'] ?? false)) {
-
-                    $message = $responseData['message']
-                        ?? 'Unable to create Paystack subaccount.';
-
+                try {
+                    $subaccountCode = (new PaystackService())->createSubaccount(
+                        $validateData['business_name'],
+                        $validateData['bank_code'],
+                        (string) $validateData['account_number']
+                    );
+                } catch (Exception $e) {
                     $this->dispatchBrowserEvent('notify', [
                         'type' => 'error',
-                        'message' => $message,
+                        'message' => $e->getMessage(),
                     ]);
 
                     return;
-                }
-
-                /*
-                 * Get Paystack subaccount code
-                 */
-                $subaccountCode = $responseData['data']['subaccount_code'] ?? null;
-
-                if (!$subaccountCode) {
-                    throw new Exception(
-                        'Paystack created the subaccount but no subaccount code was returned.'
-                    );
                 }
 
                 /*
@@ -310,26 +401,7 @@ class UserManagement extends Component
              */
             if ($subaccountCode) {
 
-                try {
-
-                    Http::withToken(
-                        config('services.paystack.secret_key')
-                    )
-                        ->acceptJson()
-                        ->put(
-                            "https://api.paystack.co/subaccount/{$subaccountCode}",
-                            [
-                                'active' => false,
-                            ]
-                        );
-
-                } catch (Exception $rollbackException) {
-
-                    Log::error('Unable to deactivate Paystack subaccount', [
-                        'subaccount_code' => $subaccountCode,
-                        'error' => $rollbackException->getMessage(),
-                    ]);
-                }
+                (new PaystackService())->deactivateSubaccount($subaccountCode);
             }
 
             /*
@@ -349,85 +421,89 @@ class UserManagement extends Component
                 'message' => 'Unable to create user. Please try again.',
             ]);
         }
+        $this->showCreateForm = false;
     }
 
 
     public function edit($id)
     {
-        $this->editingID = $id;
-        $this->editingName = User::find($id)->name;
-        $this->editingEmail = User::find($id)->email;
-        $this->editingRole = User::find($id)->role->id;
-        $this->editingStation = User::find($id)->station->id ?? null;
-        $this->editingBusinessName = User::find($id)->business_name ?? null;
-        $this->editingBankCode = User::find($id)->bank_code ?? null;
-        $this->editingAccountNumber = User::find($id)->account_number ?? null;
+        $user = $this->scopedQuery()->findOrFail($id);
+
+        $this->editingID = $user->id;
+        $this->editingName = $user->name;
+        $this->editingEmail = $user->email;
+        $this->editingRole = $user->role_id;
+        $this->editingStation = $user->station_id;
+        $this->editingBusinessName = $user->business_name;
+        $this->editingBankCode = $user->bank_code;
+        $this->editingAccountNumber = $user->account_number;
+        $this->editingHasSubaccount = !empty($user->account_code);
         $this->showCreateForm = true;
+        $this->resetValidation();
     }
 
     public function cancelEdit()
     {
-        $this->reset('editingID', 'editingName', 'editingEmail', 'editingRole', 'editingStation', 'editingBusinessName', 'editingBankCode', 'editingAccountNumber');
+        $this->resetValidation();
+        $this->showCreateForm = false;
+        $this->reset('editingHasSubaccount', 'editingID', 'editingName', 'editingEmail', 'editingRole', 'editingStation', 'editingBusinessName', 'editingBankCode', 'editingAccountNumber');
     }
 
     public function update()
     {
         // try {
 
+        $needsPayout = in_array((int) $this->editingRole, self::PAYOUT_ROLES, true);
+
         $this->validate([
-            'editingName' => ['required'],
-            'editingEmail' => ['required'],
+            'editingName' => ['required', 'string', 'max:255'],
+            'editingEmail' => ['required', 'email', Rule::unique('users', 'email')->ignore($this->editingID)],
             'editingRole' => ['required'],
+            'editingBusinessName' => $needsPayout ? ['required', 'string', 'max:255'] : ['nullable'],
+            'editingBankCode' => $needsPayout ? ['required'] : ['nullable'],
+            'editingAccountNumber' => $needsPayout ? ['required', 'digits:10'] : ['nullable'],
         ]);
-        $getUser = User::find($this->editingID);
-        if (empty($getUser->account_code)) {
-            $response = Http::withHeaders([
-                'Authorization' => 'Bearer ' . env('PAYSTACK_TEST_KEY'), // Replace with your actual Paystack API key
-                'Content-Type' => 'application/json',
-                'Cache-Control' => 'no-cache',
-            ])->post('https://api.paystack.co/subaccount', [
-                        'business_name' => $this->editingBusinessName,
-                        'settlement_bank' => $this->editingBankCode,
-                        'account_number' => (string) $this->editingAccountNumber,
-                        'percentage_charge' => SystemParameter::getValue('CAR_OWNER_PERCENTAGE')
-                    ]);
-            if ($response['status'] == true) {
-                User::find($this->editingID)->update([
-                    'name' => $this->editingName,
-                    'email' => $this->editingEmail,
-                    'role_id' => $this->editingRole,
-                    'station_id' => $this->editingStation,
-                    'business_name' => $this->editingBusinessName,
-                    'bank_code' => $this->editingBankCode,
-                    'account_number' => $this->editingAccountNumber,
-                    'percentage_charge' => SystemParameter::getValue('CAR_OWNER_PERCENTAGE')
-                ]);
-            } elseif ($response['status'] == false) {
+        $getUser = $this->scopedQuery()->findOrFail($this->editingID);
+        $attributes = [
+            'name' => $this->editingName,
+            'email' => $this->editingEmail,
+            'role_id' => $this->editingRole,
+            'station_id' => $this->editingStation,
+            'business_name' => $this->editingBusinessName,
+            'bank_code' => $this->editingBankCode,
+            'account_number' => $this->editingAccountNumber,
+            'percentage_charge' => SystemParameter::getValue('CAR_OWNER_PERCENTAGE')
+        ];
+
+        // Users in a payout role need a Paystack subaccount; create one if they don't have it yet
+        if (in_array((int) $this->editingRole, [6, 7, 8], true) && empty($getUser->account_code)) {
+            try {
+                $attributes['account_code'] = (new PaystackService())->createSubaccount(
+                    (string) $this->editingBusinessName,
+                    (string) $this->editingBankCode,
+                    (string) $this->editingAccountNumber
+                );
+            } catch (Exception $e) {
                 $this->dispatchBrowserEvent('notify', [
                     'type' => 'error',
-                    'message' => $response['message']
+                    'message' => $e->getMessage()
                 ]);
                 return;
             }
-        } else {
-            User::find($this->editingID)->update([
-                'name' => $this->editingName,
-                'email' => $this->editingEmail,
-                'role_id' => $this->editingRole,
-                'station_id' => $this->editingStation,
-                'business_name' => $this->editingBusinessName,
-                'bank_code' => $this->editingBankCode,
-                'account_number' => $this->editingAccountNumber,
-                'percentage_charge' => SystemParameter::getValue('CAR_OWNER_PERCENTAGE')
-            ]);
         }
+
+        $getUser->update($attributes);
         $this->cancelEdit();
+        $this->dispatchBrowserEvent('notify', [
+            'type' => 'success',
+            'message' => 'User Updated Successfully',
+        ]);
     }
 
     public function delete($id)
     {
         try {
-            User::findOrfail($id)->delete();
+            $this->scopedQuery()->findOrFail($id)->delete();
             $this->dispatchBrowserEvent('notify', [
                 'type' => 'error',
                 'message' => 'Deleted Successfully',
@@ -444,18 +520,27 @@ class UserManagement extends Component
     }
     public function render()
     {
-        if (auth()->user()->role_id == 1):
-            $userManagement = User::where('name', 'like', '%' . $this->search . '%')->latest()->paginate($this->limit);
-        else:
-            $station = auth()->user()->station_id;
-            $userManagement = User::where('name', 'like', '%' . $this->search . '%')->where('station_id', $station)->latest()->paginate($this->limit);
-        endif;
-        $roles = Role::all();
-        $stations = Station::all();
+        $scoped = $this->scopedQuery();
+        $monthStart = now()->startOfMonth();
+
+        $stats = [
+            'total' => (clone $scoped)->count(),
+            'new' => (clone $scoped)->where('created_at', '>=', $monthStart)->count(),
+            'ready' => (clone $scoped)->whereNotNull('account_code')->where('account_code', '!=', '')->count(),
+            'missing' => (clone $scoped)->whereIn('role_id', self::PAYOUT_ROLES)
+                ->where(fn ($q) => $q->whereNull('account_code')->orWhere('account_code', ''))->count(),
+        ];
+
+        $users = $this->filteredQuery()->with(['role', 'station'])->paginate((int) $this->limit);
+
         return view('livewire.user-management', [
-            'users' => $userManagement,
-            'roles' => $roles,
-            'stations' => $stations
+            'users' => $users,
+            'roles' => Role::all(),
+            'stations' => Station::all(),
+            'stats' => $stats,
+            'payoutRoles' => self::PAYOUT_ROLES,
+            'filtersActive' => $this->search !== '' || $this->roleFilter !== '' || $this->stationFilter !== ''
+                || $this->payoutFilter !== '' || $this->verifiedFilter !== '' || $this->dateFrom || $this->dateTo,
         ])->layout('components.dashboard.dashboard-master');
     }
 }

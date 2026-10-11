@@ -20,8 +20,9 @@ class BookingOrder extends Model
         'amount',
         'payment_status',
         'pickup_location',
-        'pickup_location',
+        'dropoff_location',
         'status',
+        'reason',
         'type'
     ];
 

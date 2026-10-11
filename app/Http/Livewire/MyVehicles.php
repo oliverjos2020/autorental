@@ -3,57 +3,53 @@
 namespace App\Http\Livewire;
 
 use Exception;
-use App\Models\Vehicle;
 use Livewire\Component;
 use Livewire\WithPagination;
+use App\Http\Livewire\Concerns\FiltersVehicles;
 
 class MyVehicles extends Component
 {
-    use WithPagination;
+    use WithPagination, FiltersVehicles;
     protected $paginationTheme = 'bootstrap';
-    public $search;
-    public $limit = '10';
-    protected $queryString = ['limit', 'search'];
 
-    public function updatingSearch()
+    public function mount()
     {
-        $this->resetPage();
+        // Newest first by default; the shared default (most booked) suits the report better
+        if (!request()->has('sortBy')) {
+            $this->sortBy = 'created_at';
+        }
     }
 
-   public function updatingLimit()
-   {
-       $this->resetPage();
-   }
-   public function delete($id)
+    public function delete($id)
     {
-        try{
-            Vehicle::findOrfail($id)->delete();
-            session()->flash('delete', 'Deleted Successfully');
+        try {
+            // Scoped so a station admin can't delete another station's vehicle
+            $this->fleetQuery()->findOrFail($id)->delete();
             $this->dispatchBrowserEvent('notify', [
                 'type' => 'error',
                 'message' => 'Deleted Successfully',
             ]);
-
         } catch (Exception $e) {
             $this->dispatchBrowserEvent('notify', [
                 'type' => 'error',
                 'message' => $e->getMessage(),
             ]);
-            return;
         }
-
     }
 
     public function render()
     {
-        if(auth()->user()->role_id == 1){
-            $vehicleManagement = Vehicle::query()->where('vehicleMake', 'like', '%' . $this->search . '%')->latest()->paginate($this->limit);
-        }else{
-            $vehicleManagement = Vehicle::query()->where('vehicleMake', 'like', '%' . $this->search . '%')->where('station_id', Auth()->user()->station_id)->latest()->paginate($this->limit);
-        }
-        
+        $stats = [
+            'total' => $this->fleetQuery()->count(),
+            'owners' => $this->fleetQuery()->distinct()->count('vehicles.user_id'),
+            'onTrip' => $this->fleetQuery()->where('on_trip', 1)->count(),
+            'available' => $this->fleetQuery()->where('on_trip', 0)->where('status', 2)->count(),
+            'unpublished' => $this->fleetQuery()->where('publication_status', '!=', 'published')->count(),
+        ];
+
         return view('livewire.my-vehicles', [
-            'vehicles' => $vehicleManagement,
-        ])->layout('components.dashboard.dashboard-master');
+            'vehicles' => $this->reportQuery()->paginate((int) $this->limit),
+            'stats' => $stats,
+        ] + $this->filterOptions())->layout('components.dashboard.dashboard-master');
     }
 }

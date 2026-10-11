@@ -24,6 +24,10 @@ return [
         'token' => env('POSTMARK_TOKEN'),
     ],
 
+    'paystack' => [
+        'secret_key' => env('PAYSTACK_SECRET_KEY', env('PAYSTACK_TEST_KEY')),
+    ],
+
     'ses' => [
         'key' => env('AWS_ACCESS_KEY_ID'),
         'secret' => env('AWS_SECRET_ACCESS_KEY'),
