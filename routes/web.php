@@ -179,6 +179,7 @@ Route::middleware('api')->group(function () {
         Route::post('/api/v1/rating', [RatingController::class, 'create']);
         Route::get('/api/v1/rating/{user_id}', [RatingController::class, 'fetch']);
         Route::post('/api/v1/booking', [BookingAPIController::class, 'booking']);
+        Route::post('/api/v1/booking/resubmit', [BookingAPIController::class, 'resubmit']);
         Route::post('/api/v1/mybookings', [BookingAPIController::class, 'getMyBookings']);
         Route::get('/api/v1/vehicles', [VehicleController::class, 'vehicles']);
         Route::get('/api/v1/brands', [BrandController::class, 'brands']);

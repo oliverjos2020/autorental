@@ -149,13 +149,17 @@
                                 @endphp
                                 <tr wire:key="booking-{{ $booking->id }}">
                                     <td>#{{ $booking->id }}</td>
-                                    <td>
-                                        <strong>{{ $booking->user->name ?? 'Deleted user' }}</strong>
-                                        <div class="text-muted font-size-12">{{ $booking->user->email ?? '' }}</div>
-                                        <div class="text-muted font-size-12">{{ $booking->user->phone_no ?? '' }}</div>
-                                        <div class="font-size-12">
-                                            @if (!in_array($idCard, $noDoc, true)) <a href="{{ $idCard }}" target="_blank">ID card</a> @endif
-                                            @if (!in_array($license, $noDoc, true)) · <a href="{{ $license }}" target="_blank">License</a> @endif
+                                    <td class="d-flex align-items-center">
+                                        <img src="{{ url($booking->user->passport ?? 'logo/auto-logo.png') }}" alt=""
+                                                class="rounded me-2" style="width:56px;height:40px;object-fit:cover;">
+                                        <div>
+                                            <strong>{{ $booking->user->name ?? 'Deleted user' }}</strong>
+                                            <div class="text-muted font-size-12">{{ $booking->user->email ?? '' }}</div>
+                                            <div class="text-muted font-size-12">{{ $booking->user->phone_no ?? '' }}</div>
+                                            <div class="font-size-12">
+                                                @if (!in_array($idCard, $noDoc, true)) <a href="{{ $idCard }}" target="_blank">ID card</a> @endif
+                                                @if (!in_array($license, $noDoc, true)) · <a href="{{ $license }}" target="_blank">License</a> @endif
+                                            </div>
                                         </div>
                                     </td>
                                     <td>

@@ -13,6 +13,9 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Validation\ValidationException;
 use App\Models\Location;
 use App\Services\PaystackService;
+use App\Services\FirebaseNotificationService;
+use App\Http\Livewire\BookingReport;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Exception;
 
@@ -75,12 +78,16 @@ class BookingAPIController extends Controller
                 }
                 // dd('/storage/' . $filePath);
 
-                // Update user details
-                User::where('id', $request->user_id)->update([
-                    'address' => $request->address,
-                    'identity_card' => '/storage/' . $filePath,
-                    'driverLicense' => '/storage/' . $filePath2,
-                ]);
+                // Update user details (only overwrite documents that were actually sent,
+                // so a resubmitted ID isn't wiped by the next booking)
+                $userDetails = ['address' => $request->address];
+                if ($filePath !== '') {
+                    $userDetails['identity_card'] = '/storage/' . $filePath;
+                }
+                if ($filePath2 !== '') {
+                    $userDetails['driverLicense'] = '/storage/' . $filePath2;
+                }
+                User::where('id', $request->user_id)->update($userDetails);
 
                 $vehicle = Vehicle::find($request->vehicle_id);
                 if(!$vehicle){
@@ -129,7 +136,7 @@ class BookingAPIController extends Controller
                     'dropoff_location' => $request->dropoff_location,
                     'pickupDate' => $request->pickupDate,
                     'dropoffDate' => $request->dropoffDate,
-                    'amount' => $request->amount,
+                    'amount' => $request->amount + ($request->amount * 0.075), // Adding 7.5% VAT
                     'duration' => $request->duration,
                     'wth_driver' => $request->wth_driver,
                     'payment_status' => 0, // 0 = pending payment
@@ -354,6 +361,103 @@ class BookingAPIController extends Controller
                 'errors' => $e->errors(),
                 'responseCode' => 422,
             ], 422);
+        }
+    }
+
+    /**
+     * Resolve a declined booking: replace the user's identity card and send the
+     * booking back to the admin for review (declined -> pending).
+     *
+     * POST /api/v1/booking/resubmit  (multipart: booking_id, user_id, identity_card)
+     */
+    public function resubmit(Request $request)
+    {
+        try {
+            $request->validate([
+                'booking_id' => ['required', 'integer'],
+                'user_id' => ['required', 'integer'],
+                'identity_card' => ['required', 'file', 'mimes:jpg,png,jpeg', 'max:300'],
+            ]);
+
+            // The token owner must be the user the request claims to act for
+            $authUser = auth('api')->user();
+            if ($authUser && (int) $authUser->id !== (int) $request->user_id) {
+                return response()->json([
+                    'responseCode' => 403,
+                    'responseMessage' => 'You can only resubmit your own bookings',
+                ], 403);
+            }
+
+            $booking = BookingOrder::where('id', $request->booking_id)
+                ->where('user_id', $request->user_id)
+                ->first();
+
+            if (!$booking) {
+                return response()->json([
+                    'responseCode' => 404,
+                    'responseMessage' => 'Booking not found for this user',
+                ], 404);
+            }
+
+            if ((int) $booking->status !== BookingReport::DECLINED) {
+                return response()->json([
+                    'responseCode' => 409,
+                    'responseMessage' => 'Only declined bookings can be resubmitted',
+                ], 409);
+            }
+
+            $file = $request->file('identity_card');
+            $path = $file->storeAs('uploads', time() . '_ID_' . $file->getClientOriginalName(), 'public');
+
+            DB::transaction(function () use ($booking, $path) {
+                User::where('id', $booking->user_id)->update(['identity_card' => '/storage/' . $path]);
+
+                // Back to the admin's queue; the old decline reason no longer applies
+                $booking->update(['status' => BookingReport::PENDING, 'reason' => null]);
+            });
+
+            $this->notifyStationAdminOfResubmission($booking);
+
+            return response()->json([
+                'responseCode' => 200,
+                'responseMessage' => 'Document updated. Your booking has been sent for review again.',
+                'data' => [
+                    'booking_order' => $booking->fresh(),
+                    'identity_card' => '/storage/' . $path,
+                ]
+            ], 200);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'errors' => $e->errors(),
+                'responseCode' => 422,
+            ], 422);
+        }
+    }
+
+    private function notifyStationAdminOfResubmission(BookingOrder $booking): void
+    {
+        try {
+            $booking->loadMissing(['user', 'vehicle']);
+
+            $admin = User::where('station_id', $booking->vehicle->station_id)
+                ->whereIn('role_id', [1, 2])
+                ->whereNotNull('fcm_token')
+                ->first();
+
+            if ($admin) {
+                FirebaseNotificationService::push(
+                    $admin->fcm_token,
+                    'Booking Resubmitted',
+                    ($booking->user->name ?? 'A customer') . ' updated their document for ' . $booking->vehicle->vehicleMake . ' ' . $booking->vehicle->vehicleModel,
+                    [
+                        'booking_order_id' => (string) $booking->id,
+                        'vehicle_id' => (string) $booking->vehicle_id,
+                        'type' => 'booking_resubmitted',
+                    ]
+                );
+            }
+        } catch (Exception $e) {
+            Log::warning('Resubmission notification failed', ['booking' => $booking->id, 'error' => $e->getMessage()]);
         }
     }
 
