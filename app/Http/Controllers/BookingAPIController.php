@@ -136,7 +136,7 @@ class BookingAPIController extends Controller
                     'dropoff_location' => $request->dropoff_location,
                     'pickupDate' => $request->pickupDate,
                     'dropoffDate' => $request->dropoffDate,
-                    'amount' => $request->amount + ($request->amount * 0.075), // Adding 7.5% VAT
+                    'amount' => $request->amount, // Adding 7.5% VAT
                     'duration' => $request->duration,
                     'wth_driver' => $request->wth_driver,
                     'payment_status' => 0, // 0 = pending payment
