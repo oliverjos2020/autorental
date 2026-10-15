@@ -61,7 +61,7 @@ class PaystackService
      * and app shares are taken from the base amount only, as flat shares, so
      * whatever is left of the total (the VAT) stays in the main Paystack account.
      *
-     * @return array{base:int, vat:int, total:int, shares:array}
+     * @return array{base:int, vat:int, total:int, bearer_type:string, shares:array}
      * @throws Exception when the percentages or subaccounts are not configured properly
      */
     public function buildSplit(float $amount, string $carOwnerSubaccount): array
@@ -90,17 +90,37 @@ class PaystackService
         // Car owner takes the remainder so the three shares always equal the base exactly.
         $carOwner = $base - $association - $app;
 
+        $total = $base + $vat;
+
+        // Paystack takes its fee from whoever "bears" it. The main account is the
+        // preferred payer, but it only holds what is left after the flat shares (the
+        // VAT). When that can't cover the fee (e.g. VAT is 0), Paystack rejects the
+        // split with "Merchant share cannot be lower than zero", so spread the fee
+        // across the subaccounts in proportion to their shares instead.
+        $remainder = $total - ($association + $app + $carOwner);
+
         return [
             'base' => $base,
             'vat' => $vat,
-            'total' => $base + $vat,
-            // 'total' => $base,
+            'total' => $total,
+            'bearer_type' => $remainder >= $this->estimatedFee($total) ? 'account' : 'all-proportional',
             'shares' => [
                 'association' => ['subaccount' => $associationAccount, 'share' => $association],
                 'car_owner' => ['subaccount' => $carOwnerSubaccount, 'share' => $carOwner],
                 'app' => ['subaccount' => $appAccount, 'share' => $app],
             ],
         ];
+    }
+
+    /**
+     * Paystack's local card fee in kobo: 1.5% (+ N100 from N2,500 up), capped at N2,000.
+     * Slightly pessimistic is fine: it only decides who bears the fee.
+     */
+    private function estimatedFee(int $totalKobo): int
+    {
+        $fee = (int) round($totalKobo * 0.015) + ($totalKobo >= 250000 ? 10000 : 0);
+
+        return min($fee, 200000);
     }
 
     /**
@@ -121,7 +141,7 @@ class PaystackService
             ],
             'split' => [
                 'type' => 'flat',
-                'bearer_type' => 'account',
+                'bearer_type' => $split['bearer_type'] ?? 'account',
                 'subaccounts' => array_values($split['shares']),
             ],
         ]);
