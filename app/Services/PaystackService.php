@@ -93,7 +93,8 @@ class PaystackService
         return [
             'base' => $base,
             'vat' => $vat,
-            'total' => $base + $vat,
+            // 'total' => $base + $vat,
+            'total' => $base,
             'shares' => [
                 'association' => ['subaccount' => $associationAccount, 'share' => $association],
                 'car_owner' => ['subaccount' => $carOwnerSubaccount, 'share' => $carOwner],
