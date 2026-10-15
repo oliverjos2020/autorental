@@ -69,7 +69,7 @@ class PaystackService
         $associationPct = (float) SystemParameter::getValue('ASSOCIATION_PERCENTAGE', 2);
         $carOwnerPct = (float) SystemParameter::getValue('CAR_OWNER_PERCENTAGE', 96.5);
         $appPct = (float) SystemParameter::getValue('APP_PERCENTAGE', 1.5);
-        $vatPct = (float) SystemParameter::getValue('VAT_PERCENTAGE', 7.5);
+        $vatPct = (float) SystemParameter::getValue('VAT_PERCENTAGE', 0.0);
 
         if (abs($associationPct + $carOwnerPct + $appPct - 100) > 0.0001) {
             throw new Exception('Association, car owner and app percentages must add up to 100.');
@@ -93,8 +93,8 @@ class PaystackService
         return [
             'base' => $base,
             'vat' => $vat,
-            // 'total' => $base + $vat,
-            'total' => $base,
+            'total' => $base + $vat,
+            // 'total' => $base,
             'shares' => [
                 'association' => ['subaccount' => $associationAccount, 'share' => $association],
                 'car_owner' => ['subaccount' => $carOwnerSubaccount, 'share' => $carOwner],

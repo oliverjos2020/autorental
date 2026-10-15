@@ -127,6 +127,7 @@ class BookingAPIController extends Controller
                         'error' => $e->getMessage()
                     ], 500);
                 }
+                // print_r($split['total']); exit;
 
                 // Create booking order with PENDING status
                 $bookingOrder = BookingOrder::create([
