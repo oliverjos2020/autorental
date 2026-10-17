@@ -23,6 +23,7 @@ class BookingOrder extends Model
         'dropoff_location',
         'status',
         'reason',
+        'wth_driver',
         'type'
     ];
 

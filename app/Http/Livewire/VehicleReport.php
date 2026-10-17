@@ -26,7 +26,7 @@ class VehicleReport extends Component
         // Fleet overview stats (respect owner/station filters)
         $totalVehicles = $this->fleetQuery()->count();
         $vehiclesOnTrip = $this->fleetQuery()->where('on_trip', 1)->count();
-        $vehiclesAvailable = $this->fleetQuery()->where('on_trip', 0)->where('status', 2)->count();
+        $vehiclesAvailable = $this->fleetQuery()->where('publication_status', 'published')->where('on_trip', 0)->count();
         $vehiclesInactive = $this->fleetQuery()->where('status', '!=', 2)->count();
         $totalOwners = $this->fleetQuery()->distinct()->count('vehicles.user_id');
         $utilizationRate = $totalVehicles > 0 ? round(($vehiclesOnTrip / $totalVehicles) * 100, 1) : 0;

@@ -20,6 +20,7 @@
                     <div class="profile-widgets py-3">
 
                         <div class="text-center">
+                            @if(empty($user->passport))
                             <div class="">
                                
                                 @php
@@ -42,6 +43,12 @@
                                 <div class="online-circle"><i class="fas fa-circle text-success"></i>
                                 </div>
                             </div>
+                            @else
+                                <a href="{{ asset($user->passport) }}" target="_blank">
+                                    <img class="rounded-circle" src="{{asset($user->passport)}}"
+                                        style="max-height:110px" alt="Header Avatar">
+                                </a>
+                            @endif
 
                             <div class="mt-3 ">
                                 <a class="text-reset fw-medium font-size-16">{{ $user->name }}</a>
@@ -173,7 +180,7 @@
                                 <tbody>
                                     @forelse($vehicles as $vehicle)
                                     <tr>
-                                        <td><img src="{{ asset($vehicle->photos->first()->image_path) }}" style="height:50px; width:70px;" alt="{{ $vehicle->vehicleMake }}"></td>
+                                        <td><a href="{{ asset($vehicle->photos->first()->image_path) }}" target="_blank"><img src="{{ asset($vehicle->photos->first()->image_path) }}" style="height:50px; width:70px;" alt="{{ $vehicle->vehicleMake }}"></a></td>
                                         <td>{{ $vehicle->vehicleMake }}</td>
                                         <td>{{ $vehicle->vehicleModel }}</td>
                                         <td>{{ $vehicle->vehicleYear }}</td>
@@ -183,12 +190,10 @@
                                         <td>{{ $vehicle->seats }}</td>
                                         <td>{{ $vehicle->priceSetup->amount ?? ''}}</td>
                                         <td>
-                                            @if($vehicle->status == 1)
+                                            @if($vehicle->publication_status == 'pending')
                                                 <a class="badge bg-primary btn-sm"><i class="fas fa-sync-alt"></i> Pending</a>
-                                            @elseif($vehicle->status == 2)
-                                                <a class="badge bg-success btn-sm"><i class="fa fa-check"></i> Approved</a>
-                                            @elseif($vehicle->status == 3)
-                                                <a class="badge bg-danger btn-sm"><i class="fas fa-info-circle"></i> Declined</a>
+                                            @elseif($vehicle->publication_status == 'published')
+                                                <a class="badge bg-success btn-sm"><i class="fas fa-check"></i> Published</a>
                                             @endif
                                         </td>
                                     </tr>

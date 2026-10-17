@@ -290,6 +290,80 @@ class BookingReport extends Component
         }
     }
 
+    /* ------------------------------------------------------------ trip details */
+
+    /**
+     * Google Maps link that drops a pin on a place. Works with a free-text address
+     * (Google picks the best match) or with "lat,lng" coordinates when that's what was sent.
+     */
+    public function mapsUrl(?string $place): ?string
+    {
+        $place = trim((string) $place);
+
+        return $place === '' ? null : 'https://www.google.com/maps/search/?api=1&query=' . rawurlencode($place);
+    }
+
+    /**
+     * Google Maps turn-by-turn route between two places.
+     */
+    public function directionsUrl(?string $from, ?string $to): ?string
+    {
+        $from = trim((string) $from);
+        $to = trim((string) $to);
+
+        return ($from === '' || $to === '')
+            ? null
+            : 'https://www.google.com/maps/dir/?api=1&origin=' . rawurlencode($from) . '&destination=' . rawurlencode($to) . '&travelmode=driving';
+    }
+
+    /**
+     * Plain-text summary of an accepted trip, ready to paste into WhatsApp/SMS for the driver.
+     */
+    public function tripText(BookingOrder $booking): string
+    {
+        $vehicle = $booking->vehicle;
+        $customer = $booking->user;
+        $when = fn ($d) => $d ? \Carbon\Carbon::parse($d)->format('D, d M Y \a\t h:i A') : null;
+
+        $lines = [
+            'TRIP #' . $booking->id . ($booking->type === 'ehailing' ? ' (E-hailing)' : ''),
+            'Vehicle: ' . trim(($vehicle->vehicleMake ?? '') . ' ' . ($vehicle->vehicleModel ?? '') . ' ' . ($vehicle->vehicleYear ?? ''))
+                . (!empty($vehicle->vehicleID) ? ' [' . $vehicle->vehicleID . ']' : ''),
+            'Customer: ' . ($customer->name ?? 'N/A') . (!empty($customer->phone_no) ? ' - ' . $customer->phone_no : ''),
+        ];
+
+        if ($booking->wth_driver !== null) {
+            $lines[] = 'With driver: ' . ((int) $booking->wth_driver === 1 ? 'Yes' : 'No');
+        }
+
+        $lines[] = '';
+        if ($pickupAt = $when($booking->pickupDate)) {
+            $lines[] = 'Pick-up: ' . $pickupAt;
+        }
+        $lines[] = 'Pick-up location: ' . ($booking->pickup_location ?: 'N/A');
+        if ($url = $this->mapsUrl($booking->pickup_location)) {
+            $lines[] = 'Map: ' . $url;
+        }
+
+        if ($booking->dropoff_location || $booking->dropoffDate) {
+            $lines[] = '';
+            if ($dropAt = $when($booking->dropoffDate)) {
+                $lines[] = 'Drop-off: ' . $dropAt;
+            }
+            if ($booking->dropoff_location) {
+                $lines[] = 'Drop-off location: ' . $booking->dropoff_location;
+                if ($url = $this->mapsUrl($booking->dropoff_location)) {
+                    $lines[] = 'Map: ' . $url;
+                }
+                if ($route = $this->directionsUrl($booking->pickup_location, $booking->dropoff_location)) {
+                    $lines[] = 'Route: ' . $route;
+                }
+            }
+        }
+
+        return implode("\n", $lines);
+    }
+
     /* ----------------------------------------------------------------- export */
 
     public function exportCsv()

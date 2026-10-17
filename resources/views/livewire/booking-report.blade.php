@@ -150,8 +150,10 @@
                                 <tr wire:key="booking-{{ $booking->id }}">
                                     <td>#{{ $booking->id }}</td>
                                     <td class="d-flex align-items-center">
-                                        <img src="{{ url($booking->user->passport ?? 'logo/auto-logo.png') }}" alt=""
+                                        <a href="{{ asset($booking->user->passport ?? 'logo/auto-logo.png') }}" target="_blank">
+                                            <img src="{{ url($booking->user->passport ?? 'logo/auto-logo.png') }}" alt=""
                                                 class="rounded me-2" style="width:56px;height:40px;object-fit:cover;">
+                                        </a>
                                         <div>
                                             <strong>{{ $booking->user->name ?? 'Deleted user' }}</strong>
                                             <div class="text-muted font-size-12">{{ $booking->user->email ?? '' }}</div>
@@ -179,13 +181,22 @@
                                     </td>
                                     <td class="font-size-13">
                                         @if ($booking->type === 'ehailing')
-                                            <i class="mdi mdi-map-marker text-success"></i> {{ $booking->pickup_location }}
-                                            <br><i class="mdi mdi-flag-checkered text-danger"></i> {{ $booking->dropoff_location }}
+                                            <i class="mdi mdi-map-marker text-success"></i>
+                                            @if ($mapUrl = $this->mapsUrl($booking->pickup_location)) <a href="{{ $mapUrl }}" target="_blank" rel="noopener" title="Open in Google Maps">{{ $booking->pickup_location }}</a> @else {{ $booking->pickup_location }} @endif
+                                            <br><i class="mdi mdi-flag-checkered text-danger"></i>
+                                            @if ($mapUrl = $this->mapsUrl($booking->dropoff_location)) <a href="{{ $mapUrl }}" target="_blank" rel="noopener" title="Open in Google Maps">{{ $booking->dropoff_location }}</a> @else {{ $booking->dropoff_location }} @endif
+                                            @if ($routeUrl = $this->directionsUrl($booking->pickup_location, $booking->dropoff_location))
+                                                <div><a href="{{ $routeUrl }}" target="_blank" rel="noopener" class="font-size-12"><i class="mdi mdi-directions"></i> Route</a></div>
+                                            @endif
                                         @else
                                             {{ optional($booking->pickupDate ? \Carbon\Carbon::parse($booking->pickupDate) : null)->format('d M Y') }}
                                             → {{ optional($booking->dropoffDate ? \Carbon\Carbon::parse($booking->dropoffDate) : null)->format('d M Y') }}
                                             @if ($booking->pickup_location)
-                                                <div class="text-muted font-size-12"><i class="mdi mdi-map-marker"></i> {{ $booking->pickup_location }}</div>
+                                                <div class="font-size-12">
+                                                    <a href="{{ $this->mapsUrl($booking->pickup_location) }}" target="_blank" rel="noopener" title="Open in Google Maps" class="text-muted">
+                                                        <i class="mdi mdi-map-marker"></i> {{ $booking->pickup_location }}
+                                                    </a>
+                                                </div>
                                             @endif
                                         @endif
                                     </td>
@@ -215,6 +226,10 @@
                                                 <i class="fa fa-times"></i> Decline
                                             </button>
                                         @elseif ($active)
+                                            <button type="button" class="btn btn-outline-secondary btn-sm" data-trip="{{ $this->tripText($booking) }}"
+                                                onclick="copyTripDetails(this)" title="Copy trip details to send to the driver">
+                                                <i class="mdi mdi-content-copy"></i> Copy trip
+                                            </button>
                                             <button class="btn btn-warning btn-sm"
                                                 onclick="confirm('End this booking and mark the vehicle as available?') || event.stopImmediatePropagation()"
                                                 wire:click="end({{ $booking->id }})">
@@ -263,3 +278,32 @@
         </div>
     @endif
 </div>
+
+<script>
+    // Copies a booking's trip summary. Falls back to a hidden textarea where the
+    // async clipboard API isn't available (plain http, older browsers).
+    function copyTripDetails(btn) {
+        var text = btn.getAttribute('data-trip');
+        var done = function () {
+            var html = btn.innerHTML;
+            btn.innerHTML = '<i class="mdi mdi-check"></i> Copied';
+            btn.classList.add('btn-success');
+            setTimeout(function () { btn.innerHTML = html; btn.classList.remove('btn-success'); }, 1800);
+        };
+        var fallback = function () {
+            var ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.position = 'fixed';
+            ta.style.opacity = '0';
+            document.body.appendChild(ta);
+            ta.select();
+            try { document.execCommand('copy'); done(); } catch (e) { window.prompt('Copy the trip details:', text); }
+            document.body.removeChild(ta);
+        };
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(text).then(done, fallback);
+        } else {
+            fallback();
+        }
+    }
+</script>
